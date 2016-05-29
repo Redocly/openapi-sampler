@@ -24,5 +24,4 @@ OpenAPISampler._registerSampler('number', sampleNumber);
 OpenAPISampler._registerSampler('object', sampleObject);
 OpenAPISampler._registerSampler('string', sampleString);
 
-
 export default OpenAPISampler;

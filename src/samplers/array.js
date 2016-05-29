@@ -10,12 +10,12 @@ export function sampleArray(schema) {
       return schema.items[itemNumber] || {};
     }
     return schema.items || {};
-  }
+  };
 
   let res = [];
   if (!schema.items) return res;
 
-  for (let i=0; i< arrayLength; i++) {
+  for (let i = 0; i < arrayLength; i++) {
     let itemSchema = itemSchemaGetter(i);
     let sample = traverse(itemSchema);
     res.push(sample);

@@ -8,13 +8,12 @@ function mergeAllOf(schema) {
   traverse(schema);
 };
 
-
 function traverse(obj) {
   if (obj === null || typeof(obj) !== 'object') {
     return;
   }
 
-  for(var key in obj) {
+  for (var key in obj) {
     if (obj.hasOwnProperty(key)) {
       traverse(obj[key]);
     }
@@ -28,7 +27,7 @@ function traverse(obj) {
 function merge(into, schemas) {
   for (let subSchema of schemas) {
     if (into.type && subSchema.type && into.type !== subSchema.type) {
-      let errMessage = `allOf merging: schemas with different types can't be merged`;
+      let errMessage = 'allOf merging: schemas with different types can\'t be merged';
       throw new Error(errMessage);
     }
     if (into.type === 'array') {
@@ -41,6 +40,6 @@ function merge(into, schemas) {
     }
 
     // TODO merging constrains: maximum, minimum, etc.
-    defaults(into, subSchema)
+    defaults(into, subSchema);
   }
 }

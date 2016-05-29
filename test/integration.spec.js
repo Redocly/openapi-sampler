@@ -1,7 +1,9 @@
 'use strict';
 
 describe('Integration', function() {
-  var schema, result, expected;
+  var schema;
+  var result;
+  var expected;
 
   describe('Primitives', function() {
 
@@ -42,7 +44,6 @@ describe('Integration', function() {
       expect(result).to.deep.equal(expected);
     });
   });
-
 
   describe('Objects', function() {
     it('should sample object without properties', function() {

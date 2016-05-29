@@ -1,0 +1,7 @@
+{
+  "preset": "google",
+  "maximumLineLength": null,
+  "esnext": true,
+  "disallowSpacesInsideObjectBrackets": null,
+  "requireCurlyBraces": false
+}

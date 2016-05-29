@@ -44,14 +44,13 @@ function defaultSample(min, max) {
   return res;
 }
 
-
 const stringFormats = {
   'email': emailSample,
   'password': passwordSample,
   'date-time': dateTimeSample,
   'date': dateSample,
   'default': defaultSample
-}
+};
 
 export function sampleString(schema) {
   let format = schema.format || 'default';
