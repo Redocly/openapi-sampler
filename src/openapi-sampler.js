@@ -1,5 +1,5 @@
 import { traverse } from './traverse';
-import { sampleArray, sampleBoolean, sampleNumber, sampleObject, sampleString} from './samplers';
+import { sampleArray, sampleBoolean, sampleNumber, sampleObject, sampleString} from './samplers/index';
 import { normalize } from './normalize';
 
 const OpenAPISampler = {
