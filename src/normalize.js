@@ -1,28 +1,9 @@
 import { defaults } from './utils';
 
-export function normalize(schema) {
-  mergeAllOf(schema);
-}
-
-function mergeAllOf(schema) {
-  traverse(schema);
+export function mergeAllOf(schema) {
+  merge(schema, schema.allOf);
+  schema.allOf = null;
 };
-
-function traverse(obj) {
-  if (obj === null || typeof(obj) !== 'object') {
-    return;
-  }
-
-  for (var key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      traverse(obj[key]);
-    }
-  }
-
-  if (obj.allOf) {
-    merge(obj, obj.allOf);
-  }
-}
 
 function merge(into, schemas) {
   for (let subSchema of schemas) {

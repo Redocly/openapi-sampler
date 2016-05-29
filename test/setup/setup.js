@@ -1,7 +1,7 @@
 module.exports = function(root) {
   root = root ? root : global;
   root.expect = root.chai.expect;
-  var OpenAPISampler = require('../../src/openapi-sampler');
+  global.OpenAPISampler = require('../../src/openapi-sampler');
   beforeEach(function() {
     // Using these globally-available Sinon features is preferrable, as they're
     // automatically restored for you in the subsequent `afterEach`

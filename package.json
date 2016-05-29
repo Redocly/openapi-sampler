@@ -1,6 +1,6 @@
 {
   "name": "openapi-sampler",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Tool for generation samples based on OpenAPI payload/response schema",
   "main": "dist/openapi-sampler.js",
   "jsnext:main": "src/openapi-sampler.js",
@@ -10,7 +10,8 @@
     "test-browser": "gulp test-browser",
     "watch": "gulp watch",
     "build": "gulp build",
-    "coverage": "gulp coverage"
+    "coverage": "gulp coverage",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",

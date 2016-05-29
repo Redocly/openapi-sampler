@@ -1,6 +1,11 @@
 import { _samplers } from './openapi-sampler';
+import { mergeAllOf } from './normalize';
 
 export function traverse(schema) {
+  if (schema.allOf) {
+    mergeAllOf(schema);
+  }
+
   if (schema.example) {
     return schema.example;
   }

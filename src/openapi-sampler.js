@@ -5,7 +5,6 @@ import { normalize } from './normalize';
 export var _samplers = {};
 
 export function sample(schema) {
-  normalize(schema);
   return traverse(schema);
 };
 
