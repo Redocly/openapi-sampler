@@ -1,6 +1,6 @@
 {
   "name": "openapi-sampler",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Tool for generation samples based on OpenAPI payload/response schema",
   "main": "dist/openapi-sampler.js",
   "jsnext:main": "src/openapi-sampler.js",
@@ -77,9 +77,5 @@
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"
-  },
-  "babelBoilerplateOptions": {
-    "entryFileName": "openapi-sampler.js",
-    "mainVarName": "OpenAPISampler"
   }
 }

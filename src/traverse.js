@@ -1,4 +1,4 @@
-import OpenAPISampler from './openapi-sampler';
+import { _samplers } from './openapi-sampler';
 
 export function traverse(schema) {
   if (schema.example) {
@@ -14,7 +14,7 @@ export function traverse(schema) {
   }
 
   let type = schema.type;
-  let sampler = OpenAPISampler._samplers[type];
+  let sampler = _samplers[type];
   if (sampler) return sampler(schema);
   return {};
 }

@@ -40,7 +40,6 @@ module.exports = function (config) {
           ]
         },
         files: [
-          './test/setup/browser.js',
           './dist/openapi-sampler.js',
           'node_modules/babel-polyfill/dist/polyfill.js',
           'test/**/*.spec.js'

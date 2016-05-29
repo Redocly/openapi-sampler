@@ -9,7 +9,10 @@ import config from './config';
 const $ = global.$;
 
 function build() {
-  return browserify({ entries: [path.join('src', config.entryFileName + '.js')] })
+  return browserify({
+      standalone: 'OpenAPISampler',
+      entries: [path.join('src', config.entryFileName + '.js')]
+    })
     .transform('babelify', {presets: ['es2015']})
     .bundle()
     .pipe(source(config.exportFileName + '.js'))

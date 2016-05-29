@@ -45,7 +45,7 @@ function defaultSample(min, max) {
 }
 
 function ipv4Sample() {
-  return '192.168.0.1'
+  return '192.168.0.1';
 }
 
 const stringFormats = {

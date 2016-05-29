@@ -57,4 +57,9 @@ describe('sampleString', () => {
     res = () => sampleString({format: 'date-time', minLength: 100});
     expect(res).to.throw();
   });
+
+  it('should return ip for ipv4 format', () => {
+    res = sampleString({format: 'ipv4'});
+    expect(res).to.equal('192.168.0.1');
+  });
 });

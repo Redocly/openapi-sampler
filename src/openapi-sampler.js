@@ -2,26 +2,20 @@ import { traverse } from './traverse';
 import { sampleArray, sampleBoolean, sampleNumber, sampleObject, sampleString} from './samplers/index';
 import { normalize } from './normalize';
 
-const OpenAPISampler = {
+export var _samplers = {};
 
-  sample(schema) {
-    normalize(schema);
-    return traverse(schema);
-  },
-
-  _registerSampler(type, sampler) {
-    OpenAPISampler._samplers[type] = sampler;
-  },
-
-  _samplers: {}
-
+export function sample(schema) {
+  normalize(schema);
+  return traverse(schema);
 };
 
-OpenAPISampler._registerSampler('array', sampleArray);
-OpenAPISampler._registerSampler('boolean', sampleBoolean);
-OpenAPISampler._registerSampler('integer', sampleNumber);
-OpenAPISampler._registerSampler('number', sampleNumber);
-OpenAPISampler._registerSampler('object', sampleObject);
-OpenAPISampler._registerSampler('string', sampleString);
+export function _registerSampler(type, sampler) {
+  _samplers[type] = sampler;
+};
 
-export default OpenAPISampler;
+_registerSampler('array', sampleArray);
+_registerSampler('boolean', sampleBoolean);
+_registerSampler('integer', sampleNumber);
+_registerSampler('number', sampleNumber);
+_registerSampler('object', sampleObject);
+_registerSampler('string', sampleString);
