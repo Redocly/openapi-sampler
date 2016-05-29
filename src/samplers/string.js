@@ -44,16 +44,21 @@ function defaultSample(min, max) {
   return res;
 }
 
+function ipv4Sample() {
+  return '192.168.0.1'
+}
+
 const stringFormats = {
   'email': emailSample,
   'password': passwordSample,
   'date-time': dateTimeSample,
   'date': dateSample,
+  'ipv4': ipv4Sample,
   'default': defaultSample
 };
 
 export function sampleString(schema) {
   let format = schema.format || 'default';
-  let sampler = stringFormats[format];
+  let sampler = stringFormats[format] || defaultSample;
   return sampler(schema.minLength | 0, schema.maxLength);
 }
