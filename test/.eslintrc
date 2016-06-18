@@ -1,5 +1,4 @@
 {
-  "extends": "./setup/.globals.json",
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "module"
