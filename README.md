@@ -29,6 +29,20 @@ Then require it in your code:
 var OpenAPISampler = require('openapi-sampler');
 ```
 
+#### Web Browsers
+
+Install using [bower](https://bower.io/):
+
+    bower install openapi-sampler
+
+Then reference `openapi-sampler.js` in your HTML:
+
+```html
+<script src="bower_components/openapi-sampler/openapi-sampler.js"></script>
+```
+Then use it via global exposed variable `OpenAPISampler`
+
+
 ## Usage
 #### `OpenAPISampler.sample(schema, [options])`
 - **schema** (_required_) - `object`

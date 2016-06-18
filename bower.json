@@ -1,0 +1,29 @@
+{
+  "name": "openapi-sampler",
+  "main": ["dist/openapi-sampler.js"],
+  "homepage": "https://github.com/APIs-guru/openapi-sampler/openapi-sampler",
+  "authors": [
+    "Roman Hotsiy <gotsijroman@gmail.com>"
+  ],
+  "description": "Tool for generation samples based on OpenAPI payload/response schema",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/APIs-guru/openapi-sampler/openapi-sampler.git"
+  },
+  "keywords": [
+    "OpenAPI",
+    "Swagger",
+    "instantiator",
+    "sampler",
+    "faker"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "test",
+    "gulp-tasks",
+    "coverage",
+    "tmp"
+  ]
+}
