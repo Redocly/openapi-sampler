@@ -13,17 +13,17 @@ describe('sampleNumber', () => {
   });
 
   it('should return minimum if minimum is specified', () => {
-    res = sampleNumber({mininum: 3});
+    res = sampleNumber({minimum: 3});
     expect(res).to.equal(3);
   });
 
   it('should return minimum +1 for exclusiveMinimum', () => {
-    res = sampleNumber({mininum: 3, exclusiveMinimum: true});
+    res = sampleNumber({minimum: 3, exclusiveMinimum: true});
     expect(res).to.equal(4);
   });
 
   it('should return minimum +1 for exclusiveMinimum', () => {
-    res = sampleNumber({mininum: 3, exclusiveMinimum: true});
+    res = sampleNumber({minimum: 3, exclusiveMinimum: true});
     expect(res).to.equal(4);
   });
 
@@ -37,20 +37,20 @@ describe('sampleNumber', () => {
     expect(res).to.equal(-4);
   });
 
-  it('should return mininum if both mininum and maximum are specified', () => {
-    res = sampleNumber({maximum: 10, mininum: 3});
+  it('should return minimum if both minimum and maximum are specified', () => {
+    res = sampleNumber({maximum: 10, minimum: 3});
     expect(res).to.equal(3);
   });
 
   // (2, 3) -> 2.5
   it('should return middle point if integer is not possible', () => {
-    res = sampleNumber({mininum: 2, maximum: 3, exclusiveMinimum: true, exclusiveMaximum: true});
+    res = sampleNumber({minimum: 2, maximum: 3, exclusiveMinimum: true, exclusiveMaximum: true});
     expect(res).to.equal(2.5);
   });
 
   // (2, 3] -> 3
   it('should return closer to minimum possible int', () => {
-    res = sampleNumber({mininum: 2, maximum: 3, exclusiveMinimum: true});
+    res = sampleNumber({minimum: 2, maximum: 3, exclusiveMinimum: true});
     expect(res).to.equal(3);
   });
 });
