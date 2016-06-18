@@ -11,9 +11,10 @@
     "watch": "gulp watch",
     "build": "gulp build",
     "build-dist": "gulp build",
-    "branch-release": "branch-release",
     "coverage": "gulp coverage",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "branch-release": "travis-after-all && branch-release || echo Waiting all jobs to be finished...",
+    "after-all-publish": "travis-after-all && npm publish || echo Waiting all jobs to be finished..."
   },
   "repository": {
     "type": "git",
@@ -78,6 +79,7 @@
     "require-dir": "^0.3.0",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0",
+    "travis-after-all": "^1.4.4",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"
