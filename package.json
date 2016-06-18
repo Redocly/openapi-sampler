@@ -13,8 +13,8 @@
     "build-dist": "gulp build",
     "coverage": "gulp coverage",
     "prepublish": "npm run build",
-    "branch-release": "travis-after-all && branch-release || echo Waiting all jobs to be finished...",
-    "after-all-publish": "travis-after-all && npm publish || echo Waiting all jobs to be finished..."
+    "branch-release": "travis-after-all && branch-release",
+    "after-all-publish": "travis-after-all && npm publish"
   },
   "repository": {
     "type": "git",
