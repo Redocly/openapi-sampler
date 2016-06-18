@@ -17,4 +17,14 @@ describe('sampleObject', () => {
       b: 0
     });
   });
+
+  it('should skip readonly properties if skipReadOnly=treu', () => {
+    res = sampleObject({properties: {
+      a: {type: 'string'},
+      b: {type: 'integer', readOnly: true}
+    }}, {skipReadOnly: true});
+    expect(res).to.deep.equal({
+      a: 'string'
+    });
+  });
 });

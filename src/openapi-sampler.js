@@ -4,8 +4,13 @@ import { normalize } from './normalize';
 
 export var _samplers = {};
 
-export function sample(schema) {
-  return traverse(schema);
+const defaults = {
+  skipReadOnly: false
+};
+
+export function sample(schema, options) {
+  let opts = Object.assign(defaults, options);
+  return traverse(schema, opts);
 };
 
 export function _registerSampler(type, sampler) {

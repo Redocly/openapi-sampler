@@ -1,7 +1,7 @@
 import { _samplers } from './openapi-sampler';
 import { mergeAllOf } from './normalize';
 
-export function traverse(schema) {
+export function traverse(schema, options) {
   if (schema.allOf) {
     mergeAllOf(schema);
   }
@@ -20,6 +20,6 @@ export function traverse(schema) {
 
   let type = schema.type;
   let sampler = _samplers[type];
-  if (sampler) return sampler(schema);
+  if (sampler) return sampler(schema, options);
   return {};
 }
