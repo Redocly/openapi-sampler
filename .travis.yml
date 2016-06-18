@@ -14,3 +14,15 @@ script: gulp test
 after_success:
 - cat coverage/*/lcov.info > coveralls.txt
 - cat coveralls.txt | node_modules/coveralls/bin/coveralls.js
+deploy:
+  - skip_cleanup: true
+    provider: script
+    script: npm run branch-release
+    on:
+      branch: master
+  - skip_cleanup: true
+    provider: script
+    script: npm run deploy
+    on:
+      branch: releases
+      tags: true
