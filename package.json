@@ -1,6 +1,6 @@
 {
   "name": "openapi-sampler",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Tool for generation samples based on OpenAPI payload/response schema",
   "main": "dist/openapi-sampler.js",
   "jsnext:main": "src/openapi-sampler.js",
