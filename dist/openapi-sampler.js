@@ -248,9 +248,11 @@ function sampleObject(schema) {
       res[propertyName] = (0, _traverse.traverse)(schema.properties[propertyName]);
     });
   }
+  if (schema && _typeof(schema.additionalProperties) === 'object') {
+    res.property1 = (0, _traverse.traverse)(schema.additionalProperties);
+    res.property2 = (0, _traverse.traverse)(schema.additionalProperties);
+  }
   return res;
-
-  // TODO: additionalProperties
 }
 
 },{"../traverse":9}],8:[function(require,module,exports){
@@ -309,12 +311,27 @@ function ipv4Sample() {
   return '192.168.0.1';
 }
 
+function ipv6Sample() {
+  return '2001:0db8:85a3:0000:0000:8a2e:0370:7334';
+}
+
+function hostnameSample() {
+  return 'example.com';
+}
+
+function uriSample() {
+  return 'http://example.com';
+}
+
 var stringFormats = {
   'email': emailSample,
   'password': passwordSample,
   'date-time': dateTimeSample,
   'date': dateSample,
   'ipv4': ipv4Sample,
+  'ipv6': ipv6Sample,
+  'hostname': hostnameSample,
+  'uri': uriSample,
   'default': defaultSample
 };
 
