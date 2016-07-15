@@ -16,7 +16,10 @@ Tool for generation samples based on OpenAPI payload/response schema
   - password
   - date-time
   - date
-  - ipv4  
+  - ipv4
+  - ipv6
+  - hostname
+  - uri
 
 ## Installation
 #### Node
