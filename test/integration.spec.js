@@ -109,6 +109,27 @@ describe('Integration', function() {
       };
       expect(result).to.deep.equal(expected);
     });
+
+    it('should sample both properties and additionalProperties', function() {
+      schema = {
+        type: 'object',
+        properties: {
+          test: {
+            type: 'string'
+          }
+        },
+        additionalProperties: {
+          type: 'number'
+        }
+      };
+      result = OpenAPISampler.sample(schema);
+      expected = {
+        test: 'string',
+        property1: 0,
+        property2: 0
+      };
+      expect(result).to.deep.equal(expected);
+    });
   });
 
   describe('AllOf', function() {

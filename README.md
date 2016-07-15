@@ -7,8 +7,9 @@ Tool for generation samples based on OpenAPI payload/response schema
 ## Features
 - deterministic (given a particular input, will always produce the same output)
 - Supports `allOf`
+- Supports `additionalProperties`
 - Uses `default`, `example` and `enum` where possible
-- Full array support: supports `minItems`, and tuples (`items` is array)
+- Full array support: supports `minItems`, and tuples (`items` as an array)
 - Supports `minLength`, `maxLength`, `min`, `max`, `exclusiveMinimum`, `exclusiveMaximum`
 - Supports the next `string` formats:
   - email

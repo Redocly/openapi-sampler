@@ -9,7 +9,9 @@ export function sampleObject(schema, options = {}) {
       res[propertyName] = traverse(schema.properties[propertyName]);
     });
   }
+  if (schema && typeof schema.additionalProperties === 'object') {
+    res.property1 = traverse(schema.additionalProperties);
+    res.property2 = traverse(schema.additionalProperties);
+  }
   return res;
-
-  // TODO: additionalProperties
 }
