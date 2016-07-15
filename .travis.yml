@@ -20,6 +20,9 @@ script: gulp test
 after_success:
 - cat coverage/*/lcov.info > coveralls.txt
 - cat coveralls.txt | node_modules/coveralls/bin/coveralls.js
+cache:
+  directories:
+  - node_modules
 deploy:
 - skip_cleanup: true
   provider: script

@@ -1,6 +1,6 @@
 {
   "name": "openapi-sampler",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Tool for generation samples based on OpenAPI payload/response schema",
   "main": "dist/openapi-sampler.js",
   "jsnext:main": "src/openapi-sampler.js",
@@ -13,8 +13,8 @@
     "build-dist": "gulp build",
     "coverage": "gulp coverage",
     "prepublish": "npm run build",
-    "branch-release": "travis-after-all && branch-release || echo Waiting all jobs to be finished...",
-    "after-all-publish": "travis-after-all && npm publish || echo Waiting all jobs to be finished..."
+    "branch-release": "travis-after-all && branch-release",
+    "after-all-publish": "travis-after-all && npm publish"
   },
   "repository": {
     "type": "git",

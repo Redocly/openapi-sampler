@@ -48,12 +48,27 @@ function ipv4Sample() {
   return '192.168.0.1';
 }
 
+function ipv6Sample() {
+  return '2001:0db8:85a3:0000:0000:8a2e:0370:7334';
+}
+
+function hostnameSample() {
+  return 'example.com';
+}
+
+function uriSample() {
+  return 'http://example.com';
+}
+
 const stringFormats = {
   'email': emailSample,
   'password': passwordSample,
   'date-time': dateTimeSample,
   'date': dateSample,
   'ipv4': ipv4Sample,
+  'ipv6': ipv6Sample,
+  'hostname': hostnameSample,
+  'uri': uriSample,
   'default': defaultSample
 };
 
