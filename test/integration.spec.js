@@ -183,6 +183,16 @@ describe('Integration', function() {
       expect(result).to.deep.equal(obj);
     });
 
+    it('should use falsy example', function() {
+      schema = {
+        type: 'string',
+        example: false
+      };
+      result = OpenAPISampler.sample(schema);
+      expected = false;
+      expect(result).to.deep.equal(expected);
+    });
+
     it('should use enum', function() {
       schema = {
         type: 'string',
