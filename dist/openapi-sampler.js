@@ -358,11 +358,11 @@ function traverse(schema, options) {
     (0, _normalize.mergeAllOf)(schema);
   }
 
-  if (schema.example) {
+  if (schema.example != null) {
     return schema.example;
   }
 
-  if (schema.default) {
+  if (schema.default != null) {
     return schema.default;
   }
 
