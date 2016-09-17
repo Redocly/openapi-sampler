@@ -6,11 +6,11 @@ export function traverse(schema, options) {
     mergeAllOf(schema);
   }
 
-  if (schema.example) {
+  if (schema.example != null) {
     return schema.example;
   }
 
-  if (schema.default) {
+  if (schema.default != null) {
     return schema.default;
   }
 
