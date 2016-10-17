@@ -7,7 +7,7 @@ function pad(number) {
   return number;
 }
 
-export function toRFCDateTime(date, omitTime) {
+export function toRFCDateTime(date, omitTime, milliseconds) {
   var res = date.getUTCFullYear() +
     '-' + pad(date.getUTCMonth() + 1) +
     '-' + pad(date.getUTCDate());
@@ -15,7 +15,7 @@ export function toRFCDateTime(date, omitTime) {
     res += 'T' + pad(date.getUTCHours()) +
     ':' + pad(date.getUTCMinutes()) +
     ':' + pad(date.getUTCSeconds()) +
-    '.' + (date.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) +
+    (milliseconds ? '.' + (date.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) : '') +
     'Z';
   }
   return res;
