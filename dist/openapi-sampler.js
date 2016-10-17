@@ -230,14 +230,14 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 exports.sampleObject = sampleObject;
 
 var _traverse = require('../traverse');
 
 function sampleObject(schema) {
-  var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
   var res = {};
   if (schema && _typeof(schema.properties) === 'object') {
@@ -281,7 +281,7 @@ function passwordSample(min, max) {
 }
 
 function commonDateTimeSample(min, max, omitTime) {
-  var res = (0, _utils.toRFCDateTime)(new Date(), omitTime);
+  var res = (0, _utils.toRFCDateTime)(new Date(), omitTime, false);
   if (res.length < min) {
     throw Erorr('Using minLength = ' + min + ' is incorrect with format "date-time"');
   }
@@ -392,10 +392,10 @@ function pad(number) {
   return number;
 }
 
-function toRFCDateTime(date, omitTime) {
+function toRFCDateTime(date, omitTime, milliseconds) {
   var res = date.getUTCFullYear() + '-' + pad(date.getUTCMonth() + 1) + '-' + pad(date.getUTCDate());
   if (!omitTime) {
-    res += 'T' + pad(date.getUTCHours()) + ':' + pad(date.getUTCMinutes()) + ':' + pad(date.getUTCSeconds()) + '.' + (date.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) + 'Z';
+    res += 'T' + pad(date.getUTCHours()) + ':' + pad(date.getUTCMinutes()) + ':' + pad(date.getUTCSeconds()) + (milliseconds ? '.' + (date.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) : '') + 'Z';
   }
   return res;
 };
