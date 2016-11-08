@@ -18,8 +18,8 @@ describe('sampleString', () => {
   });
 
   it('should return string of appropriate length if maxLength specified', () => {
-    res = sampleString({maxLength: 3});
-    expect(res.length).to.equal(3);
+    res = sampleString({maxLength: 2});
+    expect(res.length).to.equal(2);
   });
 
   it('should return email for format email', () => {
