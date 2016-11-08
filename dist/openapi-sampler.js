@@ -302,7 +302,7 @@ function dateSample(min, max) {
 function defaultSample(min, max) {
   var res = (0, _utils.ensureMinLength)('string', min);
   if (max && res.length > max) {
-    res = res.substring(max);
+    res = res.substring(0, max);
   }
   return res;
 }
