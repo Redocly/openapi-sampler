@@ -39,7 +39,7 @@ function dateSample(min, max) {
 function defaultSample(min, max) {
   let res = ensureMinLength('string', min);
   if (max && res.length > max) {
-    res = res.substring(max);
+    res = res.substring(0, max);
   }
   return res;
 }
