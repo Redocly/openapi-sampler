@@ -43,6 +43,14 @@ describe('Integration', function() {
       expected = 100;
       expect(result).to.deep.equal(expected);
     });
+
+    it('should use null if type is not specified', function() {
+      schema = {
+      };
+      result = OpenAPISampler.sample(schema);
+      expected = null;
+      expect(result).to.deep.equal(expected);
+    });
   });
 
   describe('Objects', function() {

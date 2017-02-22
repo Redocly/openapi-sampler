@@ -21,5 +21,5 @@ export function traverse(schema, options) {
   let type = schema.type;
   let sampler = _samplers[type];
   if (sampler) return sampler(schema, options);
-  return {};
+  return null;
 }
