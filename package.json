@@ -13,8 +13,7 @@
     "build-dist": "gulp build",
     "coverage": "gulp coverage",
     "prepublish": "npm run build",
-    "branch-release": "travis-after-all && branch-release",
-    "after-all-publish": "travis-after-all && npm publish"
+    "branch-release": "branch-release"
   },
   "repository": {
     "type": "git",
@@ -79,7 +78,6 @@
     "require-dir": "^0.3.0",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0",
-    "travis-after-all": "^1.4.4",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"

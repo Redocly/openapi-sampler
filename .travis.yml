@@ -29,8 +29,10 @@ deploy:
   script: npm run branch-release
   on:
     branch: master
+    condition: $KARMA = true
 - skip_cleanup: true
   provider: script
-  script: npm run after-all-publish
+  script: npm publish
   on:
     tags: true
+    condition: $KARMA = true
