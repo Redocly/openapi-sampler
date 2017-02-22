@@ -20,6 +20,6 @@ describe('sampleArray', () => {
 
   it('should correcly sample tuples', () => {
     res = sampleArray({items: [{type: 'number'}, {type: 'string'}, {}]});
-    expect(res).to.deep.equal([0, 'string', {}]);
+    expect(res).to.deep.equal([0, 'string', null]);
   });
 });

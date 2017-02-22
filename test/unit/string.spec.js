@@ -39,7 +39,7 @@ describe('sampleString', () => {
 
   it('should return password of appropriate length if minLength specified', () => {
     res = sampleString({format: 'password', minLength: 20});
-    expect(res.substring(0,9)).to.equal('pa$$word_');
+    expect(res.substring(0, 9)).to.equal('pa$$word_');
     expect(res.length).to.equal(20);
   });
 
