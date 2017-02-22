@@ -373,7 +373,7 @@ function traverse(schema, options) {
   var type = schema.type;
   var sampler = _openapiSampler._samplers[type];
   if (sampler) return sampler(schema, options);
-  return {};
+  return null;
 }
 
 },{"./normalize":1,"./openapi-sampler":2}],10:[function(require,module,exports){
