@@ -245,12 +245,12 @@ function sampleObject(schema) {
       if (options.skipReadOnly && schema.properties[propertyName].readOnly) {
         return;
       }
-      res[propertyName] = (0, _traverse.traverse)(schema.properties[propertyName]);
+      res[propertyName] = (0, _traverse.traverse)(schema.properties[propertyName], options);
     });
   }
   if (schema && _typeof(schema.additionalProperties) === 'object') {
-    res.property1 = (0, _traverse.traverse)(schema.additionalProperties);
-    res.property2 = (0, _traverse.traverse)(schema.additionalProperties);
+    res.property1 = (0, _traverse.traverse)(schema.additionalProperties, options);
+    res.property2 = (0, _traverse.traverse)(schema.additionalProperties, options);
   }
   return res;
 }
