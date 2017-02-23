@@ -28,6 +28,22 @@ describe('sampleObject', () => {
     });
   });
 
+  it('should skip readonly properties in nested objects if skipReadOnly=true', () => {
+    res = sampleObject({properties: {
+      a: {type: 'string'},
+      b: {type: 'object', properties: {
+        b1: { type: 'number', readOnly: true },
+        b2: { type: 'number'}
+      }}
+    }}, {skipReadOnly: true});
+    expect(res).to.deep.equal({
+      a: 'string',
+      b: {
+        b2: 0
+      }
+    });
+  });
+
   it('should should instantiate 2 additionalProperties', () => {
     res = sampleObject({additionalProperties: {type: 'string'}});
     expect(res).to.deep.equal({
