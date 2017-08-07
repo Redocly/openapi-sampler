@@ -1,6 +1,6 @@
 {
   "name": "openapi-sampler",
-  "version": "0.4.1",
+  "version": "0.4.3",
   "description": "Tool for generation samples based on OpenAPI payload/response schema",
   "main": "dist/openapi-sampler.js",
   "jsnext:main": "src/openapi-sampler.js",
@@ -75,7 +75,7 @@
     "lolex": "^1.5.0",
     "mocha": "^3.2.0",
     "phantomjs-prebuilt": "^2.1.7",
-    "require-dir": "^0.3.0",
+    "require-dir": "^0.3.2",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0",
     "vinyl-buffer": "^1.0.0",
