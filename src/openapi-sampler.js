@@ -9,7 +9,7 @@ const defaults = {
 };
 
 export function sample(schema, options) {
-  let opts = Object.assign(defaults, options);
+  let opts = Object.assign({}, defaults, options);
   return traverse(schema, opts);
 };
 
