@@ -77,7 +77,7 @@ var defaults = {
 };
 
 function sample(schema, options) {
-  var opts = Object.assign(defaults, options);
+  var opts = Object.assign({}, defaults, options);
   return (0, _traverse.traverse)(schema, opts);
 };
 
@@ -103,6 +103,8 @@ exports.sampleArray = sampleArray;
 var _traverse = require('../traverse');
 
 function sampleArray(schema) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
   var arrayLength = schema.minItems || 1;
   if (Array.isArray(schema.items)) {
     arrayLength = Math.max(arrayLength, schema.items.length);
@@ -120,7 +122,7 @@ function sampleArray(schema) {
 
   for (var i = 0; i < arrayLength; i++) {
     var itemSchema = itemSchemaGetter(i);
-    var sample = (0, _traverse.traverse)(itemSchema);
+    var sample = (0, _traverse.traverse)(itemSchema, options);
     res.push(sample);
   }
   return res;
