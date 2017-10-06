@@ -1,5 +1,5 @@
 import { traverse } from './traverse';
-import { sampleArray, sampleBoolean, sampleNumber, sampleObject, sampleString} from './samplers/index';
+import { sampleArray, sampleBoolean, sampleNumber, sampleObject, sampleString } from './samplers/index';
 
 export var _samplers = {};
 
@@ -15,6 +15,8 @@ export function sample(schema, options) {
 export function _registerSampler(type, sampler) {
   _samplers[type] = sampler;
 };
+
+export { inferType } from './infer';
 
 _registerSampler('array', sampleArray);
 _registerSampler('boolean', sampleBoolean);
