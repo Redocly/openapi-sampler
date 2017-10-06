@@ -283,4 +283,25 @@ describe('Integration', function() {
       expect(result).to.equal(expected);
     });
   });
+
+  describe('Detection', function() {
+    it('should detect autodetect types based on props', function() {
+      schema = {
+        properties: {
+          a: {
+            minimum: 10
+          },
+          b: {
+            minLength: 1
+          }
+        }
+      };
+      result = OpenAPISampler.sample(schema);
+      expected = {
+        a: 10,
+        b: 'string'
+      };
+      expect(result).to.deep.equal(expected);
+    });
+  });
 });

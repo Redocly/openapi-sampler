@@ -1,5 +1,6 @@
 import { _samplers } from './openapi-sampler';
 import { allOfSample } from './allOf';
+import { detectType } from './detect';
 
 export function traverse(schema, options) {
   if (schema.allOf !== undefined) {
@@ -19,11 +20,13 @@ export function traverse(schema, options) {
   }
 
   let type = schema.type;
+  if (!type) {
+    type = detectType(schema);
+  }
   let sampler = _samplers[type];
-  let example = null;
   if (sampler) {
-    example = sampler(schema, options);
+    return sampler(schema, options);
   }
 
-  return example;
+  return null;
 }
