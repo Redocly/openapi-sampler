@@ -170,6 +170,78 @@ describe('Integration', function() {
       };
       expect(result).to.deep.equal(expected);
     });
+
+    it('should throw for schemas with allOf with different types', function() {
+      schema = {
+        'allOf': [
+          {
+            'type': 'string'
+          },
+          {
+            'type': 'object',
+            'properties': {
+              'amount': {
+                'type': 'number',
+                'default': 1
+              }
+            }
+          }
+        ]
+      };
+      expect(() => OpenAPISampler.sample(schema)).to.throw();
+    });
+
+    it('should sample schema with allOf even if some type is not specified', function() {
+      schema = {
+        'properties': {
+          'title': {
+            'type': 'string'
+          }
+        },
+        'allOf': [
+          {
+            'type': 'object',
+            'properties': {
+              'amount': {
+                'type': 'number',
+                'default': 1
+              }
+            }
+          }
+        ]
+      };
+      result = OpenAPISampler.sample(schema);
+      expected = {
+        'title': 'string',
+        'amount': 1
+      };
+      expect(result).to.deep.equal(expected);
+
+      schema = {
+        'type': 'object',
+        'properties': {
+          'title': {
+            'type': 'string'
+          }
+        },
+        'allOf': [
+          {
+            'properties': {
+              'amount': {
+                'type': 'number',
+                'default': 1
+              }
+            }
+          }
+        ]
+      };
+      result = OpenAPISampler.sample(schema);
+      expected = {
+        'title': 'string',
+        'amount': 1
+      };
+      expect(result).to.deep.equal(expected);
+    });
   });
 
   describe('Example', function() {
