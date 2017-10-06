@@ -20,10 +20,10 @@ function passwordSample(min, max) {
 function commonDateTimeSample(min, max, omitTime) {
   let res = toRFCDateTime(new Date(), omitTime, false);
   if (res.length < min) {
-    throw Erorr(`Using minLength = ${min} is incorrect with format "date-time"`);
+    throw new Error(`Using minLength = ${min} is incorrect with format "date-time"`);
   }
   if (max && res.length > max) {
-    throw Erorr(`Using maxLength = ${max} is incorrect with format "date-time"`);
+    throw new Error(`Using maxLength = ${max} is incorrect with format "date-time"`);
   }
   return res;
 }
