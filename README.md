@@ -22,7 +22,7 @@ Tool for generation samples based on OpenAPI payload/response schema
   - uri
 
 ## Installation
-#### Node
+
 Install using [npm](https://docs.npmjs.com/getting-started/what-is-npm)
 
     npm install openapi-sampler --save
@@ -32,20 +32,6 @@ Then require it in your code:
 ```js
 var OpenAPISampler = require('openapi-sampler');
 ```
-
-#### Web Browsers
-
-Install using [bower](https://bower.io/):
-
-    bower install openapi-sampler
-
-Then reference `openapi-sampler.js` in your HTML:
-
-```html
-<script src="bower_components/openapi-sampler/openapi-sampler.js"></script>
-```
-Then use it via global exposed variable `OpenAPISampler`
-
 
 ## Usage
 #### `OpenAPISampler.sample(schema, [options])`

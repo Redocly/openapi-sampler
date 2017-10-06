@@ -806,16 +806,6 @@ braces@^1.8.2:
     preserve "^0.2.0"
     repeat-element "^1.1.2"
 
-branch-release@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/branch-release/-/branch-release-1.0.3.tgz#604d64ae1e4af3e211f99b1ec4d8dfc45f0ab930"
-  dependencies:
-    chalk "^1.1.1"
-    git-url-parse "^6.0.3"
-    semver "^5.1.0"
-    shelljs "^0.7.0"
-    yargs "^3.31.0"
-
 brorand@^1.0.1:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/brorand/-/brorand-1.0.7.tgz#6677fa5e4901bdbf9c9ec2a748e28dca407a9bfc"

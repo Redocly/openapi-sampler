@@ -13,7 +13,6 @@
     "build-dist": "gulp build",
     "coverage": "gulp coverage",
     "prepublish": "npm run build",
-    "branch-release": "branch-release"
   },
   "repository": {
     "type": "git",
@@ -41,7 +40,6 @@
     "babel-preset-es2015": "^6.3.13",
     "babel-register": "^6.3.13",
     "babelify": "^7.3.0",
-    "branch-release": "^1.0.3",
     "browserify": "^14.1.0",
     "browserify-istanbul": "^2.0.0",
     "chai": "^3.5.0",

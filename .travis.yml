@@ -24,12 +24,6 @@ cache:
   directories:
   - node_modules
 deploy:
-- skip_cleanup: true
-  provider: script
-  script: npm run branch-release
-  on:
-    branch: master
-    condition: $KARMA = true
 - provider: npm
   email: gotsijroman@gmail.com
   api_key:
