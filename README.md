@@ -20,6 +20,8 @@ Tool for generation samples based on OpenAPI payload/response schema
   - ipv6
   - hostname
   - uri
+- Infers schema type automatically following same rules as [json-schema-faker](https://www.npmjs.com/package/json-schema-faker#inferred-types)
+- Support for `$ref` resolving
 
 ## Installation
 
@@ -34,13 +36,14 @@ var OpenAPISampler = require('openapi-sampler');
 ```
 
 ## Usage
-#### `OpenAPISampler.sample(schema, [options])`
+#### `OpenAPISampler.sample(schema, [options], [spec])`
 - **schema** (_required_) - `object`
 A [OpenAPI Schema Object](http://swagger.io/specification/#schemaObject)
 - **options** (_optional_) - `object`
 Available options:
   - **skipReadOnly** - `boolean`
   Don't include `readOnly` object properties
+- **spec** - whole specification where the schema is taken from. Required only when schema may contain `$ref`. **spec** must not contain any external references
 
 ## Example
 ```js
