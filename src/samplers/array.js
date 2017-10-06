@@ -1,5 +1,5 @@
 import { traverse } from '../traverse';
-export function sampleArray(schema, options = {}) {
+export function sampleArray(schema, options = {}, spec) {
   let arrayLength = schema.minItems || 1;
   if (Array.isArray(schema.items)) {
     arrayLength = Math.max(arrayLength, schema.items.length);
@@ -17,7 +17,7 @@ export function sampleArray(schema, options = {}) {
 
   for (let i = 0; i < arrayLength; i++) {
     let itemSchema = itemSchemaGetter(i);
-    let sample = traverse(itemSchema, options);
+    let sample = traverse(itemSchema, options, spec);
     res.push(sample);
   }
   return res;

@@ -1,4 +1,4 @@
-import { traverse } from './traverse';
+import { traverse, clearCache } from './traverse';
 import { sampleArray, sampleBoolean, sampleNumber, sampleObject, sampleString } from './samplers/index';
 
 export var _samplers = {};
@@ -7,9 +7,10 @@ const defaults = {
   skipReadOnly: false
 };
 
-export function sample(schema, options) {
+export function sample(schema, options, spec) {
   let opts = Object.assign({}, defaults, options);
-  return traverse(schema, opts);
+  clearCache();
+  return traverse(schema, opts, spec);
 };
 
 export function _registerSampler(type, sampler) {

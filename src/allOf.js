@@ -1,6 +1,6 @@
 import { traverse } from './traverse';
 
-export function allOfSample(into, children) {
+export function allOfSample(into, children, options, spec) {
   let type = into.type;
   const subSamples = [];
   for (let subSchema of children) {
@@ -16,12 +16,13 @@ export function allOfSample(into, children) {
     type = type || subSchema.type;
   }
 
-  let mainSample = traverse({ type, ...into });
+  let mainSample = traverse({ type, ...into }, options, spec);
   for (let subSchema of children) {
+    const subSample = traverse({ type, ...subSchema }, options, spec);
     if (type === 'object') {
-      Object.assign(mainSample, traverse({ type, ...subSchema }));
+      Object.assign(mainSample, subSample);
     } else {
-      mainSample = traverse({ type, ...subSchema });
+      mainSample = subSample;
     }
   }
   return mainSample;

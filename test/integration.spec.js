@@ -304,4 +304,68 @@ describe('Integration', function() {
       expect(result).to.deep.equal(expected);
     });
   });
+
+  describe('$refs', function() {
+    it('should follow $ref', function() {
+      schema = {
+        $ref: '#/defs/Schema'
+      };
+      const spec = {
+        defs: {
+          Schema: {
+            type: 'object',
+            properties: {
+              a: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      };
+      result = OpenAPISampler.sample(schema, {}, spec);
+      expected = {
+        a: 'string'
+      };
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('should not follow circular $ref', function() {
+      schema = {
+        $ref: '#/defs/Schema'
+      };
+      const spec = {
+        defs: {
+          str: {
+            type: 'string'
+          },
+          Schema: {
+            type: 'object',
+            properties: {
+              a: {
+                $ref: '#/defs/str'
+              },
+              b: {
+                $ref: '#/defs/Schema'
+              }
+            }
+          }
+        }
+      };
+      result = OpenAPISampler.sample(schema, {}, spec);
+      expected = {
+        a: 'string',
+        b: {}
+      };
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('should throw if schema has $ref and spec is not provided', function() {
+      schema = {
+        $ref: '#/defs/Schema'
+      };
+
+      expect(() => OpenAPISampler.sample(schema)).to
+        .throw(/You must provide specification in the third parameter/);
+    });
+  });
 });
