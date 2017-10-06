@@ -13,15 +13,18 @@ const schemaKeywordTypes = {
   maxItems: 'array',
   minItems: 'array',
   uniqueItems: 'array',
+  additionalItems: 'array',
 
   maxProperties: 'object',
   minProperties: 'object',
   required: 'object',
   additionalProperties: 'object',
   properties: 'object',
+  patternProperties: 'object',
+  dependencies: 'object'
 };
 
-export function detectType(schema) {
+export function inferType(schema) {
   if (schema.type !== undefined) {
     return schema.type;
   }

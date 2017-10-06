@@ -1,6 +1,6 @@
 import { _samplers } from './openapi-sampler';
 import { allOfSample } from './allOf';
-import { detectType } from './detect';
+import { inferType } from './infer';
 
 export function traverse(schema, options) {
   if (schema.allOf !== undefined) {
@@ -21,7 +21,7 @@ export function traverse(schema, options) {
 
   let type = schema.type;
   if (!type) {
-    type = detectType(schema);
+    type = inferType(schema);
   }
   let sampler = _samplers[type];
   if (sampler) {
