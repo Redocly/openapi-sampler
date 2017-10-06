@@ -1,6 +1,5 @@
 import { traverse } from './traverse';
 import { sampleArray, sampleBoolean, sampleNumber, sampleObject, sampleString} from './samplers/index';
-import { normalize } from './normalize';
 
 export var _samplers = {};
 
