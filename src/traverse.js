@@ -36,7 +36,7 @@ export function traverse(schema, options, spec) {
   }
 
   if (schema.allOf !== undefined) {
-    return allOfSample({ ...schema, allOf: undefined }, schema.allOf, spec);
+    return allOfSample({ ...schema, allOf: undefined }, schema.allOf, options, spec);
   }
 
   if (schema.example !== undefined) {
