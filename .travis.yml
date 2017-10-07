@@ -24,7 +24,8 @@ cache:
   directories:
   - node_modules
 deploy:
-- provider: npm
+- skip_cleanup: true
+  provider: npm
   email: gotsijroman@gmail.com
   api_key:
     secure: TTIC4bYFHXrCUG7Y/u3FHIivOmY0XqSF6AUToUNmxDzl0z9D8XtdJizDJJ7monA0anYJajGzxqATNKHTaKbkrCbHLAIU13XKOASP91rLVI9LcGKb7bT+DWDwT2GH5hr1ZOlmnnhdZBICl+ebnnWcpPKo4upeYMH9FyPfD+er+fThIbKbUecIu9x8a8yZzJGkZp71B4pslHWABtApfpw5hu8Apl4pu9qO9sYbhP/k1NawzjR00w/4+avVU2Rb2EulDQc6zcf9UpW7+Otv3/hh985DLYTvwDCZt6+fTfdesQfCzdNNNanXRsYYAmy46r+l65QO6SdNKxoJmst+owD+JGI76b2sEIRlrC2hF8C1PsWHc+eCSARd0e6I4VjwY5tga+LsHvbAoiYAGvr3aSzDEWot7toEYsf2lOJ9rVG5E2VT71V0fccfqeMR39TrOMB4K2Cbpc3cQCH6j2s79pKE4VUA4n8wnYPWSknTLbAIyZ/K+jYLet0LOaK5zRdryJo68h/Crd1YIqVtFMHHC412cV0lZ61vlLIAAfeESlpW26i4MJT6HpsjM08Wp71veruTzroAjNqNy/8ig9VLrvyq+WuT7tAA/YLeS5BJobip9uyBYekBmy3FTo7SAvWzPzQA5AwlXsRe1C4y0HR+LcDEUCFaWalv0CrH3h26B4BFbrM=
