@@ -30,8 +30,8 @@ export function traverse(schema, options, spec) {
     if ($refCache[ref] !== true) {
       $refCache[ref] = true;
       result = traverse(referenced, options, spec);
+      $refCache[ref] = false;
     }
-    $refCache[ref] = false;
     return result;
   }
 

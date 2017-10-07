@@ -359,6 +359,33 @@ describe('Integration', function() {
       expect(result).to.deep.equal(expected);
     });
 
+    it('should not follow circular $ref if more than one in properties', function() {
+      schema = {
+        $ref: '#/defs/Schema'
+      };
+      const spec = {
+        defs: {
+          Schema: {
+            type: 'object',
+            properties: {
+              a: {
+                $ref: '#/defs/Schema'
+              },
+              b: {
+                $ref: '#/defs/Schema'
+              }
+            }
+          }
+        }
+      };
+      result = OpenAPISampler.sample(schema, {}, spec);
+      expected = {
+        a: {},
+        b: {}
+      };
+      expect(result).to.deep.equal(expected);
+    });
+
     it('should throw if schema has $ref and spec is not provided', function() {
       schema = {
         $ref: '#/defs/Schema'
