@@ -305,6 +305,40 @@ describe('Integration', function() {
     });
   });
 
+  describe('oneOf and anyOf', function() {
+    it('should support oneOf', function() {
+      schema = {
+        oneOf: [
+          {
+            type: 'string'
+          },
+          {
+            type: 'number'
+          }
+        ]
+      };
+      result = OpenAPISampler.sample(schema);
+      expected = 'string';
+      expect(result).to.equal(expected);
+    });
+
+    it('should support anyOf', function() {
+      schema = {
+        anyOf: [
+          {
+            type: 'string'
+          },
+          {
+            type: 'number'
+          }
+        ]
+      };
+      result = OpenAPISampler.sample(schema);
+      expected = 'string';
+      expect(result).to.equal(expected);
+    });
+  });
+
   describe('$refs', function() {
     it('should follow $ref', function() {
       schema = {

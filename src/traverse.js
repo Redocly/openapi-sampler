@@ -48,6 +48,17 @@ export function traverse(schema, options, spec) {
     );
   }
 
+  if (schema.oneOf && schema.oneOf.length) {
+    if (schema.anyOf) {
+      console.warn('oneOf and anyOf are not supported on the same level. Skipping anyOf');
+    }
+    return traverse(schema.oneOf[0]);
+  }
+
+  if (schema.anyOf && schema.anyOf.length) {
+    return traverse(schema.anyOf[0]);
+  }
+
   let example = null;
   if (schema.example !== undefined) {
     example = schema.example;
