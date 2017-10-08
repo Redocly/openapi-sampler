@@ -43,6 +43,8 @@ A [OpenAPI Schema Object](http://swagger.io/specification/#schemaObject)
 Available options:
   - **skipReadOnly** - `boolean`
   Don't include `readOnly` object properties
+  - **skipWriteOnly** - `boolean`
+  Don't include `writeOnly` object properties
 - **spec** - whole specification where the schema is taken from. Required only when schema may contain `$ref`. **spec** must not contain any external references
 
 ## Example

@@ -8,6 +8,9 @@ export function sampleObject(schema, options = {}, spec) {
         return;
       }
 
+      if (options.skipWriteOnly && sample.writeOnly) {
+        return;
+      }
       res[propertyName] = sample.value;
     });
   }
