@@ -27,18 +27,3 @@ export function ensureMinLength(sample, min) {
   }
   return sample;
 }
-
-export function defaults(target, src) {
-  var props = Object.keys(src);
-
-  var index = -1;
-  var length = props.length;
-
-  while (++index < length) {
-    var key = props[index];
-    if (target[key] === undefined) {
-      target[key] = src[key];
-    }
-  }
-  return target;
-}
