@@ -9,11 +9,6 @@ export function allOfSample(into, children, options, spec) {
     if (res.type && type && type !== res.type) {
       throw new Error('allOf: schemas with different types can\'t be merged');
     }
-    if (type === 'array') {
-      throw new Error(
-        'allOf: subschemas with type array are not supported yet',
-      );
-    }
     res.type = res.type || type;
     res.readOnly = res.readOnly || readOnly;
     res.writeOnly = res.writeOnly || writeOnly;
@@ -25,7 +20,11 @@ export function allOfSample(into, children, options, spec) {
     Object.assign(res.value, ...subSamples);
     return res;
   } else {
-    res.value = subSamples[subSamples.length - 1];
+    if (res.type === 'array') {
+      // TODO: implement arrays
+      console.warn('OpenAPI Sampler: found allOf with "array" type. Result may be incorrect');
+    }
+    res.value = subSamples[subSamples.length - 1] || res.value;
     return res;
   }
 }

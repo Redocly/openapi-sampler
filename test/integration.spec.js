@@ -191,6 +191,36 @@ describe('Integration', function() {
       expect(() => OpenAPISampler.sample(schema)).to.throw();
     });
 
+    it('should not be confused by subschema without type', function() {
+      schema = {
+        'type': 'string',
+        'allOf': [
+          {
+            'description': 'test'
+          }
+        ]
+      };
+      result = OpenAPISampler.sample(schema);
+      expected = 'string';
+      expect(result).to.equal(expected);
+    });
+
+    it('should not throw for array allOf', function() {
+      schema = {
+        'type': 'array',
+        'allOf': [
+          {
+            'type': 'array',
+            'items': {
+              'type': 'string'
+            }
+          }
+        ]
+      };
+      result = OpenAPISampler.sample(schema);
+      expect(result).to.be.an('array');
+    });
+
     it('should sample schema with allOf even if some type is not specified', function() {
       schema = {
         'properties': {
@@ -335,6 +365,24 @@ describe('Integration', function() {
       };
       result = OpenAPISampler.sample(schema);
       expected = 'string';
+      expect(result).to.equal(expected);
+    });
+
+    it('should prefer oneOf if anyOf and oneOf are on the same level ', function() {
+      schema = {
+        anyOf: [
+          {
+            type: 'string'
+          }
+        ],
+        oneOf: [
+          {
+            type: 'number'
+          }
+        ]
+      };
+      result = OpenAPISampler.sample(schema);
+      expected = 0;
       expect(result).to.equal(expected);
     });
   });
