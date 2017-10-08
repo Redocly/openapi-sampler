@@ -12,7 +12,7 @@ export function allOfSample(into, children, options, spec) {
     res.type = res.type || type;
     res.readOnly = res.readOnly || readOnly;
     res.writeOnly = res.writeOnly || writeOnly;
-    if (value) subSamples.push(value);
+    if (value != null) subSamples.push(value);
   }
 
   if (res.type === 'object') {
