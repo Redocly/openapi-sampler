@@ -1,29 +1,31 @@
 import { traverse } from './traverse';
 
 export function allOfSample(into, children, options, spec) {
-  let type = into.type;
+  let res = traverse(into, options, spec);
   const subSamples = [];
+
   for (let subSchema of children) {
-    if (type && subSchema.type && type !== subSchema.type) {
-      let errMessage = 'allOf: schemas with different types can\'t be merged';
-      throw new Error(errMessage);
+    const { type, readOnly, writeOnly, value } = traverse({ type, ...subSchema }, options, spec);
+    if (res.type && type && type !== res.type) {
+      throw new Error('allOf: schemas with different types can\'t be merged');
     }
-    if (into.type === 'array') {
+    if (type === 'array') {
       throw new Error(
         'allOf: subschemas with type array are not supported yet',
       );
     }
-    type = type || subSchema.type;
+    res.type = res.type || type;
+    res.readOnly = res.readOnly || readOnly;
+    res.writeOnly = res.writeOnly || writeOnly;
+    if (value) subSamples.push(value);
   }
 
-  let mainSample = traverse({ type, ...into }, options, spec);
-  for (let subSchema of children) {
-    const subSample = traverse({ type, ...subSchema }, options, spec);
-    if (type === 'object') {
-      Object.assign(mainSample, subSample);
-    } else {
-      mainSample = subSample;
-    }
+  if (res.type === 'object') {
+    res.value = res.value || {};
+    Object.assign(res.value, ...subSamples);
+    return res;
+  } else {
+    res.value = subSamples[subSamples.length - 1];
+    return res;
   }
-  return mainSample;
 }

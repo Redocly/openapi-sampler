@@ -5,7 +5,7 @@ export function sampleArray(schema, options = {}, spec) {
     arrayLength = Math.max(arrayLength, schema.items.length);
   }
 
-  let itemSchemaGetter = (itemNumber) => {
+  let itemSchemaGetter = itemNumber => {
     if (Array.isArray(schema.items)) {
       return schema.items[itemNumber] || {};
     }
@@ -17,7 +17,7 @@ export function sampleArray(schema, options = {}, spec) {
 
   for (let i = 0; i < arrayLength; i++) {
     let itemSchema = itemSchemaGetter(i);
-    let sample = traverse(itemSchema, options, spec);
+    let { value: sample } = traverse(itemSchema, options, spec);
     res.push(sample);
   }
   return res;

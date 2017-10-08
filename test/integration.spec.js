@@ -394,5 +394,38 @@ describe('Integration', function() {
       expect(() => OpenAPISampler.sample(schema)).to
         .throw(/You must provide specification in the third parameter/);
     });
+
+    it('should ignore readOnly params if referenced', function() {
+      schema = {
+        type: 'object',
+        properties: {
+          a: {
+            allOf: [
+              { $ref: '#/defs/Prop' }
+            ],
+            description: 'prop A'
+          },
+          b: {
+            type: 'string'
+          }
+        }
+      };
+
+      const spec = {
+        defs: {
+          Prop: {
+            type: 'string',
+            readOnly: true
+          }
+        }
+      };
+
+      expected = {
+        b: 'string'
+      };
+
+      result = OpenAPISampler.sample(schema, {skipReadOnly: true}, spec);
+      expect(result).to.deep.equal(expected);
+    });
   });
 });

@@ -20,45 +20,56 @@ export function traverse(schema, options, spec) {
     }
 
     const referenced = JsonPointer.get(spec, ref);
-    const referencedType = inferType(referenced);
-    let result = referencedType === 'object' ?
-        {}
-      : referencedType === 'array' ?
-          []
-        : undefined;
+
+    let result;
 
     if ($refCache[ref] !== true) {
       $refCache[ref] = true;
       result = traverse(referenced, options, spec);
       $refCache[ref] = false;
+    } else {
+      const referencedType = inferType(referenced);
+      result = {
+        value: referencedType === 'object' ?
+            {}
+          : referencedType === 'array' ? [] : undefined
+      };
     }
+
     return result;
   }
 
   if (schema.allOf !== undefined) {
-    return allOfSample({ ...schema, allOf: undefined }, schema.allOf, options, spec);
+    return allOfSample(
+      { ...schema, allOf: undefined },
+      schema.allOf,
+      options,
+      spec,
+    );
   }
 
+  let example = null;
   if (schema.example !== undefined) {
-    return schema.example;
+    example = schema.example;
+  } else if (schema.default !== undefined) {
+    example = schema.default;
+  } else if (schema.enum !== undefined && schema.enum.length) {
+    example = schema.enum[0];
+  } else {
+    let type = schema.type;
+    if (!type) {
+      type = inferType(schema);
+    }
+    let sampler = _samplers[type];
+    if (sampler) {
+      example = sampler(schema, options, spec);
+    }
   }
 
-  if (schema.default !== undefined) {
-    return schema.default;
-  }
-
-  if (schema.enum !== undefined && schema.enum.length) {
-    return schema.enum[0];
-  }
-
-  let type = schema.type;
-  if (!type) {
-    type = inferType(schema);
-  }
-  let sampler = _samplers[type];
-  if (sampler) {
-    return sampler(schema, options, spec);
-  }
-
-  return null;
+  return {
+    value: example,
+    readOnly: schema.readOnly,
+    writeOnly: schema.writeOnly,
+    type: schema.type,
+  };
 }

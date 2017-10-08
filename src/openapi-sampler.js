@@ -10,7 +10,7 @@ const defaults = {
 export function sample(schema, options, spec) {
   let opts = Object.assign({}, defaults, options);
   clearCache();
-  return traverse(schema, opts, spec);
+  return traverse(schema, opts, spec).value;
 };
 
 export function _registerSampler(type, sampler) {
