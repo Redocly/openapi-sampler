@@ -24,7 +24,8 @@ export function allOfSample(into, children, options, spec) {
       // TODO: implement arrays
       console.warn('OpenAPI Sampler: found allOf with "array" type. Result may be incorrect');
     }
-    res.value = subSamples[subSamples.length - 1] || res.value;
+    const lastSample = subSamples[subSamples.length - 1];
+    res.value = lastSample != null ? lastSample : res.value;
     return res;
   }
 }
