@@ -14,7 +14,7 @@ export function traverse(schema, options, spec) {
     if (!spec) {
       throw new Error('Your schema contains $ref. You must provide specification in the third parameter.');
     }
-    let ref = schema.$ref;
+    let ref = decodeURI(schema.$ref);
     if (ref.startsWith('#')) {
       ref = ref.substring(1);
     }
