@@ -272,6 +272,51 @@ describe('Integration', function() {
       };
       expect(result).to.deep.equal(expected);
     });
+
+    it('should merge deep properties', function() {
+      schema = {
+        'type': 'object',
+        'allOf': [
+          {
+            'type': 'object',
+            'properties': {
+              'parent': {
+                'type': 'object',
+                'properties': {
+                  'child1': {
+                    'type': 'string'
+                  }
+                }
+              }
+            }
+          },
+          {
+            'type': 'object',
+            'properties': {
+              'parent': {
+                'type': 'object',
+                'properties': {
+                  'child2': {
+                    'type': 'number'
+                  }
+                }
+              }
+            }
+          }
+        ]
+      };
+
+      expected = {
+        parent: {
+          child1: 'string',
+          child2: 0
+        }
+      };
+
+      result = OpenAPISampler.sample(schema);
+
+      expect(result).to.deep.equal(expected);
+    });
   });
 
   describe('Example', function() {

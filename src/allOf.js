@@ -1,4 +1,5 @@
 import { traverse } from './traverse';
+import { mergeDeep } from './utils';
 
 export function allOfSample(into, children, options, spec) {
   let res = traverse(into, options, spec);
@@ -16,8 +17,7 @@ export function allOfSample(into, children, options, spec) {
   }
 
   if (res.type === 'object') {
-    res.value = res.value || {};
-    Object.assign(res.value, ...subSamples);
+    res.value = mergeDeep(res.value || {}, ...subSamples);
     return res;
   } else {
     if (res.type === 'array') {
