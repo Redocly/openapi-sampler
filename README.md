@@ -41,6 +41,8 @@ var OpenAPISampler = require('openapi-sampler');
 A [OpenAPI Schema Object](http://swagger.io/specification/#schemaObject)
 - **options** (_optional_) - `object`
 Available options:
+  - **skipNonRequired** - `boolean`
+  Don't include non-required object properties not specified in [`required` property of the schema object](https://swagger.io/docs/specification/data-models/data-types/#required)
   - **skipReadOnly** - `boolean`
   Don't include `readOnly` object properties
   - **skipWriteOnly** - `boolean`
