@@ -77,4 +77,17 @@ describe('sampleObject', () => {
       property2: 'string'
     });
   });
+
+  it('should skip non-required properties if skipNonRequired=true', () => {
+    res = sampleObject({
+      properties: {
+        a: {type: 'string'},
+        b: {type: 'integer'}
+      },
+      required: ['a']
+    }, {skipNonRequired: true});
+    expect(res).to.deep.equal({
+      a: 'string'
+    });
+  });
 });

@@ -2,7 +2,18 @@ import { traverse } from '../traverse';
 export function sampleObject(schema, options = {}, spec) {
   let res = {};
   if (schema && typeof schema.properties === 'object') {
+    let requiredKeys = (Array.isArray(schema.required) ? schema.required : []);
+    let requiredKeyDict = requiredKeys.reduce((dict, key) => {
+      dict[key] = true;
+      return dict;
+    }, {});
+
     Object.keys(schema.properties).forEach(propertyName => {
+      // skip before traverse that could be costly
+      if (options.skipNonRequired && !requiredKeyDict.hasOwnProperty(propertyName)) {
+        return;
+      }
+
       const sample = traverse(schema.properties[propertyName], options, spec);
       if (options.skipReadOnly && sample.readOnly) {
         return;
