@@ -44,5 +44,5 @@ export function mergeDeep(...objects) {
     });
 
     return prev;
-  }, {});
+  }, Array.isArray(objects[objects.length - 1]) ? [] : {});
 }

@@ -191,6 +191,50 @@ describe('Integration', function() {
       expect(() => OpenAPISampler.sample(schema)).to.throw();
     });
 
+    it('deep array', function() {
+      schema = {
+        'allOf': [
+          {
+            'type': 'object',
+            'properties': {
+              'arr': {
+                'type': 'array',
+                'items': {
+                  'type': 'object',
+                }
+              }
+            }
+          },
+          {
+            'type': 'object',
+            'properties': {
+              'arr': {
+                'type': 'array',
+                'items': {
+                  'type': 'object',
+                  'properties': {
+                    'name': {
+                      'type': 'string'
+                    }
+                  }
+                }
+              }
+            }
+          },
+        ]
+      };
+
+      expected = {
+        arr: [
+          {
+            name: 'string'
+          }
+        ]
+      };
+      const result = OpenAPISampler.sample(schema);
+      expect(result).to.deep.equal(expected);
+    });
+
     it('should not be confused by subschema without type', function() {
       schema = {
         'type': 'string',
