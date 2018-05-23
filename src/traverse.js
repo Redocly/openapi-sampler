@@ -39,6 +39,15 @@ export function traverse(schema, options, spec) {
     return result;
   }
 
+  if (schema.example !== undefined) {
+    return {
+      value: schema.example,
+      readOnly: schema.readOnly,
+      writeOnly: schema.writeOnly,
+      type: schema.type,
+    };
+  }
+
   if (schema.allOf !== undefined) {
     return allOfSample(
       { ...schema, allOf: undefined },
@@ -60,9 +69,7 @@ export function traverse(schema, options, spec) {
   }
 
   let example = null;
-  if (schema.example !== undefined) {
-    example = schema.example;
-  } else if (schema.default !== undefined) {
+  if (schema.default !== undefined) {
     example = schema.default;
   } else if (schema.enum !== undefined && schema.enum.length) {
     example = schema.enum[0];
