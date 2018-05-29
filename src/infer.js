@@ -37,5 +37,5 @@ export function inferType(schema) {
     }
   }
 
-  return 'any';
+  return null;
 }

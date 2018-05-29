@@ -69,12 +69,13 @@ export function traverse(schema, options, spec) {
   }
 
   let example = null;
+  let type = null;
   if (schema.default !== undefined) {
     example = schema.default;
   } else if (schema.enum !== undefined && schema.enum.length) {
     example = schema.enum[0];
   } else {
-    let type = schema.type;
+    type = schema.type;
     if (!type) {
       type = inferType(schema);
     }
@@ -88,6 +89,6 @@ export function traverse(schema, options, spec) {
     value: example,
     readOnly: schema.readOnly,
     writeOnly: schema.writeOnly,
-    type: schema.type,
+    type: type
   };
 }
