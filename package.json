@@ -78,8 +78,7 @@
     "sinon": "^5.0.7",
     "sinon-chai": "^3.0.0",
     "vinyl-buffer": "^1.0.1",
-    "vinyl-source-stream": "^2.0.0",
-    "watchify": "^3.11.0"
+    "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {
     "json-pointer": "^0.6.0"
