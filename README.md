@@ -29,6 +29,10 @@ Install using [npm](https://docs.npmjs.com/getting-started/what-is-npm)
 
     npm install openapi-sampler --save
 
+or using [yarn](https://yarnpkg.com)
+
+    yarn add openapi-sampler
+    
 Then require it in your code:
 
 ```js
