@@ -8,7 +8,7 @@ Tool for generation samples based on OpenAPI payload/response schema
 - deterministic (given a particular input, will always produce the same output)
 - Supports `allOf`
 - Supports `additionalProperties`
-- Uses `default`, `example` and `enum` where possible
+- Uses `default`, `const`, `enum` and `examples` where possible
 - Full array support: supports `minItems`, and tuples (`items` as an array)
 - Supports `minLength`, `maxLength`, `min`, `max`, `exclusiveMinimum`, `exclusiveMaximum`
 - Supports the next `string` formats:
@@ -32,7 +32,7 @@ Install using [npm](https://docs.npmjs.com/getting-started/what-is-npm)
 or using [yarn](https://yarnpkg.com)
 
     yarn add openapi-sampler
-    
+
 Then require it in your code:
 
 ```js
