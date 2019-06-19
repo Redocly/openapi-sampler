@@ -59,7 +59,7 @@ export function traverse(schema, options, spec) {
 
   if (schema.oneOf && schema.oneOf.length) {
     if (schema.anyOf) {
-      console.warn('oneOf and anyOf are not supported on the same level. Skipping anyOf');
+      if (!options.quiet) console.warn('oneOf and anyOf are not supported on the same level. Skipping anyOf');
     }
     return traverse(schema.oneOf[0], options, spec);
   }

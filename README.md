@@ -51,6 +51,8 @@ Available options:
   Don't include `readOnly` object properties
   - **skipWriteOnly** - `boolean`
   Don't include `writeOnly` object properties
+  - **quiet** - `boolean`
+  Don't log console warning messages
 - **spec** - whole specification where the schema is taken from. Required only when schema may contain `$ref`. **spec** must not contain any external references
 
 ## Example
