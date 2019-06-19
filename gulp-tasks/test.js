@@ -1,15 +1,13 @@
 import gulp  from 'gulp';
-import fs from 'fs';
-import glob from 'glob';
-import path from 'path';
 import {Server as KarmaServer} from 'karma';
 
 import {coverage} from './coverage';
 import mochaGlobals from '../test/setup/.globals.json';
-const $ = global.$;
 
 export function mocha() {
-  require('babel-register');
+  const $ = global.$;
+
+  require('@babel/register');
   return gulp.src(['test/setup/node.js', 'test/**/*.spec.js', 'src/**/*.spec.js'], {read: false})
     .pipe($.mocha({
       reporter: 'spec',
@@ -34,5 +32,5 @@ function test(done) {
 }
 
 // Lint and run our tests
-gulp.task('test', ['lint'], test);
-gulp.task('test-browser', ['lint'], karma);
+gulp.task('test', gulp.series('lint', test));
+gulp.task('test-browser', gulp.series('lint', karma));

@@ -1,13 +1,12 @@
 import gulp  from 'gulp';
-import { Instrumenter } from 'isparta';
 
 import { mocha } from './test';
-const $ = global.$;
 
 export function coverage(done) {
-  require('babel-register');
+  const $ = global.$;
+
+  require('@babel/register');
   gulp.src(['src/**/!(*spec).js'])
-    .pipe($.istanbul({ instrumenter: Instrumenter }))
     .pipe($.istanbul.hookRequire())
     .on('finish', () => {
       return mocha()
@@ -18,4 +17,4 @@ export function coverage(done) {
     });
 }
 
-gulp.task('coverage', ['lint'], coverage);
+gulp.task('coverage', gulp.series('lint', coverage));

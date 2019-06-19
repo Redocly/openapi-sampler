@@ -1,6 +1,4 @@
 module.exports = function (config) {
-    let travis = process.env.TRAVIS;
-
     function configureLocalBrowsers() {
       let isMac     = /^darwin/.test(process.platform),
           isWindows = /^win/.test(process.platform),
@@ -31,17 +29,13 @@ module.exports = function (config) {
           ]
         },
         browserify: {
+          debug: true,
           transform: [
-            require('browserify-istanbul')({
-              instrumenter: require('isparta'),
-              ignore: ['**/*.spec.js']
-            }),
-            ['babelify', {'presets': ['es2015']}]
+            ['babelify', {'presets': ['@babel/preset-env'], 'plugins': ['istanbul']}],
           ]
         },
         files: [
           './test/setup/browser.js',
-          'node_modules/babel-polyfill/dist/polyfill.js',
           'test/**/*.spec.js'
         ],
 

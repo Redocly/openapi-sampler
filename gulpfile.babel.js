@@ -1,10 +1,7 @@
 import gulp  from 'gulp';
-import loadPlugins from 'gulp-load-plugins';
-import requireDir from 'require-dir';
-
+import gulpLoadPlugins from 'gulp-load-plugins';
+import './gulp-tasks';
 // Load all of our Gulp plugins
-global.$ = loadPlugins();
+global.$ = gulpLoadPlugins();
 
-requireDir('./gulp-tasks');
-
-gulp.task('default', ['test']);
+gulp.task('default', gulp.series('test'));

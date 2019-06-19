@@ -1,4 +1,4 @@
-import { sampleNumber } from '../../src/samplers/number';
+import { sampleNumber } from '../../src/samplers/number.js';
 
 describe('sampleNumber', () => {
   let res;

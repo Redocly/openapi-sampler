@@ -1,4 +1,4 @@
-import { sampleArray } from '../../src/samplers/array';
+import { sampleArray } from '../../src/samplers/array.js';
 
 describe('sampleArray', () => {
   var res;

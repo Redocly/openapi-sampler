@@ -6,14 +6,15 @@ import path from 'path';
 
 import config from './config';
 
-const $ = global.$;
 
 function build() {
+  const $ = global.$;
+
   return browserify({
       standalone: 'OpenAPISampler',
       entries: [path.join('src', config.entryFileName + '.js')]
     })
-    .transform('babelify', {presets: ['es2015']})
+    .transform('babelify', {presets: ['@babel/preset-env']})
     .bundle()
     .pipe(source(config.exportFileName + '.js'))
     .pipe(gulp.dest(config.destinationFolder))
@@ -26,4 +27,4 @@ function build() {
     .pipe(gulp.dest(config.destinationFolder));
 }
 
-gulp.task('build', ['lint', 'clean'], build);
+gulp.task('build', gulp.series(gulp.parallel('lint', 'clean'), build));

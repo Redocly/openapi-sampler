@@ -1,4 +1,4 @@
-import { sampleObject} from '../../src/samplers/object';
+import { sampleObject} from '../../src/samplers/object.js';
 
 describe('sampleObject', () => {
   let res;
