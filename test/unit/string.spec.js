@@ -48,9 +48,19 @@ describe('sampleString', () => {
     expect(Date.parse(res)).not.to.be.NaN;
   });
 
+  it('should return deterministic date string for format date', () => {
+    res = sampleString({format: 'date'});
+    expect(res).to.equal("2019-08-24");
+  });
+
   it('should return date string for format date', () => {
     res = sampleString({format: 'date-time'});
     expect(Date.parse(res)).not.to.be.NaN;
+  });
+
+  it('should return deterministic date string for format date-time', () => {
+    res = sampleString({format: 'date-time'});
+    expect(res).to.equal("2019-08-24T14:15:22Z");
   });
 
   it('should throw if incorrect maxLength applied to date-time', () => {
