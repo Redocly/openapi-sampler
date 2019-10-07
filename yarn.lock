@@ -4769,6 +4769,11 @@ lolex@^4.0.1, lolex@^4.1.0:
   resolved "https://registry.yarnpkg.com/lolex/-/lolex-4.1.0.tgz#ecdd7b86539391d8237947a3419aa8ac975f0fe1"
   integrity sha512-BYxIEXiVq5lGIXeVHnsFzqa1TxN5acnKnPCdlZSpzm8viNEOhiigupA4vTQ9HEFQ6nLTQ9wQOgBknJgzUYQ9Aw==
 
+lolex@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/lolex/-/lolex-5.0.0.tgz#30096cae7d1e598ff57f5f5d429a41e6276e1eef"
+  integrity sha512-79Le9AHAH4tg76f/Zti7S9TzUZmuKFYOWLAXUj+K5g8ZIK7d0xw2i6aB9FNIkJbCGTQ9CKxm3IQjqu7YR6+oMA==
+
 loose-envify@^1.0.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
