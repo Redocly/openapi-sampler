@@ -1,5 +1,5 @@
 {
-  "name": "openapi-sampler",
+  "name": "@neuralegion/openapi-sampler",
   "version": "1.0.0-beta.15",
   "description": "Tool for generation samples based on OpenAPI payload/response schema",
   "main": "dist/openapi-sampler.js",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/APIs-guru/openapi-sampler.git"
+    "url": "https://github.com/NeuraLegion/openapi-sampler"
   },
   "keywords": [
     "OpenAPI",
@@ -25,12 +25,12 @@
     "sampler",
     "faker"
   ],
-  "author": "Roman Hotsiy <gotsijroman@gmail.com>",
+  "author": "Mirsad Halilcevic <miki.halilcevic@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/APIs-guru/openapi-sampler/issues"
+    "url": "https://github.com/NeuraLegion/openapi-sampler/issues"
   },
-  "homepage": "https://github.com/APIs-guru/openapi-sampler/",
+  "homepage": "https://github.com/NeuraLegion/openapi-sampler",
   "browserslist": "> 0.25%, not dead",
   "devDependencies": {
     "@babel/core": "^7.4.5",
