@@ -59,7 +59,7 @@
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
     "json-loader": "^0.5.7",
-    "karma": "^4.1.0",
+    "karma": "^5.0.2",
     "karma-babel-preprocessor": "^8.0.0",
     "karma-browserify": "^6.0.0",
     "karma-chrome-launcher": "^2.2.0",
