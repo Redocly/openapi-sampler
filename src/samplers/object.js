@@ -14,7 +14,7 @@ export function sampleObject(schema, options = {}, spec) {
         return;
       }
 
-      const sample = traverse(schema.properties[propertyName], options, spec);
+      const sample = traverse(schema.properties[propertyName], options, spec, { propertyName });
       if (options.skipReadOnly && sample.readOnly) {
         return;
       }

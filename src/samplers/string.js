@@ -1,6 +1,6 @@
 'use strict';
 
-import { ensureMinLength, toRFCDateTime } from '../utils';
+import { ensureMinLength, toRFCDateTime, uuid } from '../utils';
 
 const passwordSymbols = 'qwerty!@#$%^123456';
 
@@ -60,6 +60,10 @@ function uriSample() {
   return 'http://example.com';
 }
 
+function uuidSample(_min, _max, propertyName) {
+  return uuid(propertyName || 'id');
+}
+
 const stringFormats = {
   'email': emailSample,
   'password': passwordSample,
@@ -69,11 +73,13 @@ const stringFormats = {
   'ipv6': ipv6Sample,
   'hostname': hostnameSample,
   'uri': uriSample,
+  'uuid': uuidSample,
   'default': defaultSample
 };
 
-export function sampleString(schema) {
+export function sampleString(schema, options, spec, context) {
   let format = schema.format || 'default';
   let sampler = stringFormats[format] || defaultSample;
-  return sampler(schema.minLength | 0, schema.maxLength);
+  let propertyName = context && context.propertyName;
+  return sampler(schema.minLength | 0, schema.maxLength, propertyName);
 }

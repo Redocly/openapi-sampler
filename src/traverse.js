@@ -9,7 +9,7 @@ export function clearCache() {
   $refCache = {};
 }
 
-export function traverse(schema, options, spec) {
+export function traverse(schema, options, spec, context) {
   if (schema.$ref) {
     if (!spec) {
       throw new Error('Your schema contains $ref. You must provide specification in the third parameter.');
@@ -85,7 +85,7 @@ export function traverse(schema, options, spec) {
     }
     let sampler = _samplers[type];
     if (sampler) {
-      example = sampler(schema, options, spec);
+      example = sampler(schema, options, spec, context);
     }
   }
 
