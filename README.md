@@ -20,6 +20,7 @@ Tool for generation samples based on OpenAPI payload/response schema
   - ipv6
   - hostname
   - uri
+  - uuid
 - Infers schema type automatically following same rules as [json-schema-faker](https://www.npmjs.com/package/json-schema-faker#inferred-types)
 - Support for `$ref` resolving
 

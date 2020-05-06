@@ -90,4 +90,17 @@ describe('sampleObject', () => {
       a: 'string'
     });
   });
+
+  it('should pass propertyName context to samplers', () => {
+    res = sampleObject({
+      properties: {
+        fooId: {type: 'string', format: 'uuid'},
+        barId: {type: 'string', format: 'uuid'},
+      }
+    });
+    expect(res).to.deep.equal({
+      fooId: 'fb4274c7-4fcd-4035-8958-a680548957ff',
+      barId: '3c966637-4898-4972-9a9d-baefa6cd6c89'
+    });
+  })
 });
