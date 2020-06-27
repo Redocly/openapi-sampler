@@ -8,7 +8,8 @@ export function allOfSample(into, children, options, spec) {
   for (let subSchema of children) {
     const { type, readOnly, writeOnly, value } = traverse({ type, ...subSchema }, options, spec);
     if (res.type && type && type !== res.type) {
-      throw new Error('allOf: schemas with different types can\'t be merged');
+      console.warn('allOf: schemas with different types can\'t be merged');
+      res.type = type;
     }
     res.type = res.type || type;
     res.readOnly = res.readOnly || readOnly;
@@ -17,7 +18,7 @@ export function allOfSample(into, children, options, spec) {
   }
 
   if (res.type === 'object') {
-    res.value = mergeDeep(res.value || {}, ...subSamples);
+    res.value = mergeDeep(res.value || {}, ...subSamples.filter(sample => typeof sample === 'object'));
     return res;
   } else {
     if (res.type === 'array') {

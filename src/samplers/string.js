@@ -18,12 +18,12 @@ function passwordSample(min, max) {
 }
 
 function commonDateTimeSample(min, max, omitTime) {
-  let res = toRFCDateTime(new Date("2019-08-24T14:15:22.123Z"), omitTime, false);
+  let res = toRFCDateTime(new Date('2019-08-24T14:15:22.123Z'), omitTime, false);
   if (res.length < min) {
-    throw new Error(`Using minLength = ${min} is incorrect with format "date-time"`);
+    console.warn(`Using minLength = ${min} is incorrect with format "date-time"`);
   }
   if (max && res.length > max) {
-    throw new Error(`Using maxLength = ${max} is incorrect with format "date-time"`);
+    console.warn(`Using maxLength = ${max} is incorrect with format "date-time"`);
   }
   return res;
 }

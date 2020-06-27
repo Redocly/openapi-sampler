@@ -12,7 +12,7 @@ export function clearCache() {
 export function traverse(schema, options, spec, context) {
   if (schema.$ref) {
     if (!spec) {
-      throw new Error('Your schema contains $ref. You must provide specification in the third parameter.');
+      throw new Error('Your schema contains $ref. You must provide full specification in the third parameter.');
     }
     let ref = decodeURIComponent(schema.$ref);
     if (ref.startsWith('#')) {

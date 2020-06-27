@@ -51,7 +51,7 @@ describe('sampleString', () => {
 
   it('should return deterministic date string for format date', () => {
     res = sampleString({format: 'date'});
-    expect(res).to.equal("2019-08-24");
+    expect(res).to.equal('2019-08-24');
   });
 
   it('should return date string for format date', () => {
@@ -61,17 +61,17 @@ describe('sampleString', () => {
 
   it('should return deterministic date string for format date-time', () => {
     res = sampleString({format: 'date-time'});
-    expect(res).to.equal("2019-08-24T14:15:22Z");
+    expect(res).to.equal('2019-08-24T14:15:22Z');
   });
 
-  it('should throw if incorrect maxLength applied to date-time', () => {
-    res = () => sampleString({format: 'date-time', maxLength: 5});
-    expect(res).to.throw();
+  it('should not throw if incorrect maxLength applied to date-time', () => {
+    res = sampleString({format: 'date-time', maxLength: 5});
+    expect(res).to.equal('2019-08-24T14:15:22Z')
   });
 
-  it('should throw if incorrect minLength applied to date-time', () => {
-    res = () => sampleString({format: 'date-time', minLength: 100});
-    expect(res).to.throw();
+  it('should not throw if incorrect minLength applied to date-time', () => {
+    res = sampleString({format: 'date-time', minLength: 100});
+    expect(res).to.equal('2019-08-24T14:15:22Z')
   });
 
   it('should return ip for ipv4 format', () => {

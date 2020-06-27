@@ -171,7 +171,7 @@ describe('Integration', function() {
       expect(result).to.deep.equal(expected);
     });
 
-    it('should throw for schemas with allOf with different types', function() {
+    it('should not throw for schemas with allOf with different types', function() {
       schema = {
         'allOf': [
           {
@@ -188,7 +188,11 @@ describe('Integration', function() {
           }
         ]
       };
-      expect(() => OpenAPISampler.sample(schema)).to.throw();
+      result = OpenAPISampler.sample(schema);
+      expected = {
+        'amount': 1
+      };
+      expect(result).to.deep.equal(expected);
     });
 
     it('deep array', function() {
@@ -563,7 +567,7 @@ describe('Integration', function() {
       };
 
       expect(() => OpenAPISampler.sample(schema)).to
-        .throw(/You must provide specification in the third parameter/);
+        .throw(/You must provide full specification in the third parameter/);
     });
 
     it('should ignore readOnly params if referenced', function() {
