@@ -3,7 +3,7 @@
   "version": "1.0.0-beta.16",
   "description": "Tool for generation samples based on OpenAPI payload/response schema",
   "main": "dist/openapi-sampler.js",
-  "jsnext:main": "src/openapi-sampler.js",
+  "module": "src/openapi-sampler.js",
   "scripts": {
     "test": "gulp",
     "lint": "gulp lint",
