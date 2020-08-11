@@ -1,15 +1,27 @@
 import { _samplers } from './openapi-sampler';
 import { allOfSample } from './allOf';
 import { inferType } from './infer';
+import { getResultForCircular } from './utils';
 import JsonPointer from 'json-pointer';
 
 let $refCache = {};
+//for circular JS references we use additional array and not object as we need to compare entire schemas and not strings
+let circleCache = [];
 
 export function clearCache() {
   $refCache = {};
+  circleCache = [];
 }
 
 export function traverse(schema, options, spec, context) {
+
+  //checking circular JS references by checking context 
+  //because context is passed only when traversing through nested objects happens
+  if (context) {
+    if (circleCache.includes(schema)) return getResultForCircular(inferType(schema));
+    circleCache.push(schema);
+  }
+
   if (schema.$ref) {
     if (!spec) {
       throw new Error('Your schema contains $ref. You must provide full specification in the third parameter.');
@@ -29,11 +41,7 @@ export function traverse(schema, options, spec, context) {
       $refCache[ref] = false;
     } else {
       const referencedType = inferType(referenced);
-      result = {
-        value: referencedType === 'object' ?
-            {}
-          : referencedType === 'array' ? [] : undefined
-      };
+      result = getResultForCircular(referencedType);
     }
 
     return result;
@@ -88,6 +96,8 @@ export function traverse(schema, options, spec, context) {
       example = sampler(schema, options, spec, context);
     }
   }
+
+  circleCache.pop();
 
   return {
     value: example,

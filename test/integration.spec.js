@@ -603,4 +603,59 @@ describe('Integration', function() {
       expect(result).to.deep.equal(expected);
     });
   });
+
+  describe('circular references in JS object', function() {
+
+    let result, schema, expected;
+    
+    it('should not follow circular references in JS object', function() {
+      let someType = {
+        type: 'string'
+      };
+
+      let circularSchema = {
+        type: 'object',
+        properties: {
+          a: someType
+        }
+      }
+      
+      circularSchema.properties.b = circularSchema;
+      schema = circularSchema;
+      result = OpenAPISampler.sample(schema);
+      expected = {
+        a: 'string',
+        b: {
+          a: 'string',
+          b: {}
+        }
+      };
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('should not follow circular references in JS object when more that one circular reference present', function() {
+
+      let circularSchema = {
+        type: 'object',
+        properties: {}
+      }
+
+      circularSchema.properties.a = circularSchema;
+      circularSchema.properties.b = circularSchema;
+
+      schema = circularSchema;
+      result = OpenAPISampler.sample(schema);
+      expected = {
+        a: { 
+          a: {},
+          b: {} 
+        }, 
+        b: { 
+          a: {},
+          b: {} 
+        }
+      };
+      expect(result).to.deep.equal(expected);
+    });
+  });
 });
