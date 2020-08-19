@@ -6,11 +6,11 @@ import JsonPointer from 'json-pointer';
 
 let $refCache = {};
 //for circular JS references we use additional array and not object as we need to compare entire schemas and not strings
-let circleCache = [];
+let seenSchemasStack = [];
 
 export function clearCache() {
   $refCache = {};
-  circleCache = [];
+  seenSchemasStack = [];
 }
 
 export function traverse(schema, options, spec, context) {
@@ -18,8 +18,8 @@ export function traverse(schema, options, spec, context) {
   //checking circular JS references by checking context 
   //because context is passed only when traversing through nested objects happens
   if (context) {
-    if (circleCache.includes(schema)) return getResultForCircular(inferType(schema));
-    circleCache.push(schema);
+    if (seenSchemasStack.includes(schema)) return getResultForCircular(inferType(schema));
+    seenSchemasStack.push(schema);
   }
 
   if (schema.$ref) {
@@ -97,7 +97,7 @@ export function traverse(schema, options, spec, context) {
     }
   }
 
-  circleCache.pop();
+  seenSchemasStack.pop();
 
   return {
     value: example,
