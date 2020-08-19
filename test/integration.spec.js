@@ -633,6 +633,27 @@ describe('Integration', function() {
       expect(result).to.deep.equal(expected);
     });
 
+    it('should not detect false-positive circular references in JS object', function() {
+      let a = {
+        allOf: [ {type: 'string'} ]
+      };
+      
+      let nonCircularSchema = {
+        type: 'object',
+        properties: {
+          a: a,
+          b: a
+        }
+      }
+      
+      result = OpenAPISampler.sample(nonCircularSchema);
+      expected = {
+        a: 'string',
+        b: 'string'
+      };
+      expect(result).to.deep.equal(expected);
+    });
+
     it('should not follow circular references in JS object when more that one circular reference present', function() {
 
       let circularSchema = {
