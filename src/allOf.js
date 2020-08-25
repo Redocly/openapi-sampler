@@ -6,7 +6,7 @@ export function allOfSample(into, children, options, spec) {
   const subSamples = [];
 
   for (let subSchema of children) {
-    const { type, readOnly, writeOnly, value } = traverse({ type, ...subSchema }, options, spec);
+    const { type, readOnly, writeOnly, value } = traverse({ type: res.type, ...subSchema }, options, spec);
     if (res.type && type && type !== res.type) {
       console.warn('allOf: schemas with different types can\'t be merged');
       res.type = type;
