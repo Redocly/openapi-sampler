@@ -14,7 +14,6 @@ export function clearCache() {
 }
 
 export function traverse(schema, options, spec, context) {
-
   //checking circular JS references by checking context 
   //because context is passed only when traversing through nested objects happens
   if (context) {
@@ -43,11 +42,11 @@ export function traverse(schema, options, spec, context) {
       const referencedType = inferType(referenced);
       result = getResultForCircular(referencedType);
     }
-
     return result;
   }
 
   if (schema.example !== undefined) {
+    seenSchemasStack.pop();
     return {
       value: schema.example,
       readOnly: schema.readOnly,
@@ -98,7 +97,6 @@ export function traverse(schema, options, spec, context) {
   }
 
   seenSchemasStack.pop();
-
   return {
     value: example,
     readOnly: schema.readOnly,

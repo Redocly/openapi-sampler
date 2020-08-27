@@ -609,11 +609,11 @@ describe('Integration', function() {
     let result, schema, expected;
 
     it('should not follow circular references in JS object', function() {
-      let someType = {
+      const someType = {
         type: 'string'
       };
 
-      let circularSchema = {
+      const circularSchema = {
         type: 'object',
         properties: {
           a: someType
@@ -634,30 +634,98 @@ describe('Integration', function() {
     });
 
     it('should not detect false-positive circular references in JS object', function() {
-      let a = {
+      const a = {
         type: 'string',
         example: 'test'
       };
 
-      let nonCircularSchema = {
+      const b = {
+        type: 'integer',
+        example: 1
+      };
+
+      const c = {
+        type: 'object',
+        properties: {
+          test: {
+            'type': 'string'
+          }
+        }
+      };
+
+      const d = {
+        type: 'array',
+        items: {
+          'type': 'string',
+        }
+      };
+
+      const e = {
+        allOf: [ c, c ]
+      };
+
+      const f = {
+        oneOf: [d, d ]
+      };
+
+      const g = {
+        anyOf: [ c, c ]
+      };
+
+      const h = { $ref: '#/a' };
+
+      const nonCircularSchema = {
         type: 'object',
         properties: {
           a: a,
-          b: a,
+          aa: a,
+          b: b,
+          bb: b,
+          c: c,
+          cc: c,
+          d: d,
+          dd: d,
+          e: e,
+          ee: e,
+          f: f,
+          ff: f,
+          g: g,
+          gg: g,
+          h: h,
+          hh: h
         }
       }
 
-      result = OpenAPISampler.sample(nonCircularSchema);
+      const spec = {
+          nonCircularSchema,
+          a: a
+      }
+      result = OpenAPISampler.sample(nonCircularSchema, {}, spec);
+
       expected = {
         a: 'test',
-        b: 'test'
+        aa: 'test',
+        b: 1,
+        bb: 1,
+        c: {'test': 'string'},
+        cc: {'test': 'string'},
+        d: ['string'],
+        dd: ['string'],
+        e: {'test': 'string'},
+        ee: {'test': 'string'},
+        f: ['string'],
+        ff: ['string'],
+        g: {'test': 'string'},
+        gg: {'test': 'string'},
+        h: 'test',
+        hh: 'test'
       };
       expect(result).to.deep.equal(expected);
     });
 
     it('should not follow circular references in JS object when more that one circular reference present', function() {
 
-      let circularSchema = {
+      const circularSchema = {
         type: 'object',
         properties: {}
       }
