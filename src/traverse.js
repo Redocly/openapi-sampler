@@ -14,8 +14,8 @@ export function clearCache() {
 }
 
 export function traverse(schema, options, spec, context) {
-  //checking circular JS references by checking context 
-  //because context is passed only when traversing through nested objects happens
+  // checking circular JS references by checking context 
+  // because context is passed only when traversing through nested objects happens
   if (context) {
     if (seenSchemasStack.includes(schema)) return getResultForCircular(inferType(schema));
     seenSchemasStack.push(schema);
