@@ -67,6 +67,10 @@ export function getResultForCircular(type) {
   };
 }
 
+export function popSchemaStack(seenSchemasStack, context) {
+  if (context) seenSchemasStack.pop();
+}
+
 function hashCode(str) {
   var hash = 0;
   if (str.length == 0) return hash;

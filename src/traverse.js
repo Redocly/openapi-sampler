@@ -1,11 +1,11 @@
 import { _samplers } from './openapi-sampler';
 import { allOfSample } from './allOf';
 import { inferType } from './infer';
-import { getResultForCircular } from './utils';
+import { getResultForCircular, popSchemaStack } from './utils';
 import JsonPointer from 'json-pointer';
 
 let $refCache = {};
-//for circular JS references we use additional array and not object as we need to compare entire schemas and not strings
+// for circular JS references we use additional array and not object as we need to compare entire schemas and not strings
 let seenSchemasStack = [];
 
 export function clearCache() {
@@ -42,11 +42,12 @@ export function traverse(schema, options, spec, context) {
       const referencedType = inferType(referenced);
       result = getResultForCircular(referencedType);
     }
+    popSchemaStack(seenSchemasStack, context);
     return result;
   }
 
   if (schema.example !== undefined) {
-    seenSchemasStack.pop();
+    popSchemaStack(seenSchemasStack, context);
     return {
       value: schema.example,
       readOnly: schema.readOnly,
@@ -56,6 +57,7 @@ export function traverse(schema, options, spec, context) {
   }
 
   if (schema.allOf !== undefined) {
+    popSchemaStack(seenSchemasStack, context);
     return allOfSample(
       { ...schema, allOf: undefined },
       schema.allOf,
@@ -68,10 +70,12 @@ export function traverse(schema, options, spec, context) {
     if (schema.anyOf) {
       if (!options.quiet) console.warn('oneOf and anyOf are not supported on the same level. Skipping anyOf');
     }
+    popSchemaStack(seenSchemasStack, context);
     return traverse(schema.oneOf[0], options, spec);
   }
 
   if (schema.anyOf && schema.anyOf.length) {
+    popSchemaStack(seenSchemasStack, context);
     return traverse(schema.anyOf[0], options, spec);
   }
 
@@ -95,8 +99,8 @@ export function traverse(schema, options, spec, context) {
       example = sampler(schema, options, spec, context);
     }
   }
-
-  seenSchemasStack.pop();
+  
+  popSchemaStack(seenSchemasStack, context);
   return {
     value: example,
     readOnly: schema.readOnly,
