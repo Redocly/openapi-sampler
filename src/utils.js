@@ -59,6 +59,18 @@ export function uuid(str) {
   return uuid;
 }
 
+export function getResultForCircular(type) {
+  return {
+    value: type === 'object' ?
+        {}
+      : type === 'array' ? [] : undefined
+  };
+}
+
+export function popSchemaStack(seenSchemasStack, context) {
+  if (context) seenSchemasStack.pop();
+}
+
 function hashCode(str) {
   var hash = 0;
   if (str.length == 0) return hash;

@@ -31,3 +31,4 @@ bower_components
 
 # Users Environment Variables
 .lock-wscript
+package-lock.json
