@@ -4,7 +4,8 @@ import { sampleArray, sampleBoolean, sampleNumber, sampleObject, sampleString } 
 export var _samplers = {};
 
 const defaults = {
-  skipReadOnly: false
+  skipReadOnly: false,
+  maxSampleDepth: 15,
 };
 
 export function sample(schema, options, spec) {
