@@ -14,7 +14,7 @@ describe('sampleObject', () => {
     }});
     expect(res).to.deep.equal({
       a: 'string',
-      b: 0
+      b: 1
     });
   });
 
@@ -39,7 +39,7 @@ describe('sampleObject', () => {
     expect(res).to.deep.equal({
       a: 'string',
       b: {
-        b2: 0
+        b2: 1
       }
     });
   });
@@ -65,7 +65,7 @@ describe('sampleObject', () => {
     expect(res).to.deep.equal({
       a: 'string',
       b: {
-        b2: 0
+        b2: 1
       }
     });
   });

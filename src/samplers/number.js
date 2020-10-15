@@ -23,5 +23,5 @@ export function sampleNumber(schema) {
     }
   }
 
-  return 0;
+  return 1;
 }

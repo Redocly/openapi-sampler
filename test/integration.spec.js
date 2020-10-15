@@ -21,7 +21,7 @@ describe('Integration', function() {
         'type': 'number'
       };
       result = OpenAPISampler.sample(schema);
-      expected = 0;
+      expected = 1;
       expect(result).to.deep.equal(expected);
     });
 
@@ -133,8 +133,8 @@ describe('Integration', function() {
       result = OpenAPISampler.sample(schema);
       expected = {
         test: 'string',
-        property1: 0,
-        property2: 0
+        property1: 1,
+        property2: 1
       };
       expect(result).to.deep.equal(expected);
     });
@@ -157,7 +157,7 @@ describe('Integration', function() {
             'properties': {
               'amount': {
                 'type': 'number',
-                'default': 1
+                'default': 2
               }
             }
           }
@@ -166,7 +166,7 @@ describe('Integration', function() {
       result = OpenAPISampler.sample(schema);
       expected = {
         'title': 'string',
-        'amount': 1
+        'amount': 2
       };
       expect(result).to.deep.equal(expected);
     });
@@ -182,7 +182,7 @@ describe('Integration', function() {
             'properties': {
               'amount': {
                 'type': 'number',
-                'default': 1
+                'default': 2
               }
             }
           }
@@ -190,7 +190,7 @@ describe('Integration', function() {
       };
       result = OpenAPISampler.sample(schema);
       expected = {
-        'amount': 1
+        'amount': 2
       };
       expect(result).to.deep.equal(expected);
     });
@@ -282,7 +282,7 @@ describe('Integration', function() {
             'properties': {
               'amount': {
                 'type': 'number',
-                'default': 1
+                'default': 2
               }
             }
           }
@@ -291,7 +291,7 @@ describe('Integration', function() {
       result = OpenAPISampler.sample(schema);
       expected = {
         'title': 'string',
-        'amount': 1
+        'amount': 2
       };
       expect(result).to.deep.equal(expected);
 
@@ -307,7 +307,7 @@ describe('Integration', function() {
             'properties': {
               'amount': {
                 'type': 'number',
-                'default': 1
+                'default': 2
               }
             }
           }
@@ -316,7 +316,7 @@ describe('Integration', function() {
       result = OpenAPISampler.sample(schema);
       expected = {
         'title': 'string',
-        'amount': 1
+        'amount': 2
       };
       expect(result).to.deep.equal(expected);
     });
@@ -357,7 +357,7 @@ describe('Integration', function() {
       expected = {
         parent: {
           child1: 'string',
-          child2: 0
+          child2: 1
         }
       };
 
@@ -475,7 +475,7 @@ describe('Integration', function() {
         ]
       };
       result = OpenAPISampler.sample(schema);
-      expected = 0;
+      expected = 1;
       expect(result).to.equal(expected);
     });
   });
