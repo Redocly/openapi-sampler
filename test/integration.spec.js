@@ -141,6 +141,37 @@ describe('Integration', function() {
   });
 
   describe('AllOf', function() {
+    it('should handle allOf and required on the same level. (This is useful when using a $ref to specify a required param that is not required elsewhere.)', function() {
+      schema = {
+        'allOf': [
+          {
+            'type': 'object',
+            'properties': {
+              'name': {
+                'type': 'string'
+              }
+            }
+          },
+          {
+            'type': 'object',
+            'properties': {
+              'amount': {
+                'type': 'number',
+                'default': 2
+              }
+            }
+          }
+        ],
+        'required': [
+          'amount'
+        ]
+      };
+      result = OpenAPISampler.sample(schema, { skipNonRequired: true });
+      expected = {
+        'amount': 2
+      };
+      expect(result).to.deep.equal(expected);
+    })
     it('should sample schema with allOf', function() {
       schema = {
         'allOf': [
