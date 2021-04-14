@@ -26,7 +26,7 @@ const schemaKeywordTypes = {
 
 export function inferType(schema) {
   if (schema.type !== undefined) {
-    return schema.type;
+    return Array.isArray(schema.type) ? schema.type.length === 0 ? null : schema.type[0] : schema.type;
   }
   const keywords = Object.keys(schemaKeywordTypes);
   for (var i = 0; i < keywords.length; i++) {
