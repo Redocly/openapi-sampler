@@ -11,7 +11,7 @@ function build() {
   const $ = global.$;
 
   return browserify({
-      standalone: 'OpenAPISampler',
+      standalone: 'JSONSchemaSampler',
       entries: [path.join('src', config.entryFileName + '.js')]
     })
     .transform('babelify', {presets: ['@babel/preset-env']})

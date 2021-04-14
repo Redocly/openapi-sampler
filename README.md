@@ -1,10 +1,11 @@
-# openapi-sampler
+# @stoplight/json-schema-sampler
 
-[![Travis build status](http://img.shields.io/travis/Redocly/openapi-sampler.svg?style=flat)](https://travis-ci.org/Redocly/openapi-sampler) [![Coverage Status](https://coveralls.io/repos/Redocly/openapi-sampler/badge.svg?branch=master&service=github)](https://coveralls.io/github/Redocly/openapi-sampler?branch=master) [![Dependency Status](https://david-dm.org/Redocly/openapi-sampler.svg)](https://david-dm.org/Redocly/openapi-sampler) [![devDependency Status](https://david-dm.org/Redocly/openapi-sampler/dev-status.svg)](https://david-dm.org/Redocly/openapi-sampler#info=devDependencies)
+It's a fork of [openapi-sampler](https://github.com/Redocly/openapi-sampler) by Redocly, with focus on supporting JSON Schema Draft 6.
 
-Tool for generation samples based on OpenAPI payload/response schema
+Tool for generation samples based on JSON Schema Draft 6.
 
 ## Features
+
 - deterministic (given a particular input, will always produce the same output)
 - Supports `allOf`
 - Supports `additionalProperties`
@@ -28,22 +29,22 @@ Tool for generation samples based on OpenAPI payload/response schema
 
 Install using [npm](https://docs.npmjs.com/getting-started/what-is-npm)
 
-    npm install openapi-sampler --save
+    npm install @stoplight/json-schema-sampler --save
 
 or using [yarn](https://yarnpkg.com)
 
-    yarn add openapi-sampler
+    yarn add @stoplight/json-schema-sampler
 
 Then require it in your code:
 
 ```js
-var OpenAPISampler = require('openapi-sampler');
+const JSONSchemaSampler = require('@stoplight/json-schema-sampler');
 ```
 
 ## Usage
-#### `OpenAPISampler.sample(schema, [options], [spec])`
+#### `JSONSchemaSampler.sample(schema, [options], [spec])`
 - **schema** (_required_) - `object`
-A [OpenAPI Schema Object](http://swagger.io/specification/#schemaObject)
+A JSON Schema Draft 6 document.
 - **options** (_optional_) - `object`
 Available options:
   - **skipNonRequired** - `boolean`
@@ -58,8 +59,8 @@ Available options:
 
 ## Example
 ```js
-const OpenAPISampler = require('.');
-OpenAPISampler.sample({
+const JSONSchemaSampler = require('@stoplight/json-schema-sampler');
+JSONSchemaSampler.sample({
   type: 'object',
   properties: {
     a: {type: 'integer', minimum: 10},

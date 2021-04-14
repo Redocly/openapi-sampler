@@ -1,7 +1,7 @@
 module.exports = function(root) {
   root = root ? root : global;
   root.expect = root.chai.expect;
-  global.OpenAPISampler = require('../../src/openapi-sampler.js');
+  global.JSONSchemaSampler = require('../../src/json-schema-sampler.js');
   beforeEach(function() {
     // Using these globally-available Sinon features is preferrable, as they're
     // automatically restored for you in the subsequent `afterEach`
@@ -12,7 +12,7 @@ module.exports = function(root) {
     root.useFakeTimers = root.sandbox.useFakeTimers.bind(root.sandbox);
     root.useFakeXMLHttpRequest = root.sandbox.useFakeXMLHttpRequest.bind(root.sandbox);
     root.useFakeServer = root.sandbox.useFakeServer.bind(root.sandbox);
-    root.OpenAPISampler = OpenAPISampler;
+    root.JSONSchemaSampler = JSONSchemaSampler;
   });
 
   afterEach(function() {

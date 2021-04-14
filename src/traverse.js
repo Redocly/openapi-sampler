@@ -1,4 +1,4 @@
-import { _samplers } from './openapi-sampler';
+import { _samplers } from './json-schema-sampler';
 import { allOfSample } from './allOf';
 import { inferType } from './infer';
 import { getResultForCircular, popSchemaStack } from './utils';

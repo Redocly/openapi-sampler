@@ -23,7 +23,7 @@ export function allOfSample(into, children, options, spec, context) {
   } else {
     if (res.type === 'array') {
       // TODO: implement arrays
-      if (!options.quiet) console.warn('OpenAPI Sampler: found allOf with "array" type. Result may be incorrect');
+      if (!options.quiet) console.warn('JSON Schema Sampler: found allOf with "array" type. Result may be incorrect');
     }
     const lastSample = subSamples[subSamples.length - 1];
     res.value = lastSample != null ? lastSample : res.value;

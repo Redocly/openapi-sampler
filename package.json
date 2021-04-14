@@ -1,9 +1,9 @@
 {
-  "name": "openapi-sampler",
-  "version": "1.0.0-beta.18",
-  "description": "Tool for generation samples based on OpenAPI payload/response schema",
-  "main": "dist/openapi-sampler.js",
-  "module": "src/openapi-sampler.js",
+  "name": "@stoplight/json-schema-sampler",
+  "version": "1.0.0",
+  "description": "Tool for generation samples based on JSON Schema Draft 6",
+  "main": "dist/json-schema-sampler.js",
+  "module": "src/json-schema-sampler.js",
   "scripts": {
     "test": "gulp",
     "lint": "gulp lint",
@@ -16,21 +16,25 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/APIs-guru/openapi-sampler.git"
+    "url": "https://github.com/stoplightio/json-schema-sampler.git"
   },
   "keywords": [
     "OpenAPI",
+    "JSON Schema",
     "Swagger",
     "instantiator",
     "sampler",
     "faker"
   ],
-  "author": "Roman Hotsiy <gotsijroman@gmail.com>",
+  "author": "Stoplight <support@stoplight.io>",
+  "contributors": [
+    "Roman Hotsiy <gotsijroman@gmail.com>"
+  ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/APIs-guru/openapi-sampler/issues"
+    "url": "https://github.com/stoplightio/json-schema-sampler/issues"
   },
-  "homepage": "https://github.com/APIs-guru/openapi-sampler/",
+  "homepage": "https://github.com/stoplightio/json-schema-sampler/",
   "browserslist": "> 0.25%, not dead",
   "devDependencies": {
     "@babel/core": "^7.7.2",

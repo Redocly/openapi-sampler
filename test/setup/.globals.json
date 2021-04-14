@@ -8,6 +8,6 @@
     "useFakeServer": true,
     "useFakeTimers": true,
     "useFakeXMLHttpRequest": true,
-    "OpenAPISampler": true
+    "JSONSchemaSampler": true
   }
 }

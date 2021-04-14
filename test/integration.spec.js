@@ -11,7 +11,7 @@ describe('Integration', function() {
       schema = {
         'type': 'string'
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = 'string';
       expect(result).to.deep.equal(expected);
     });
@@ -20,7 +20,7 @@ describe('Integration', function() {
       schema = {
         'type': 'number'
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = 0;
       expect(result).to.deep.equal(expected);
     });
@@ -29,7 +29,7 @@ describe('Integration', function() {
       schema = {
         'type': 'boolean'
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = true;
       expect(result).to.deep.equal(expected);
     });
@@ -39,7 +39,7 @@ describe('Integration', function() {
         'type': 'number',
         'default': 100
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = 100;
       expect(result).to.deep.equal(expected);
     });
@@ -47,7 +47,7 @@ describe('Integration', function() {
     it('should use null if type is not specified', function() {
       schema = {
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = null;
       expect(result).to.deep.equal(expected);
     });
@@ -58,7 +58,7 @@ describe('Integration', function() {
       schema = {
         'type': 'object'
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = {};
       expect(result).to.deep.equal(expected);
     });
@@ -72,7 +72,7 @@ describe('Integration', function() {
           }
         }
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = {
         'title': 'string'
       };
@@ -89,7 +89,7 @@ describe('Integration', function() {
           }
         }
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = {
         'title': 'Example'
       };
@@ -110,7 +110,7 @@ describe('Integration', function() {
           }
         }
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = {
         'title': 'Example',
         'amount': 10
@@ -130,7 +130,7 @@ describe('Integration', function() {
           type: 'number'
         }
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = {
         test: 'string',
         property1: 0,
@@ -163,7 +163,7 @@ describe('Integration', function() {
           }
         ]
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = {
         'title': 'string',
         'amount': 1
@@ -188,7 +188,7 @@ describe('Integration', function() {
           }
         ]
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = {
         'amount': 1
       };
@@ -235,7 +235,7 @@ describe('Integration', function() {
           }
         ]
       };
-      const result = OpenAPISampler.sample(schema);
+      const result = JSONSchemaSampler.sample(schema);
       expect(result).to.deep.equal(expected);
     });
 
@@ -248,7 +248,7 @@ describe('Integration', function() {
           }
         ]
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = 'string';
       expect(result).to.equal(expected);
     });
@@ -265,7 +265,7 @@ describe('Integration', function() {
           }
         ]
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expect(result).to.be.an('array');
     });
 
@@ -288,7 +288,7 @@ describe('Integration', function() {
           }
         ]
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = {
         'title': 'string',
         'amount': 1
@@ -313,7 +313,7 @@ describe('Integration', function() {
           }
         ]
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = {
         'title': 'string',
         'amount': 1
@@ -361,7 +361,7 @@ describe('Integration', function() {
         }
       };
 
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
 
       expect(result).to.deep.equal(expected);
     });
@@ -381,7 +381,7 @@ describe('Integration', function() {
         type: 'object',
         example: obj
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = obj;
       expect(result).to.deep.equal(obj);
     });
@@ -391,7 +391,7 @@ describe('Integration', function() {
         type: 'string',
         example: false
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = false;
       expect(result).to.deep.equal(expected);
     });
@@ -401,7 +401,7 @@ describe('Integration', function() {
         type: 'string',
         enum: ['test1', 'test2']
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = 'test1';
       expect(result).to.equal(expected);
     });
@@ -419,7 +419,7 @@ describe('Integration', function() {
           }
         }
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = {
         a: 10,
         b: 'string'
@@ -440,7 +440,7 @@ describe('Integration', function() {
           }
         ]
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = 'string';
       expect(result).to.equal(expected);
     });
@@ -456,7 +456,7 @@ describe('Integration', function() {
           }
         ]
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = 'string';
       expect(result).to.equal(expected);
     });
@@ -474,7 +474,7 @@ describe('Integration', function() {
           }
         ]
       };
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = 0;
       expect(result).to.equal(expected);
     });
@@ -497,7 +497,7 @@ describe('Integration', function() {
           }
         }
       };
-      result = OpenAPISampler.sample(schema, {}, spec);
+      result = JSONSchemaSampler.sample(schema, {}, spec);
       expected = {
         a: 'string'
       };
@@ -526,7 +526,7 @@ describe('Integration', function() {
           }
         }
       };
-      result = OpenAPISampler.sample(schema, {}, spec);
+      result = JSONSchemaSampler.sample(schema, {}, spec);
       expected = {
         a: 'string',
         b: {}
@@ -553,7 +553,7 @@ describe('Integration', function() {
           }
         }
       };
-      result = OpenAPISampler.sample(schema, {}, spec);
+      result = JSONSchemaSampler.sample(schema, {}, spec);
       expected = {
         a: {},
         b: {}
@@ -566,7 +566,7 @@ describe('Integration', function() {
         $ref: '#/defs/Schema'
       };
 
-      expect(() => OpenAPISampler.sample(schema)).to
+      expect(() => JSONSchemaSampler.sample(schema)).to
         .throw(/You must provide full specification in the third parameter/);
     });
 
@@ -599,7 +599,7 @@ describe('Integration', function() {
         b: 'string'
       };
 
-      result = OpenAPISampler.sample(schema, {skipReadOnly: true}, spec);
+      result = JSONSchemaSampler.sample(schema, {skipReadOnly: true}, spec);
       expect(result).to.deep.equal(expected);
     });
   });
@@ -622,7 +622,7 @@ describe('Integration', function() {
 
       circularSchema.properties.b = circularSchema;
       schema = circularSchema;
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = {
         a: 'string',
         b: {
@@ -700,7 +700,7 @@ describe('Integration', function() {
           nonCircularSchema,
           a: a
       }
-      result = OpenAPISampler.sample(nonCircularSchema, {}, spec);
+      result = JSONSchemaSampler.sample(nonCircularSchema, {}, spec);
 
       expected = {
         a: 'test',
@@ -734,7 +734,7 @@ describe('Integration', function() {
       circularSchema.properties.b = circularSchema;
 
       schema = circularSchema;
-      result = OpenAPISampler.sample(schema);
+      result = JSONSchemaSampler.sample(schema);
       expected = {
         a: {
           a: {},
