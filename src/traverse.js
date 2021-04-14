@@ -98,6 +98,9 @@ export function traverse(schema, options, spec, context) {
     example = schema.examples[0];
   } else {
     type = schema.type;
+    if (Array.isArray(type) && schema.type.length > 0) {
+      type = schema.type[0];
+    }
     if (!type) {
       type = inferType(schema);
     }
