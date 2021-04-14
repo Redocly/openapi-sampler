@@ -53,6 +53,15 @@ describe('Integration', function() {
       expect(result).to.deep.equal(expected);
     });
 
+    it('should use null for null', function() {
+      schema = {
+        type: 'null'
+      };
+      result = JSONSchemaSampler.sample(schema);
+      expected = null;
+      expect(result).to.deep.equal(expected);
+    });
+
     it('should use null if type is not specified', function() {
       schema = {
       };
