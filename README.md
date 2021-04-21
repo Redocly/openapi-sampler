@@ -1,8 +1,8 @@
 # @stoplight/json-schema-sampler
 
-It's a fork of [openapi-sampler](https://github.com/Redocly/openapi-sampler) by Redocly, with focus on supporting JSON Schema Draft 6.
+It's a fork of [openapi-sampler](https://github.com/Redocly/openapi-sampler) by Redocly, with focus on supporting JSON Schema Draft 7.
 
-Tool for generation samples based on JSON Schema Draft 6.
+Tool for generation samples based on JSON Schema Draft 7.
 
 ## Features
 
@@ -14,14 +14,24 @@ Tool for generation samples based on JSON Schema Draft 6.
 - Supports `minLength`, `maxLength`, `min`, `max`, `exclusiveMinimum`, `exclusiveMaximum`
 - Supports the next `string` formats:
   - email
+  - idn-email
   - password
   - date-time
   - date
+  - time
   - ipv4
   - ipv6
   - hostname
+  - idn-hostname
   - uri
+  - uri-reference
+  - uri-template
+  - iri
+  - iri-reference
   - uuid
+  - json-pointer
+  - relative-json-pointer
+  - regex
 - Infers schema type automatically following same rules as [json-schema-faker](https://www.npmjs.com/package/json-schema-faker#inferred-types)
 - Support for `$ref` resolving
 
@@ -44,7 +54,7 @@ const JSONSchemaSampler = require('@stoplight/json-schema-sampler');
 ## Usage
 #### `JSONSchemaSampler.sample(schema, [options], [spec])`
 - **schema** (_required_) - `object`
-A JSON Schema Draft 6 document.
+A JSON Schema Draft 7 document.
 - **options** (_optional_) - `object`
 Available options:
   - **skipNonRequired** - `boolean`

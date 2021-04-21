@@ -7,10 +7,10 @@ function pad(number) {
   return number;
 }
 
-export function toRFCDateTime(date, omitTime, milliseconds) {
-  var res = date.getUTCFullYear() +
+export function toRFCDateTime(date, omitTime, omitDate, milliseconds) {
+  var res = omitDate ? '' : (date.getUTCFullYear() +
     '-' + pad(date.getUTCMonth() + 1) +
-    '-' + pad(date.getUTCDate());
+    '-' + pad(date.getUTCDate()));
   if (!omitTime) {
     res += 'T' + pad(date.getUTCHours()) +
       ':' + pad(date.getUTCMinutes()) +
