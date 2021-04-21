@@ -10,7 +10,7 @@ Tool for generation samples based on JSON Schema Draft 6.
 - Supports `allOf`
 - Supports `additionalProperties`
 - Uses `default`, `const`, `enum` and `examples` where possible
-- Full array support: supports `minItems`, and tuples (`items` as an array)
+- Good array support: supports `contains`, `minItems`, `maxItems`, and tuples (`items` as an array)
 - Supports `minLength`, `maxLength`, `min`, `max`, `exclusiveMinimum`, `exclusiveMaximum`
 - Supports the next `string` formats:
   - email
