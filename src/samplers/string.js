@@ -8,6 +8,10 @@ function emailSample() {
   return 'user@example.com';
 }
 
+function idnEmailSample() {
+  return 'пользователь@пример.ру';
+}
+
 function passwordSample(min, max) {
   let res = 'pa$$word';
   if (min > res.length) {
@@ -17,8 +21,8 @@ function passwordSample(min, max) {
   return res;
 }
 
-function commonDateTimeSample(min, max, omitTime) {
-  let res = toRFCDateTime(new Date('2019-08-24T14:15:22.123Z'), omitTime, false);
+function commonDateTimeSample({ min, max, omitTime, omitDate }) {
+  let res = toRFCDateTime(new Date('2019-08-24T14:15:22.123Z'), omitTime, omitDate, false);
   if (res.length < min) {
     console.warn(`Using minLength = ${min} is incorrect with format "date-time"`);
   }
@@ -29,11 +33,15 @@ function commonDateTimeSample(min, max, omitTime) {
 }
 
 function dateTimeSample(min, max) {
-  return commonDateTimeSample(min, max);
+  return commonDateTimeSample({ min, max, omitTime: false, omitDate: false });
 }
 
 function dateSample(min, max) {
-  return commonDateTimeSample(min, max, true);
+  return commonDateTimeSample({ min, max, omitTime: true, omitDate: false });
+}
+
+function timeSample(min, max) {
+  return commonDateTimeSample({ min, max, omitTime: false, omitDate: true }).slice(1);
 }
 
 function defaultSample(min, max) {
@@ -56,25 +64,67 @@ function hostnameSample() {
   return 'example.com';
 }
 
+function idnHostnameSample() {
+  return 'пример.ру';
+}
+
 function uriSample() {
   return 'http://example.com';
+}
+
+function uriReferenceSample() {
+  return '../dictionary';
+}
+
+function uriTemplateSample() {
+  return 'http://example.com/{endpoint}';
+}
+
+function iriSample() {
+  return 'http://пример.ру';
+}
+
+function iriReferenceSample() {
+  return '../словарь';
 }
 
 function uuidSample(_min, _max, propertyName) {
   return uuid(propertyName || 'id');
 }
 
+function jsonPointerSample() {
+  return '/json/pointer';
+}
+
+function relativeJsonPointerSample() {
+  return '1/relative/json/pointer';
+}
+
+function regexSample() {
+  return '/regex/';
+}
+
 const stringFormats = {
   'email': emailSample,
+  'idn-email': idnEmailSample, // https://tools.ietf.org/html/rfc6531#section-3.3
   'password': passwordSample,
   'date-time': dateTimeSample,
   'date': dateSample,
+  'time': timeSample, // full-time in https://tools.ietf.org/html/rfc3339#section-5.6
   'ipv4': ipv4Sample,
   'ipv6': ipv6Sample,
   'hostname': hostnameSample,
+  'idn-hostname': idnHostnameSample, // https://tools.ietf.org/html/rfc5890#section-2.3.2.3
+  'iri': iriSample, // https://tools.ietf.org/html/rfc3987
+  'iri-reference': iriReferenceSample,
   'uri': uriSample,
+  'uri-reference': uriReferenceSample, // either a URI or relative-reference https://tools.ietf.org/html/rfc3986#section-4.1
+  'uri-template': uriTemplateSample,
   'uuid': uuidSample,
-  'default': defaultSample
+  'default': defaultSample,
+  'json-pointer': jsonPointerSample,
+  'relative-json-pointer': relativeJsonPointerSample, // https://tools.ietf.org/html/draft-handrews-relative-json-pointer-01
+  'regex': regexSample,
 };
 
 export function sampleString(schema, options, spec, context) {

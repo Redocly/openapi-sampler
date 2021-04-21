@@ -13,14 +13,24 @@ Tool for generation samples based on OpenAPI payload/response schema
 - Supports `minLength`, `maxLength`, `min`, `max`, `exclusiveMinimum`, `exclusiveMaximum`
 - Supports the next `string` formats:
   - email
+  - idn-email
   - password
   - date-time
   - date
+  - time
   - ipv4
   - ipv6
   - hostname
+  - idn-hostname
   - uri
+  - uri-reference
+  - uri-template
+  - iri
+  - iri-reference
   - uuid
+  - json-pointer
+  - relative-json-pointer
+  - regex
 - Infers schema type automatically following same rules as [json-schema-faker](https://www.npmjs.com/package/json-schema-faker#inferred-types)
 - Support for `$ref` resolving
 
@@ -43,7 +53,7 @@ var OpenAPISampler = require('openapi-sampler');
 ## Usage
 #### `OpenAPISampler.sample(schema, [options], [spec])`
 - **schema** (_required_) - `object`
-A [OpenAPI Schema Object](http://swagger.io/specification/#schemaObject)
+An [OpenAPI Schema Object](http://swagger.io/specification/#schemaObject) or a JSON Schema Draft 7 document.
 - **options** (_optional_) - `object`
 Available options:
   - **skipNonRequired** - `boolean`
