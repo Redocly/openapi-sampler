@@ -11,6 +11,13 @@ describe('sampleArray', () => {
   it('should return elements of correct type', () => {
     res = sampleArray({items: {type: 'number'}});
     expect(res).to.deep.equal([0]);
+    res = sampleArray({contains: {type: 'number'}});
+    expect(res).to.deep.equal([0]);
+  });
+
+  it('should return correct number of elements based on maxItems', () => {
+    res = sampleArray({items: {type: 'number'}, maxItems: 0});
+    expect(res).to.deep.equal([]);
   });
 
   it('should return correct number of elements based on minItems', () => {
@@ -18,7 +25,7 @@ describe('sampleArray', () => {
     expect(res).to.deep.equal([0, 0, 0]);
   });
 
-  it('should correcly sample tuples', () => {
+  it('should correctly sample tuples', () => {
     res = sampleArray({items: [{type: 'number'}, {type: 'string'}, {}]});
     expect(res).to.deep.equal([0, 'string', null]);
   });
