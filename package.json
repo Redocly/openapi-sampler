@@ -1,9 +1,10 @@
 {
   "name": "@stoplight/json-schema-sampler",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Tool for generation samples based on JSON Schema Draft 7",
   "main": "dist/json-schema-sampler.js",
   "module": "src/json-schema-sampler.js",
+  "types": "./src/types.d.ts",
   "scripts": {
     "test": "gulp",
     "lint": "gulp lint",
@@ -89,6 +90,7 @@
     "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {
+    "@types/json-schema": "^7.0.7",
     "json-pointer": "^0.6.1"
   }
 }
