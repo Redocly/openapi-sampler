@@ -48,7 +48,7 @@ describe('Integration', function() {
       schema = {
         'type': ['string', 'number']
       };
-      result = JSONSchemaSampler.sample(schema);
+      result = OpenAPISampler.sample(schema);
       expected = 'string';
       expect(result).to.deep.equal(expected);
     });
@@ -57,7 +57,7 @@ describe('Integration', function() {
       schema = {
         type: 'null'
       };
-      result = JSONSchemaSampler.sample(schema);
+      result = OpenAPISampler.sample(schema);
       expected = null;
       expect(result).to.deep.equal(expected);
     });
@@ -74,7 +74,7 @@ describe('Integration', function() {
       schema = {
         type: []
       };
-      result = JSONSchemaSampler.sample(schema);
+      result = OpenAPISampler.sample(schema);
       expected = null;
       expect(result).to.deep.equal(expected);
     });
@@ -455,55 +455,73 @@ describe('Integration', function() {
     });
   });
 
-  describe('oneOf and anyOf', function() {
-    it('should support oneOf', function() {
+  describe('Compound keywords', () => {
+    it('should support basic if/then/else usage', () => {
       schema = {
-        oneOf: [
-          {
-            type: 'string'
-          },
-          {
-            type: 'number'
-          }
-        ]
+        type: 'object',
+        if: {properties: {foo: {type: 'string', format: 'email'}}},
+        then: {properties: {bar: {type: 'string'}}},
+        else: {properties: {baz: {type: 'number'}}},
       };
-      result = OpenAPISampler.sample(schema);
-      expected = 'string';
-      expect(result).to.equal(expected);
-    });
 
-    it('should support anyOf', function() {
-      schema = {
-        anyOf: [
-          {
-            type: 'string'
-          },
-          {
-            type: 'number'
-          }
-        ]
-      };
       result = OpenAPISampler.sample(schema);
-      expected = 'string';
-      expect(result).to.equal(expected);
-    });
+      expected = {
+        foo: 'user@example.com',
+        bar: 'string'
+      };
+      expect(result).to.deep.equal(expected);
+    })
 
-    it('should prefer oneOf if anyOf and oneOf are on the same level ', function() {
-      schema = {
-        anyOf: [
-          {
-            type: 'string'
-          }
-        ],
-        oneOf: [
-          {
-            type: 'number'
-          }
-        ]
-      };
-      result = OpenAPISampler.sample(schema);
-      expected = 0;
-      expect(result).to.equal(expected);
+    describe('oneOf and anyOf', function () {
+      it('should support oneOf', function () {
+        schema = {
+          oneOf: [
+            {
+              type: 'string'
+            },
+            {
+              type: 'number'
+            }
+          ]
+        };
+        result = OpenAPISampler.sample(schema);
+        expected = 'string';
+        expect(result).to.equal(expected);
+      });
+
+      it('should support anyOf', function () {
+        schema = {
+          anyOf: [
+            {
+              type: 'string'
+            },
+            {
+              type: 'number'
+            }
+          ]
+        };
+        result = OpenAPISampler.sample(schema);
+        expected = 'string';
+        expect(result).to.equal(expected);
+      });
+
+      it('should prefer oneOf if anyOf and oneOf are on the same level ', function () {
+        schema = {
+          anyOf: [
+            {
+              type: 'string'
+            }
+          ],
+          oneOf: [
+            {
+              type: 'number'
+            }
+          ]
+        };
+        result = OpenAPISampler.sample(schema);
+        expected = 0;
+        expect(result).to.equal(expected);
+      });
     });
   });
 
