@@ -6,13 +6,13 @@ Tool for generation samples based on JSON Schema Draft 7.
 
 ## Features
 
-- deterministic (given a particular input, will always produce the same output)
-- Supports `allOf`
+- Deterministic (given a particular input, will always produce the same output)
+- Supports compound keywords: `allOf`, `oneOf`, `anyOf`, `if/then/else`
 - Supports `additionalProperties`
 - Uses `default`, `const`, `enum` and `examples` where possible
 - Good array support: supports `contains`, `minItems`, `maxItems`, and tuples (`items` as an array)
 - Supports `minLength`, `maxLength`, `min`, `max`, `exclusiveMinimum`, `exclusiveMaximum`
-- Supports the next `string` formats:
+- Supports the following `string` formats:
   - email
   - idn-email
   - password

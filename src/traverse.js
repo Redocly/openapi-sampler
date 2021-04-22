@@ -1,7 +1,7 @@
 import { _samplers } from './json-schema-sampler';
 import { allOfSample } from './allOf';
 import { inferType } from './infer';
-import { getResultForCircular, popSchemaStack } from './utils';
+import { getResultForCircular, mergeDeep, popSchemaStack } from './utils';
 import JsonPointer from 'json-pointer';
 
 let $refCache = {};
@@ -84,6 +84,10 @@ export function traverse(schema, options, spec, context) {
   if (schema.anyOf && schema.anyOf.length) {
     popSchemaStack(seenSchemasStack, context);
     return traverse(schema.anyOf[0], options, spec, context);
+  }
+
+  if (schema.if && schema.then) {
+    return traverse(mergeDeep(schema.if, schema.then), options, spec, context);
   }
 
   let example = null;
