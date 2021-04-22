@@ -1,5 +1,5 @@
 import { traverse } from '../traverse';
-export function sampleObject(schema, options = {}, spec, context) {
+export function sampleObject(schema, options = {}, doc, context) {
   let res = {};
   const depth = (context && context.depth || 1);
 
@@ -16,7 +16,7 @@ export function sampleObject(schema, options = {}, spec, context) {
         return;
       }
 
-      const sample = traverse(schema.properties[propertyName], options, spec, { propertyName, depth: depth + 1 });
+      const sample = traverse(schema.properties[propertyName], options, doc, { propertyName, depth: depth + 1 });
       if (options.skipReadOnly && sample.readOnly) {
         return;
       }
@@ -29,8 +29,8 @@ export function sampleObject(schema, options = {}, spec, context) {
   }
 
   if (schema && typeof schema.additionalProperties === 'object') {
-    res.property1 = traverse(schema.additionalProperties, options, spec, {depth: depth + 1 }).value;
-    res.property2 = traverse(schema.additionalProperties, options, spec, {depth: depth + 1 }).value;
+    res.property1 = traverse(schema.additionalProperties, options, doc, {depth: depth + 1 }).value;
+    res.property2 = traverse(schema.additionalProperties, options, doc, {depth: depth + 1 }).value;
   }
   return res;
 }

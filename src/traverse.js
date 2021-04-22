@@ -13,7 +13,7 @@ export function clearCache() {
   seenSchemasStack = [];
 }
 
-export function traverse(schema, options, spec, context) {
+export function traverse(schema, options, doc, context) {
   // checking circular JS references by checking context
   // because context is passed only when traversing through nested objects happens
   if (context) {
@@ -28,21 +28,18 @@ export function traverse(schema, options, spec, context) {
   }
 
   if (schema.$ref) {
-    if (!spec) {
-      throw new Error('Your schema contains $ref. You must provide full specification in the third parameter.');
-    }
     let ref = decodeURIComponent(schema.$ref);
     if (ref.startsWith('#')) {
       ref = ref.substring(1);
     }
 
-    const referenced = JsonPointer.get(spec, ref);
+    const referenced = JsonPointer.get(doc, ref);
 
     let result;
 
     if ($refCache[ref] !== true) {
       $refCache[ref] = true;
-      result = traverse(referenced, options, spec, context);
+      result = traverse(referenced, options, doc, context);
       $refCache[ref] = false;
     } else {
       const referencedType = inferType(referenced);
@@ -68,7 +65,7 @@ export function traverse(schema, options, spec, context) {
       { ...schema, allOf: undefined },
       schema.allOf,
       options,
-      spec,
+      doc,
       context,
     );
   }
@@ -78,12 +75,12 @@ export function traverse(schema, options, spec, context) {
       if (!options.quiet) console.warn('oneOf and anyOf are not supported on the same level. Skipping anyOf');
     }
     popSchemaStack(seenSchemasStack, context);
-    return traverse(schema.oneOf[0], options, spec, context);
+    return traverse(schema.oneOf[0], options, doc, context);
   }
 
   if (schema.anyOf && schema.anyOf.length) {
     popSchemaStack(seenSchemasStack, context);
-    return traverse(schema.anyOf[0], options, spec, context);
+    return traverse(schema.anyOf[0], options, doc, context);
   }
 
   if (schema.if && schema.then) {
@@ -110,7 +107,7 @@ export function traverse(schema, options, spec, context) {
     }
     let sampler = _samplers[type];
     if (sampler) {
-      example = sampler(schema, options, spec, context);
+      example = sampler(schema, options, doc, context);
     }
   }
 

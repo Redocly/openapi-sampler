@@ -1,5 +1,5 @@
 import { traverse } from '../traverse';
-export function sampleArray(schema, options = {}, spec, context) {
+export function sampleArray(schema, options = {}, doc, context) {
   const depth = (context && context.depth || 1);
 
   let arrayLength = Math.min(schema.maxItems ?? Infinity, schema.minItems || 1);
@@ -21,7 +21,7 @@ export function sampleArray(schema, options = {}, spec, context) {
 
   for (let i = 0; i < arrayLength; i++) {
     let itemSchema = itemSchemaGetter(i);
-    let { value: sample } = traverse(itemSchema, options, spec, {depth: depth + 1});
+    let { value: sample } = traverse(itemSchema, options, doc, {depth: depth + 1});
     res.push(sample);
   }
   return res;

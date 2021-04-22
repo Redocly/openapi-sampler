@@ -527,10 +527,12 @@ describe('Integration', function() {
 
   describe('$refs', function() {
     it('should follow $ref', function() {
-      schema = {
-        $ref: '#/defs/Schema'
-      };
-      const spec = {
+      const schema = {
+        properties: {
+          test: {
+            $ref: '#/defs/Schema'
+          }
+        },
         defs: {
           Schema: {
             type: 'object',
@@ -542,9 +544,11 @@ describe('Integration', function() {
           }
         }
       };
-      result = JSONSchemaSampler.sample(schema, {}, spec);
+      result = JSONSchemaSampler.sample(schema, {});
       expected = {
-        a: 'string'
+        test: {
+          a: 'string'
+        }
       };
       expect(result).to.deep.equal(expected);
     });
@@ -612,7 +616,7 @@ describe('Integration', function() {
       };
 
       expect(() => JSONSchemaSampler.sample(schema)).to
-        .throw(/You must provide full specification in the third parameter/);
+        .throw(/Invalid reference token: defs/);
     });
 
     it('should ignore readOnly params if referenced', function() {
