@@ -1,6 +1,6 @@
 {
   "name": "@stoplight/json-schema-sampler",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Tool for generation samples based on JSON Schema Draft 7",
   "main": "dist/json-schema-sampler.js",
   "module": "src/json-schema-sampler.js",

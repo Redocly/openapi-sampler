@@ -2,7 +2,7 @@ import { traverse } from '../traverse';
 export function sampleArray(schema, options = {}, doc, context) {
   const depth = (context && context.depth || 1);
 
-  let arrayLength = Math.min(schema.maxItems ?? Infinity, schema.minItems || 1);
+  let arrayLength = Math.min('maxItems' in schema ? schema.maxItems : Infinity, schema.minItems || 1);
   // for the sake of simplicity, we're treating `contains` in a similar way to `items`
   const items = schema.items || schema.contains;
   if (Array.isArray(items)) {

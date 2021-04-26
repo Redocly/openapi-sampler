@@ -84,7 +84,7 @@ export function traverse(schema, options, doc, context) {
   }
 
   if (schema.if && schema.then) {
-    return traverse(mergeDeep(schema.if, schema.then), options, spec, context);
+    return traverse(mergeDeep(schema.if, schema.then), options, doc, context);
   }
 
   let example = null;
