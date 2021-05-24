@@ -1,7 +1,7 @@
 import { _samplers } from './openapi-sampler';
 import { allOfSample } from './allOf';
 import { inferType } from './infer';
-import { getResultForCircular, popSchemaStack } from './utils';
+import { getResultForCircular, mergeDeep, popSchemaStack } from './utils';
 import JsonPointer from 'json-pointer';
 
 let $refCache = {};
@@ -28,9 +28,6 @@ export function traverse(schema, options, spec, context) {
   }
 
   if (schema.$ref) {
-    if (!spec) {
-      throw new Error('Your schema contains $ref. You must provide full specification in the third parameter.');
-    }
     let ref = decodeURIComponent(schema.$ref);
     if (ref.startsWith('#')) {
       ref = ref.substring(1);
@@ -86,6 +83,10 @@ export function traverse(schema, options, spec, context) {
     return traverse(schema.anyOf[0], options, spec, context);
   }
 
+  if (schema.if && schema.then) {
+    return traverse(mergeDeep(schema.if, schema.then), options, spec, context);
+  }
+
   let example = null;
   let type = null;
   if (schema.default !== undefined) {
@@ -98,6 +99,9 @@ export function traverse(schema, options, spec, context) {
     example = schema.examples[0];
   } else {
     type = schema.type;
+    if (Array.isArray(type) && schema.type.length > 0) {
+      type = schema.type[0];
+    }
     if (!type) {
       type = inferType(schema);
     }
