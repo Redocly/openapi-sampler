@@ -44,8 +44,35 @@ describe('Integration', function() {
       expect(result).to.deep.equal(expected);
     });
 
+    it('should support type array', function() {
+      schema = {
+        'type': ['string', 'number']
+      };
+      result = OpenAPISampler.sample(schema);
+      expected = 'string';
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('should use null for null', function() {
+      schema = {
+        type: 'null'
+      };
+      result = OpenAPISampler.sample(schema);
+      expected = null;
+      expect(result).to.deep.equal(expected);
+    });
+
     it('should use null if type is not specified', function() {
       schema = {
+      };
+      result = OpenAPISampler.sample(schema);
+      expected = null;
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('should use null if type array is empty', function() {
+      schema = {
+        type: []
       };
       result = OpenAPISampler.sample(schema);
       expected = null;
@@ -428,64 +455,84 @@ describe('Integration', function() {
     });
   });
 
-  describe('oneOf and anyOf', function() {
-    it('should support oneOf', function() {
+  describe('Compound keywords', () => {
+    it('should support basic if/then/else usage', () => {
       schema = {
-        oneOf: [
-          {
-            type: 'string'
-          },
-          {
-            type: 'number'
-          }
-        ]
+        type: 'object',
+        if: {properties: {foo: {type: 'string', format: 'email'}}},
+        then: {properties: {bar: {type: 'string'}}},
+        else: {properties: {baz: {type: 'number'}}},
       };
-      result = OpenAPISampler.sample(schema);
-      expected = 'string';
-      expect(result).to.equal(expected);
-    });
 
-    it('should support anyOf', function() {
-      schema = {
-        anyOf: [
-          {
-            type: 'string'
-          },
-          {
-            type: 'number'
-          }
-        ]
-      };
       result = OpenAPISampler.sample(schema);
-      expected = 'string';
-      expect(result).to.equal(expected);
-    });
+      expected = {
+        foo: 'user@example.com',
+        bar: 'string'
+      };
+      expect(result).to.deep.equal(expected);
+    })
 
-    it('should prefer oneOf if anyOf and oneOf are on the same level ', function() {
-      schema = {
-        anyOf: [
-          {
-            type: 'string'
-          }
-        ],
-        oneOf: [
-          {
-            type: 'number'
-          }
-        ]
-      };
-      result = OpenAPISampler.sample(schema);
-      expected = 0;
-      expect(result).to.equal(expected);
+    describe('oneOf and anyOf', function () {
+      it('should support oneOf', function () {
+        schema = {
+          oneOf: [
+            {
+              type: 'string'
+            },
+            {
+              type: 'number'
+            }
+          ]
+        };
+        result = OpenAPISampler.sample(schema);
+        expected = 'string';
+        expect(result).to.equal(expected);
+      });
+
+      it('should support anyOf', function () {
+        schema = {
+          anyOf: [
+            {
+              type: 'string'
+            },
+            {
+              type: 'number'
+            }
+          ]
+        };
+        result = OpenAPISampler.sample(schema);
+        expected = 'string';
+        expect(result).to.equal(expected);
+      });
+
+      it('should prefer oneOf if anyOf and oneOf are on the same level ', function () {
+        schema = {
+          anyOf: [
+            {
+              type: 'string'
+            }
+          ],
+          oneOf: [
+            {
+              type: 'number'
+            }
+          ]
+        };
+        result = OpenAPISampler.sample(schema);
+        expected = 0;
+        expect(result).to.equal(expected);
+      });
     });
   });
 
   describe('$refs', function() {
     it('should follow $ref', function() {
-      schema = {
-        $ref: '#/defs/Schema'
-      };
-      const spec = {
+      const schema = {
+        properties: {
+          test: {
+            $ref: '#/defs/Schema'
+          }
+        },
         defs: {
           Schema: {
             type: 'object',
@@ -497,9 +544,11 @@ describe('Integration', function() {
           }
         }
       };
-      result = OpenAPISampler.sample(schema, {}, spec);
+      result = OpenAPISampler.sample(schema, {});
       expected = {
-        a: 'string'
+        test: {
+          a: 'string'
+        }
       };
       expect(result).to.deep.equal(expected);
     });
@@ -567,7 +616,7 @@ describe('Integration', function() {
       };
 
       expect(() => OpenAPISampler.sample(schema)).to
-        .throw(/You must provide full specification in the third parameter/);
+        .throw(/Invalid reference token: defs/);
     });
 
     it('should ignore readOnly params if referenced', function() {

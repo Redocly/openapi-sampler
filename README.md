@@ -5,22 +5,33 @@
 Tool for generation samples based on OpenAPI payload/response schema
 
 ## Features
-- deterministic (given a particular input, will always produce the same output)
-- Supports `allOf`
+
+- Deterministic (given a particular input, will always produce the same output)
+- Supports compound keywords: `allOf`, `oneOf`, `anyOf`, `if/then/else`
 - Supports `additionalProperties`
 - Uses `default`, `const`, `enum` and `examples` where possible
-- Full array support: supports `minItems`, and tuples (`items` as an array)
+- Good array support: supports `contains`, `minItems`, `maxItems`, and tuples (`items` as an array)
 - Supports `minLength`, `maxLength`, `min`, `max`, `exclusiveMinimum`, `exclusiveMaximum`
-- Supports the next `string` formats:
+- Supports the following `string` formats:
   - email
+  - idn-email
   - password
   - date-time
   - date
+  - time
   - ipv4
   - ipv6
   - hostname
+  - idn-hostname
   - uri
+  - uri-reference
+  - uri-template
+  - iri
+  - iri-reference
   - uuid
+  - json-pointer
+  - relative-json-pointer
+  - regex
 - Infers schema type automatically following same rules as [json-schema-faker](https://www.npmjs.com/package/json-schema-faker#inferred-types)
 - Support for `$ref` resolving
 

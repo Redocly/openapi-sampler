@@ -1,5 +1,14 @@
 import { sampleString } from '../../src/samplers/string.js';
 
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
+
+const ajv = new Ajv({ allErrors: true, messages: true, strict: true });
+
+addFormats(ajv);
+
+require('it-each')();
+
 const IPV4_REGEXP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 const IPV6_REGEXP = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/;
 const HOSTNAME_REGEXP = /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/;
@@ -74,6 +83,21 @@ describe('sampleString', () => {
     expect(res).to.equal('2019-08-24T14:15:22Z')
   });
 
+  it('should return deterministic time string for format date-time', () => {
+    res = sampleString({format: 'time'});
+    expect(res).to.equal('14:15:22Z');
+  });
+
+  it('should not throw if incorrect maxLength applied to time', () => {
+    res = sampleString({format: 'time', maxLength: 5});
+    expect(res).to.equal('14:15:22Z')
+  });
+
+  it('should not throw if incorrect minLength applied to time', () => {
+    res = sampleString({format: 'time', minLength: 100});
+    expect(res).to.equal('14:15:22Z')
+  });
+
   it('should return ip for ipv4 format', () => {
     res = sampleString({format: 'ipv4'});
     expect(res).to.match(IPV4_REGEXP);
@@ -104,5 +128,30 @@ describe('sampleString', () => {
     res = sampleString({format: 'uuid'}, null, null, {propertyName: 'fooId'});
     expect(res).to.match(UUID_REGEXP);
     expect(res).to.equal('fb4274c7-4fcd-4035-8958-a680548957ff');
+  });
+
+  it.each([
+    'email',
+    // 'idn-email', // unsupported by ajv-formats
+    // 'password', // unsupported by ajv-formats
+    'date-time',
+    'date',
+    'time',
+    'ipv4',
+    'ipv6',
+    'hostname',
+    // 'idn-hostname', // unsupported by ajv-formats
+    'uri',
+    'uri-reference',
+    'uri-template',
+    // 'iri', // unsupported by ajv-formats
+    // 'iri-reference', // unsupported by ajv-formats
+    'uuid',
+    'json-pointer',
+    'relative-json-pointer',
+    'regex'
+  ], 'should return valid %s', format => {
+    const schema = {type: 'string',format};
+    expect(ajv.compile(schema)(sampleString(schema))).to.be.true;
   });
 });
