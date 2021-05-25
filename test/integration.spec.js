@@ -527,24 +527,27 @@ describe('Integration', function() {
 
   describe('$refs', function() {
     it('should follow $ref', function() {
-      schema = {
-        $ref: '#/defs/Schema'
+      const schema = {
+        properties: {
+          test: {
+            $ref: '#/defs/Schema'
+          }
+        },
       };
-      const spec = {
-        defs: {
-          Schema: {
-            type: 'object',
-            properties: {
-              a: {
-                type: 'string'
-              }
+      result = OpenAPISampler.sample(schema, {}, { defs: {
+        Schema: {
+          type: 'object',
+          properties: {
+            a: {
+              type: 'string'
             }
           }
         }
-      };
-      result = OpenAPISampler.sample(schema, {}, spec);
+      }});
       expected = {
-        a: 'string'
+        test: {
+          a: 'string'
+        }
       };
       expect(result).to.deep.equal(expected);
     });
@@ -612,7 +615,7 @@ describe('Integration', function() {
       };
 
       expect(() => OpenAPISampler.sample(schema)).to
-        .throw(/You must provide full specification in the third parameter/);
+      .throw(/You must provide full specification in the third parameter/);
     });
 
     it('should ignore readOnly params if referenced', function() {

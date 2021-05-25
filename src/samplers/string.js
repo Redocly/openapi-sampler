@@ -7,11 +7,9 @@ const passwordSymbols = 'qwerty!@#$%^123456';
 function emailSample() {
   return 'user@example.com';
 }
-
 function idnEmailSample() {
-  return 'пользователь@пример.ру';
+  return 'пошта@укр.нет';
 }
-
 function passwordSample(min, max) {
   let res = 'pa$$word';
   if (min > res.length) {
@@ -63,11 +61,9 @@ function ipv6Sample() {
 function hostnameSample() {
   return 'example.com';
 }
-
 function idnHostnameSample() {
-  return 'пример.ру';
+  return 'приклад.укр';
 }
-
 function uriSample() {
   return 'http://example.com';
 }
@@ -81,11 +77,11 @@ function uriTemplateSample() {
 }
 
 function iriSample() {
-  return 'http://пример.ру';
+  return 'http://example.com';
 }
 
 function iriReferenceSample() {
-  return '../словарь';
+  return '../словник';
 }
 
 function uuidSample(_min, _max, propertyName) {
