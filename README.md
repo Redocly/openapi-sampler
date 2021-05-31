@@ -34,6 +34,7 @@ Tool for generation samples based on OpenAPI payload/response schema
   - regex
 - Infers schema type automatically following same rules as [json-schema-faker](https://www.npmjs.com/package/json-schema-faker#inferred-types)
 - Support for `$ref` resolving
+- Has basic supports for JSON Schema draft 7 (thanks to @P0lip from @stoplightio for contributing)
 
 ## Installation
 
