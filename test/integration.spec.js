@@ -524,7 +524,7 @@ describe('Integration', function() {
       });
     });
 
-    describe.only('inferring type from root schema', function() {
+    describe('inferring type from root schema', function() {
       const basicSchema = {
         oneOf: [
           {

@@ -27,7 +27,7 @@ function inferExample(schema) {
   return example;
 }
 
-function createResultFromRoot(schema) {
+function tryInferExample(schema) {
   const example = inferExample(schema);
   // case when we don't infer example from schema but take from `const`, `examples`, `default` or `enum` keywords
   if (example !== undefined) {
@@ -91,7 +91,7 @@ export function traverse(schema, options, spec, context) {
 
   if (schema.allOf !== undefined) {
     popSchemaStack(seenSchemasStack, context);
-    return createResultFromRoot(schema) || allOfSample(
+    return tryInferExample(schema) || allOfSample(
       { ...schema, allOf: undefined },
       schema.allOf,
       options,
@@ -105,17 +105,17 @@ export function traverse(schema, options, spec, context) {
       if (!options.quiet) console.warn('oneOf and anyOf are not supported on the same level. Skipping anyOf');
     }
     popSchemaStack(seenSchemasStack, context);
-    return createResultFromRoot(schema) || traverse(schema.oneOf[0], options, spec, context);
+    return tryInferExample(schema) || traverse(schema.oneOf[0], options, spec, context);
   }
 
   if (schema.anyOf && schema.anyOf.length) {
     popSchemaStack(seenSchemasStack, context);
-    return createResultFromRoot(schema) || traverse(schema.anyOf[0], options, spec, context);
+    return tryInferExample(schema) || traverse(schema.anyOf[0], options, spec, context);
   }
 
   if (schema.if && schema.then) {
     popSchemaStack(seenSchemasStack, context);
-    return createResultFromRoot(schema) || traverse(mergeDeep(schema.if, schema.then), options, spec, context);
+    return tryInferExample(schema) || traverse(mergeDeep(schema.if, schema.then), options, spec, context);
   }
 
   let example = inferExample(schema);
