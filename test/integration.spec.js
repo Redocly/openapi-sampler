@@ -505,7 +505,7 @@ describe('Integration', function() {
         expect(result).to.equal(expected);
       });
 
-      it('should prefer oneOf if anyOf and oneOf are on the same level ', function () {
+      it('should prefer oneOf if anyOf and oneOf are on the same level', function () {
         schema = {
           anyOf: [
             {
@@ -520,6 +520,122 @@ describe('Integration', function() {
         };
         result = OpenAPISampler.sample(schema);
         expected = 0;
+        expect(result).to.equal(expected);
+      });
+    });
+
+    describe.only('inferring type from root schema', function() {
+      const basicSchema = {
+        oneOf: [
+          {
+            type: 'string'
+          },
+          {
+            type: 'number'
+          }
+        ],
+        anyOf: [
+          {
+            type: 'string'
+          },
+          {
+            type: 'number'
+          }
+        ],
+        allOf: [
+          {
+            type: 'object',
+            properties: {
+              title: {
+                type: 'string'
+              }
+            }
+          },
+          {
+            type: 'object',
+            properties: {
+              amount: {
+                type: 'number',
+                default: 1
+              }
+            }
+          }
+        ],
+        if: {properties: {foo: {type: 'string', format: 'email'}}},
+        then: {properties: {bar: {type: 'string'}}},
+        else: {properties: {baz: {type: 'number'}}},
+      };
+
+      it('should infer example from root schema which has defined const keyword', function() {
+        schema = {
+          ...basicSchema,
+          const: 'foobar'
+        };
+        result = OpenAPISampler.sample(schema);
+        expected = 'foobar';
+        expect(result).to.equal(expected);
+      });
+
+      it('should infer example from root schema which has defined examples keyword', function() {
+        schema = {
+          ...basicSchema,
+          examples: ['foobar']
+        };
+        result = OpenAPISampler.sample(schema);
+        expected = 'foobar';
+        expect(result).to.equal(expected);
+      });
+
+      it('should infer example from root schema which has defined default keyword', function() {
+        schema = {
+          ...basicSchema,
+          const: 'foobar'
+        };
+        result = OpenAPISampler.sample(schema);
+        expected = 'foobar';
+        expect(result).to.equal(expected);
+      });
+
+      it('should infer example from root schema which has defined enum keyword', function() {
+        schema = {
+          ...basicSchema,
+          enum: ['foobar']
+        };
+        result = OpenAPISampler.sample(schema);
+        expected = 'foobar';
+        expect(result).to.equal(expected);
+      });
+
+      it('should infer example from root schema which has defined const and examples keyword (const has higher priority)', function() {
+        schema = {
+          ...basicSchema,
+          const: 'foobar',
+          examples: ['barfoo']
+        };
+        result = OpenAPISampler.sample(schema);
+        expected = 'foobar';
+        expect(result).to.equal(expected);
+      });
+
+      it('should infer example from root schema which has defined examples and enum keyword (examples have higher priority)', function() {
+        schema = {
+          ...basicSchema,
+          enum: ['barfoo'],
+          examples: ['foobar']
+        };
+        result = OpenAPISampler.sample(schema);
+        expected = 'foobar';
+        expect(result).to.equal(expected);
+      });
+
+      it('should infer example from root schema which has defined enum and default keyword (enum have higher priority)', function() {
+        schema = {
+          ...basicSchema,
+          default: 'barfoo',
+          enum: ['foobar']
+        };
+        result = OpenAPISampler.sample(schema);
+        expected = 'foobar';
         expect(result).to.equal(expected);
       });
     });
@@ -653,7 +769,6 @@ describe('Integration', function() {
   });
 
   describe('circular references in JS object', function() {
-
     let result, schema, expected;
 
     it('should not follow circular references in JS object', function() {
