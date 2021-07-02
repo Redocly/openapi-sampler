@@ -13,6 +13,34 @@ export function clearCache() {
   seenSchemasStack = [];
 }
 
+function inferExample(schema) {
+  let example;
+  if (schema.const !== undefined) {
+    example = schema.const;
+  } else if (schema.examples !== undefined && schema.examples.length) {
+    example = schema.examples[0];
+  } else if (schema.enum !== undefined && schema.enum.length) {
+    example = schema.enum[0];
+  } else if (schema.default !== undefined) {
+    example = schema.default;
+  }
+  return example;
+}
+
+function tryInferExample(schema) {
+  const example = inferExample(schema);
+  // case when we don't infer example from schema but take from `const`, `examples`, `default` or `enum` keywords
+  if (example !== undefined) {
+    return {
+      value: example,
+      readOnly: schema.readOnly,
+      writeOnly: schema.writeOnly,
+      type: null,
+    };
+  }
+  return;
+}
+
 export function traverse(schema, options, spec, context) {
   // checking circular JS references by checking context
   // because context is passed only when traversing through nested objects happens
@@ -37,7 +65,6 @@ export function traverse(schema, options, spec, context) {
     }
 
     const referenced = JsonPointer.get(spec, ref);
-
     let result;
 
     if ($refCache[ref] !== true) {
@@ -64,7 +91,7 @@ export function traverse(schema, options, spec, context) {
 
   if (schema.allOf !== undefined) {
     popSchemaStack(seenSchemasStack, context);
-    return allOfSample(
+    return tryInferExample(schema) || allOfSample(
       { ...schema, allOf: undefined },
       schema.allOf,
       options,
@@ -78,29 +105,23 @@ export function traverse(schema, options, spec, context) {
       if (!options.quiet) console.warn('oneOf and anyOf are not supported on the same level. Skipping anyOf');
     }
     popSchemaStack(seenSchemasStack, context);
-    return traverse(schema.oneOf[0], options, spec, context);
+    return tryInferExample(schema) || traverse(schema.oneOf[0], options, spec, context);
   }
 
   if (schema.anyOf && schema.anyOf.length) {
     popSchemaStack(seenSchemasStack, context);
-    return traverse(schema.anyOf[0], options, spec, context);
+    return tryInferExample(schema) || traverse(schema.anyOf[0], options, spec, context);
   }
 
   if (schema.if && schema.then) {
-    return traverse(mergeDeep(schema.if, schema.then), options, spec, context);
+    popSchemaStack(seenSchemasStack, context);
+    return tryInferExample(schema) || traverse(mergeDeep(schema.if, schema.then), options, spec, context);
   }
 
-  let example = null;
+  let example = inferExample(schema);
   let type = null;
-  if (schema.default !== undefined) {
-    example = schema.default;
-  } else if (schema.const !== undefined) {
-    example = schema.const;
-  } else if (schema.enum !== undefined && schema.enum.length) {
-    example = schema.enum[0];
-  } else if (schema.examples !== undefined && schema.examples.length) {
-    example = schema.examples[0];
-  } else {
+  if (example === undefined) {
+    example = null;
     type = schema.type;
     if (Array.isArray(type) && schema.type.length > 0) {
       type = schema.type[0];

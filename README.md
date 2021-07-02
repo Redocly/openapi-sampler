@@ -9,7 +9,7 @@ Tool for generation samples based on OpenAPI payload/response schema
 - Deterministic (given a particular input, will always produce the same output)
 - Supports compound keywords: `allOf`, `oneOf`, `anyOf`, `if/then/else`
 - Supports `additionalProperties`
-- Uses `default`, `const`, `enum` and `examples` where possible
+- Uses `const`, `examples`, `enum` and `default` where possible - in this order
 - Good array support: supports `contains`, `minItems`, `maxItems`, and tuples (`items` as an array)
 - Supports `minLength`, `maxLength`, `min`, `max`, `exclusiveMinimum`, `exclusiveMaximum`
 - Supports the following `string` formats:
