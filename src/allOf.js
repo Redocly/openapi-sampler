@@ -18,7 +18,8 @@ export function allOfSample(into, children, options, spec, context) {
   }
 
   if (res.type === 'object') {
-    res.value = mergeDeep(res.value || {}, ...subSamples.filter(sample => typeof sample === 'object'));
+    // Root schema should take precedent of inner schemas from `allOf`.
+    res.value = mergeDeep(...subSamples.filter(sample => typeof sample === 'object'), res.value || {});
     return res;
   } else {
     if (res.type === 'array') {

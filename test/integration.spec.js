@@ -392,6 +392,37 @@ describe('Integration', function() {
 
       expect(result).to.deep.equal(expected);
     });
+
+    it('should merge but root schema takes precedent', function() {
+      schema = {
+        type: 'object',
+        properties: {
+          key: {
+            type: 'string',
+            enum: ['foo', 'bar']
+          }
+        },
+        allOf: [
+          {
+            properties: {
+              key: {
+                type: 'string',
+                format: 'uri',
+              },
+              key2: {
+                type: 'string',
+                format: 'uri',
+              },
+            },
+          },
+        ],
+      };
+      result = OpenAPISampler.sample(schema);
+      expect(result).to.deep.equal({
+        key: 'foo',
+        key2: 'http://example.com',
+      });
+    });
   });
 
   describe('Example', function() {
