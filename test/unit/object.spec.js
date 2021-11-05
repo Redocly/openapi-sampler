@@ -44,6 +44,42 @@ describe('sampleObject', () => {
     });
   });
 
+  it('should skip readonly properties in oneOfs if skipReadOnly=true', () => {
+    res = sampleObject(
+      {
+        properties: {
+          a: { type: 'string' },
+          b: {
+            type: 'object',
+            oneOf: [
+              {
+                type: 'object',
+                properties: {
+                  c: {
+                    type: 'string',
+                  },
+                },
+              },
+              {
+                type: 'object',
+                properties: {
+                  d: {
+                    type: 'string',
+                  },
+                },
+              },
+            ],
+            readOnly: true,
+          },
+        },
+      },
+      { skipReadOnly: true }
+    );
+    expect(res).to.deep.equal({
+      a: 'string',
+    });
+  });
+
   it('should skip writeonly properties if writeonly=true', () => {
     res = sampleObject({properties: {
       a: {type: 'string'},
@@ -69,6 +105,42 @@ describe('sampleObject', () => {
       }
     });
   });
+
+   it('should skip writeonly properties in oneOfs if skipReadOnly=true', () => {
+     res = sampleObject(
+       {
+         properties: {
+           a: { type: 'string' },
+           b: {
+             type: 'object',
+             oneOf: [
+               {
+                 type: 'object',
+                 properties: {
+                   c: {
+                     type: 'string',
+                   },
+                 },
+               },
+               {
+                 type: 'object',
+                 properties: {
+                   d: {
+                     type: 'string',
+                   },
+                 },
+               },
+             ],
+             writeOnly: true,
+           },
+         },
+       },
+       { skipWriteOnly: true }
+     );
+     expect(res).to.deep.equal({
+       a: 'string',
+     });
+   });
 
   it('should should instantiate 2 additionalProperties', () => {
     res = sampleObject({additionalProperties: {type: 'string'}});

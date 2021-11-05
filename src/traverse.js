@@ -105,7 +105,16 @@ export function traverse(schema, options, spec, context) {
       if (!options.quiet) console.warn('oneOf and anyOf are not supported on the same level. Skipping anyOf');
     }
     popSchemaStack(seenSchemasStack, context);
-    return tryInferExample(schema) || traverse(schema.oneOf[0], options, spec, context);
+
+    // Make sure to pass down readOnly and writeOnly annotations from the parent
+    const firstOneOf = Object.assign({
+      readOnly: schema.readOnly,
+      writeOnly: schema.writeOnly
+    }, schema.oneOf[0]);
+
+    return (
+      tryInferExample(schema) || traverse(firstOneOf, options, spec, context)
+    );
   }
 
   if (schema.anyOf && schema.anyOf.length) {
