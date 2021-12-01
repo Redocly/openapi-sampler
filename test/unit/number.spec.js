@@ -57,26 +57,30 @@ describe('sampleNumber', () => {
     expect(res).to.equal(-4);
   });
 
-    // (2, 3) -> 2.5
-    it('should return middle point if boundary integer is not possible for draft v7', () => {
-      res = sampleNumber({exclusiveMinimum: 2, exclusiveMaximum: 3});
-      expect(res).to.equal(2.5);
-    });
+  // (2, 3) -> 2.5
+  it('should return middle point if boundary integer is not possible for draft v7', () => {
+    res = sampleNumber({exclusiveMinimum: 2, exclusiveMaximum: 3});
+    expect(res).to.equal(2.5);
+  });
 
-    // [2, 3] -> 2
-    // (8, 13) -> 9
-    it('should return closer to minimum possible int for draft v7', () => {
-      res = sampleNumber({minimum: 2, maximum: 3});
-      expect(res).to.equal(2);
-      res = sampleNumber({exclusiveMinimum: 8, exclusiveMaximum: 13});
-      expect(res).to.equal(9);
-    });
+  // [2, 3] -> 2
+  // (8, 13) -> 9
+  it('should return closer to minimum possible int for draft v7', () => {
+    res = sampleNumber({minimum: 2, maximum: 3});
+    expect(res).to.equal(2);
+    res = sampleNumber({exclusiveMinimum: 8, exclusiveMaximum: 13});
+    expect(res).to.equal(9);
+  });
 
-    it('should return closer to minimum possible int for draft v7', () => {
-      res = sampleNumber({minimum: 2, maximum: 3});
-      expect(res).to.equal(2);
-      res = sampleNumber({exclusiveMinimum: 8, exclusiveMaximum: 13});
-      expect(res).to.equal(9);
-    });
+  it('should return closer to minimum possible int for draft v7', () => {
+    res = sampleNumber({minimum: 2, maximum: 3});
+    expect(res).to.equal(2);
+    res = sampleNumber({exclusiveMinimum: 8, exclusiveMaximum: 13});
+    expect(res).to.equal(9);
+  });
 
+  it('should return null if it is omissible', () => {
+    res = sampleNumber({}, { omissible: true });
+    expect(res).to.be.null;
+  });
 });

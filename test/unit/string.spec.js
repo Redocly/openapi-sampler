@@ -130,6 +130,11 @@ describe('sampleString', () => {
     expect(res).to.equal('fb4274c7-4fcd-4035-8958-a680548957ff');
   });
 
+  it('should return null if it is omissible', () => {
+    res = sampleString({}, { omissible: true });
+    expect(res).to.be.null;
+  });
+
   it.each([
     'email',
     // 'idn-email', // unsupported by ajv-formats

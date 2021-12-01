@@ -432,6 +432,62 @@ describe('Integration', function() {
       expected = 'test1';
       expect(result).to.equal(expected);
     });
+
+    it('should skip non-required properties without example if disableNonRequiredAutoGen=true', () => {
+      var obj = {
+        withExample: 'Example',
+        withExampleArray: [3],
+      };
+      schema = {
+        type: 'object',
+        properties: {
+          withoutExampleString: {
+            type: 'string'
+          },
+          withoutExampleNumber: {
+            type: 'number'
+          },
+          withoutExampleBoolean: {
+            type: 'boolean'
+          },
+          withoutExampleObject: {
+            type: 'object',
+          },
+          withoutExampleArray: {
+            type: 'array',
+            items: { type: 'string'}
+          },
+          withExample: {
+            type: 'string',
+            example: 'Example'
+          },
+          withExampleArray: {
+            type: 'array',
+            items: { type: 'number', default: 3 }
+          }
+        },
+        additionalProperties: {
+          type: 'number'
+        }
+      };
+      result = OpenAPISampler.sample(schema, { disableNonRequiredAutoGen: true });
+      expected = obj;
+      expect(result).to.deep.equal(obj);
+    });
+
+    it('should return empty object if disableNonRequiredAutoGen=true and no explicit example', () => {
+      var obj = {};
+      schema = {
+        type: 'object',
+        properties: {
+          withoutExampleString: { type: 'string' },
+        }
+      };
+      result = OpenAPISampler.sample(schema, { disableNonRequiredAutoGen: true });
+      expected = obj;
+      expect(result).to.deep.equal(obj);
+    });
+
   });
 
   describe('Detection', function() {

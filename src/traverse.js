@@ -13,13 +13,13 @@ export function clearCache() {
   seenSchemasStack = [];
 }
 
-function inferExample(schema) {
+function inferExample(schema, omissible=false) {
   let example;
   if (schema.const !== undefined) {
     example = schema.const;
   } else if (schema.examples !== undefined && schema.examples.length) {
     example = schema.examples[0];
-  } else if (schema.enum !== undefined && schema.enum.length) {
+  } else if (schema.enum !== undefined && schema.enum.length && !omissible) {
     example = schema.enum[0];
   } else if (schema.default !== undefined) {
     example = schema.default;
@@ -127,7 +127,7 @@ export function traverse(schema, options, spec, context) {
     return tryInferExample(schema) || traverse(mergeDeep(schema.if, schema.then), options, spec, context);
   }
 
-  let example = inferExample(schema);
+  let example = inferExample(schema, options.omissible);
   let type = null;
   if (example === undefined) {
     example = null;
