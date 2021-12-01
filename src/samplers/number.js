@@ -1,4 +1,7 @@
-export function sampleNumber(schema) {
+export function sampleNumber(schema, options={}) {
+  if (options.omissible) {
+    return null;
+  }
   let res = 0;
   if (typeof schema.exclusiveMinimum === 'boolean' || typeof schema.exclusiveMaximum === 'boolean') { //legacy support for jsonschema draft 4 of exclusiveMaximum/exclusiveMinimum as booleans 
     if (schema.maximum && schema.minimum) {

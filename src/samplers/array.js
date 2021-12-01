@@ -9,7 +9,7 @@ export function sampleArray(schema, options = {}, spec, context) {
     arrayLength = Math.max(arrayLength, items.length);
   }
 
-  let itemSchemaGetter = itemNumber => {
+  const itemSchemaGetter = itemNumber => {
     if (Array.isArray(schema.items)) {
       return items[itemNumber] || {};
     }
@@ -20,9 +20,13 @@ export function sampleArray(schema, options = {}, spec, context) {
   if (!items) return res;
 
   for (let i = 0; i < arrayLength; i++) {
-    let itemSchema = itemSchemaGetter(i);
-    let { value: sample } = traverse(itemSchema, options, spec, {depth: depth + 1});
+    let { value: sample } = traverse(itemSchemaGetter(i), options, spec, {depth: depth + 1});
     res.push(sample);
   }
-  return res;
+
+  if (!options.omissible || res.some(item => item !== null)) {
+    return res;
+  }
+
+  return null;
 }
