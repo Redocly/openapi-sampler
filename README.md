@@ -8,7 +8,7 @@ Tool for generation samples based on OpenAPI payload/response schema
 
 - Deterministic (given a particular input, will always produce the same output)
 - Supports compound keywords: `allOf`, `oneOf`, `anyOf`, `if/then/else`
-- Supports `additionalProperties`
+- Supports `additionalProperties` with [`x-additionalPropertiesName`](https://github.com/Redocly/redoc/blob/master/docs/redoc-vendor-extensions.md#x-additionalpropertiesname)
 - Uses `const`, `examples`, `enum` and `default` where possible - in this order
 - Good array support: supports `contains`, `minItems`, `maxItems`, and tuples (`items` as an array)
 - Supports `minLength`, `maxLength`, `min`, `max`, `exclusiveMinimum`, `exclusiveMaximum`

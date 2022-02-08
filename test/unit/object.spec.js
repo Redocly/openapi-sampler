@@ -150,6 +150,14 @@ describe('sampleObject', () => {
     });
   });
 
+  it('should use custom property name when x-additionalPropertiesName is defined', () => {
+    res = sampleObject({additionalProperties: {type: 'string', 'x-additionalPropertiesName': 'attribute-name'}});
+    expect(res).to.deep.equal({
+      'attribute-name1': 'string',
+      'attribute-name2': 'string'
+    });
+  });
+
   it('should skip non-required properties if skipNonRequired=true', () => {
     res = sampleObject({
       properties: {
