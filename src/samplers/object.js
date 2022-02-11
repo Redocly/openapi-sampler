@@ -29,8 +29,9 @@ export function sampleObject(schema, options = {}, spec, context) {
   }
 
   if (schema && typeof schema.additionalProperties === 'object') {
-    res.property1 = traverse(schema.additionalProperties, options, spec, {depth: depth + 1 }).value;
-    res.property2 = traverse(schema.additionalProperties, options, spec, {depth: depth + 1 }).value;
+    const propertyName = schema.additionalProperties['x-additionalPropertiesName'] || 'property';
+    res[`${String(propertyName)}1`] = traverse(schema.additionalProperties, options, spec, {depth: depth + 1 }).value;
+    res[`${String(propertyName)}2`] = traverse(schema.additionalProperties, options, spec, {depth: depth + 1 }).value;
   }
   return res;
 }
