@@ -88,6 +88,6 @@
   },
   "dependencies": {
     "@types/json-schema": "^7.0.7",
-    "json-pointer-community": "^0.7.0"
+    "json-pointer-community": "0.7.0"
   }
 }
