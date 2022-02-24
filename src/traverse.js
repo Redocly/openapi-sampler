@@ -2,7 +2,7 @@ import { _samplers } from './openapi-sampler';
 import { allOfSample } from './allOf';
 import { inferType } from './infer';
 import { getResultForCircular, mergeDeep, popSchemaStack } from './utils';
-import JsonPointer from 'json-pointer-community';
+import JsonPointer from 'json-pointer';
 
 let $refCache = {};
 // for circular JS references we use additional array and not object as we need to compare entire schemas and not strings
