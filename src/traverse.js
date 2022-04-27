@@ -112,14 +112,19 @@ export function traverse(schema, options, spec, context) {
       writeOnly: schema.writeOnly
     }, schema.oneOf[0]);
 
-    return (
-      tryInferExample(schema) || traverse(firstOneOf, options, spec, context)
-    );
+    return traverseOneOrAnyOf(schema, firstOneOf)
   }
 
   if (schema.anyOf && schema.anyOf.length) {
     popSchemaStack(seenSchemasStack, context);
-    return tryInferExample(schema) || traverse(schema.anyOf[0], options, spec, context);
+
+    // Make sure to pass down readOnly and writeOnly annotations from the parent
+    const firstAnyOf = Object.assign({
+      readOnly: schema.readOnly,
+      writeOnly: schema.writeOnly
+    }, schema.anyOf[0]);
+
+    return traverseOneOrAnyOf(schema, firstAnyOf)
   }
 
   if (schema.if && schema.then) {
@@ -151,4 +156,21 @@ export function traverse(schema, options, spec, context) {
     writeOnly: schema.writeOnly,
     type: type
   };
+
+  function traverseOneOrAnyOf(schema, selectedSubSchema) {
+    const inferred = tryInferExample(schema);
+    if (inferred !== undefined) {
+      return inferred;
+    }
+
+    const localExample = traverse({...schema, oneOf: undefined, anyOf: undefined }, options, spec, context);
+    const subSchemaExample = traverse(selectedSubSchema, options, spec, context);
+
+    if (typeof localExample.value === 'object' && typeof subSchemaExample.value === 'object') {
+      const mergedExample = mergeDeep(localExample.value, subSchemaExample.value);
+      return {...subSchemaExample, value: mergedExample };
+    }
+
+    return subSchemaExample;
+  }
 }
