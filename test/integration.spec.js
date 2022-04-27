@@ -522,6 +522,40 @@ describe('Integration', function() {
         expected = 0;
         expect(result).to.equal(expected);
       });
+
+      it('should work with nested circular oneOf', function () {
+        result = OpenAPISampler.sample({ $ref: '#/definitions/A' }, {}, {
+          definitions: {
+            A: {
+              properties: {
+                a: { type: 'string' }
+              },
+              oneOf: [
+                { $ref: '#/definitions/A' }
+              ]
+            }
+          }
+        });
+        expected = { a: 'string' }
+        expect(result).to.deep.equal(expected);
+      });
+
+      it('should work with nested circular anyOf', function () {
+        result = OpenAPISampler.sample({ $ref: '#/definitions/A' }, {}, {
+          definitions: {
+            A: {
+              properties: {
+                a: { type: 'string' }
+              },
+              anyOf: [
+                { $ref: '#/definitions/A' }
+              ]
+            }
+          }
+        });
+        expected = { a: 'string' }
+        expect(result).to.deep.equal(expected);
+      });
     });
 
     describe('inferring type from root schema', function() {
