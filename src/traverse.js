@@ -129,7 +129,8 @@ export function traverse(schema, options, spec, context) {
 
   if (schema.if && schema.then) {
     popSchemaStack(seenSchemasStack, context);
-    return tryInferExample(schema) || traverse(mergeDeep(schema.if, schema.then), options, spec, context);
+    const { if: ifSchema, then, ...rest } = schema;
+    return traverse(mergeDeep(rest, ifSchema, then), options, spec, context);
   }
 
   let example = inferExample(schema);
