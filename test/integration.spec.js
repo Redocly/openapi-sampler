@@ -459,6 +459,7 @@ describe('Integration', function() {
     it('should support basic if/then/else usage', () => {
       schema = {
         type: 'object',
+        properties: {top: {type: 'number'}},
         if: {properties: {foo: {type: 'string', format: 'email'}}},
         then: {properties: {bar: {type: 'string'}}},
         else: {properties: {baz: {type: 'number'}}},
@@ -467,7 +468,8 @@ describe('Integration', function() {
       result = OpenAPISampler.sample(schema);
       expected = {
         foo: 'user@example.com',
-        bar: 'string'
+        bar: 'string',
+        top: 0,
       };
       expect(result).to.deep.equal(expected);
     })
