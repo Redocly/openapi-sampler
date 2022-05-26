@@ -4,13 +4,13 @@ export function sampleArray(schema, options = {}, spec, context) {
 
   let arrayLength = Math.min(schema.maxItems != undefined ? schema.maxItems : Infinity, schema.minItems || 1);
   // for the sake of simplicity, we're treating `contains` in a similar way to `items`
-  const items = schema.items || schema.contains;
+  const items = schema.prefixItems || schema.items || schema.contains;
   if (Array.isArray(items)) {
     arrayLength = Math.max(arrayLength, items.length);
   }
 
   let itemSchemaGetter = itemNumber => {
-    if (Array.isArray(schema.items)) {
+    if (Array.isArray(items)) {
       return items[itemNumber] || {};
     }
     return items || {};
