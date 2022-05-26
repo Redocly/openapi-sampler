@@ -29,4 +29,9 @@ describe('sampleArray', () => {
     res = sampleArray({items: [{type: 'number'}, {type: 'string'}, {}]});
     expect(res).to.deep.equal([0, 'string', null]);
   });
+
+  it('should correctly sample tuples for 3.1', () => {
+    res = sampleArray({prefixItems: [{type: 'number'}, {type: 'string'}, {}]});
+    expect(res).to.deep.equal([0, 'string', null]);
+  });
 });
