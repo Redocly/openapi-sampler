@@ -13,7 +13,7 @@
     "build": "gulp build",
     "build-dist": "gulp build",
     "coverage": "gulp coverage",
-    "prepublish": "npm run build"
+    "prepublishOnly": "npm run build"
   },
   "files": [
     "src/",
