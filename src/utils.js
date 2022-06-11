@@ -1,11 +1,38 @@
 'use strict';
 
+export const MARKED_FOR_REMOVAL = {
+  time: new Date()
+};
+
 function pad(number) {
   if (number < 10) {
     return '0' + number;
   }
   return number;
 }
+
+/**
+ * Removes all properties which have MARKED_FOR_REMOVAL as their reference.
+ *
+ * Samplers mark properties for removal depending on the configuration
+ * (skipNonRequired=true, skipReadOnly=true, skipWriteOnly=true). This is necessary as the
+ * mentioned configurations are otherwise lost when the object is a direct or indirect child
+ * of an allOf block.
+ */
+export function removeForRemovalMarkedProperties(sample) {
+  if (typeof sample === 'object') {
+    for (let key in sample) {
+      if (typeof sample[key] === 'object') {
+        if (sample[key] === MARKED_FOR_REMOVAL) {
+          delete sample[key];
+          return sample;
+        }
+        removeForRemovalMarkedProperties(sample[key])
+      }
+    }
+  }
+  return sample;
+};
 
 export function toRFCDateTime(date, omitTime, omitDate, milliseconds) {
   var res = omitDate ? '' : (date.getUTCFullYear() +
@@ -39,7 +66,11 @@ export function mergeDeep(...objects) {
       if (isObject(pVal) && isObject(oVal)) {
         prev[key] = mergeDeep(pVal, oVal);
       } else {
-        prev[key] = oVal;
+        if (prev[key] === MARKED_FOR_REMOVAL) {
+          // do nothing. KEEP_REMOVED will be filtered out later before returning the sampling result.
+        } else {
+          prev[key] = oVal;
+        }
       }
     });
 

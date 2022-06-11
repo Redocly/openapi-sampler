@@ -1,5 +1,6 @@
 import { traverse, clearCache } from './traverse';
 import { sampleArray, sampleBoolean, sampleNumber, sampleObject, sampleString } from './samplers/index';
+import {removeForRemovalMarkedProperties} from './utils';
 
 export var _samplers = {};
 
@@ -11,7 +12,9 @@ const defaults = {
 export function sample(schema, options, spec) {
   let opts = Object.assign({}, defaults, options);
   clearCache();
-  return traverse(schema, opts, spec).value;
+
+  let traverseResult = traverse(schema, opts, spec, null, true);
+  return removeForRemovalMarkedProperties(traverseResult.value);
 };
 
 export function _registerSampler(type, sampler) {

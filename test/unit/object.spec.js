@@ -1,4 +1,5 @@
 import { sampleObject} from '../../src/samplers/object.js';
+import {removeForRemovalMarkedProperties} from '../../src/utils';
 
 describe('sampleObject', () => {
   let res;
@@ -80,6 +81,50 @@ describe('sampleObject', () => {
     });
   });
 
+  it('should skip readonly properties in allOfs if skipReadOnly=true', () => {
+    res = sampleObject(
+      {
+        properties: {
+          a: { type: 'string' },
+          b: {
+            type: 'object',
+            allOf: [
+              // Have some object and make specific properties readOnly for e.g. a PATCH method
+              {
+                type: 'object',
+                properties: {
+                  c: {
+                    type: 'string',
+                  },
+                  d: {
+                    type: 'string'
+                  }
+                },
+              },
+              {
+                type: 'object',
+                properties: {
+                  c: {
+                    readOnly: true,
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+      { skipReadOnly: true },
+      null, null, true
+    );
+    res = removeForRemovalMarkedProperties(res);
+    expect(res).to.deep.equal({
+      a: 'string',
+      b: {
+        d: 'string'
+      }
+    });
+  });
+
   it('should skip writeonly properties if writeonly=true', () => {
     res = sampleObject({properties: {
       a: {type: 'string'},
@@ -142,6 +187,51 @@ describe('sampleObject', () => {
      });
    });
 
+  it('should skip writeonly properties in allOfs if skipReadOnly=true', () => {
+    res = sampleObject(
+      {
+        properties: {
+          a: { type: 'string' },
+          b: {
+            type: 'object',
+            allOf: [
+              // Have some object and make specific properties writeOnly to hide
+              // them for everything except e.g. a PATCH method
+              {
+                type: 'object',
+                properties: {
+                  c: {
+                    type: 'string',
+                  },
+                  d: {
+                    type: 'string'
+                  }
+                },
+              },
+              {
+                type: 'object',
+                properties: {
+                  c: {
+                    writeOnly: true,
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+      { skipWriteOnly: true },
+      null, null, true
+    );
+    res = removeForRemovalMarkedProperties(res);
+    expect(res).to.deep.equal({
+      a: 'string',
+      b: {
+        d: 'string'
+      }
+    });
+  });
+
   it('should should instantiate 2 additionalProperties', () => {
     res = sampleObject({additionalProperties: {type: 'string'}});
     expect(res).to.deep.equal({
@@ -166,6 +256,7 @@ describe('sampleObject', () => {
       },
       required: ['a']
     }, {skipNonRequired: true});
+
     expect(res).to.deep.equal({
       a: 'string'
     });

@@ -41,7 +41,7 @@ function tryInferExample(schema) {
   return;
 }
 
-export function traverse(schema, options, spec, context) {
+export function traverse(schema, options, spec, context, markForRemoval = false) {
   // checking circular JS references by checking context
   // because context is passed only when traversing through nested objects happens
   if (context) {
@@ -69,7 +69,7 @@ export function traverse(schema, options, spec, context) {
 
     if ($refCache[ref] !== true) {
       $refCache[ref] = true;
-      result = traverse(referenced, options, spec, context);
+      result = traverse(referenced, options, spec, context, markForRemoval);
       $refCache[ref] = false;
     } else {
       const referencedType = inferType(referenced);
@@ -97,6 +97,7 @@ export function traverse(schema, options, spec, context) {
       options,
       spec,
       context,
+      markForRemoval
     );
   }
 
@@ -130,7 +131,7 @@ export function traverse(schema, options, spec, context) {
   if (schema.if && schema.then) {
     popSchemaStack(seenSchemasStack, context);
     const { if: ifSchema, then, ...rest } = schema;
-    return traverse(mergeDeep(rest, ifSchema, then), options, spec, context);
+    return traverse(mergeDeep(rest, ifSchema, then), options, spec, context, markForRemoval);
   }
 
   let example = inferExample(schema);
@@ -146,7 +147,7 @@ export function traverse(schema, options, spec, context) {
     }
     let sampler = _samplers[type];
     if (sampler) {
-      example = sampler(schema, options, spec, context);
+      example = sampler(schema, options, spec, context, markForRemoval);
     }
   }
 
@@ -164,8 +165,8 @@ export function traverse(schema, options, spec, context) {
       return inferred;
     }
 
-    const localExample = traverse({...schema, oneOf: undefined, anyOf: undefined }, options, spec, context);
-    const subSchemaExample = traverse(selectedSubSchema, options, spec, context);
+    const localExample = traverse({...schema, oneOf: undefined, anyOf: undefined }, options, spec, context, markForRemoval);
+    const subSchemaExample = traverse(selectedSubSchema, options, spec, context, markForRemoval);
 
     if (typeof localExample.value === 'object' && typeof subSchemaExample.value === 'object') {
       const mergedExample = mergeDeep(localExample.value, subSchemaExample.value);
