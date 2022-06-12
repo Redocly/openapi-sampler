@@ -1,7 +1,7 @@
 'use strict';
 
 export const MARKED_FOR_REMOVAL = {
-  time: new Date()
+  time: new Date() // some unique identifier
 };
 
 function pad(number) {
@@ -67,7 +67,8 @@ export function mergeDeep(...objects) {
         prev[key] = mergeDeep(pVal, oVal);
       } else {
         if (prev[key] === MARKED_FOR_REMOVAL) {
-          // do nothing. KEEP_REMOVED will be filtered out later before returning the sampling result.
+          // do nothing. MARKED_FOR_REMOVAL will be filtered out later
+          // before returning the sampling result.
         } else {
           prev[key] = oVal;
         }
