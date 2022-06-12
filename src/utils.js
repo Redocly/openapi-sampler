@@ -1,6 +1,7 @@
 'use strict';
 
 export const MARKED_FOR_REMOVAL = {
+  type: 'REDOCLY_INTERNAL_MARKED_FOR_REMOVAL',
   time: new Date() // some unique identifier
 };
 
