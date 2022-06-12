@@ -20,19 +20,51 @@ function pad(number) {
  * of an allOf block.
  */
 export function removeForRemovalMarkedProperties(sample) {
-  if (typeof sample === 'object') {
-    for (let key in sample) {
-      if (typeof sample[key] === 'object') {
+  if (sample !== null && sample !== undefined && typeof sample === 'object') {
+    Object.keys(sample).forEach(key => {
+      if (sample[key] !== undefined && typeof sample[key] === 'object') {
         if (sample[key] === MARKED_FOR_REMOVAL) {
           delete sample[key];
           return sample;
         }
-        removeForRemovalMarkedProperties(sample[key])
+        return removeForRemovalMarkedProperties(sample[key]);
       }
-    }
+    });
   }
   return sample;
 };
+
+/**
+ * Filters an objects keys to only include keys which are present in
+ * a blueprint object.
+ *
+ * @param blueprint reference object which holds all allowed keys
+ * @param check object for which keys are filtered by the blueprint
+ * @returns filtered object
+ */
+export function filterDeep(blueprint, check) {
+  // filter out invalid blueprints
+  if (blueprint === undefined || blueprint === null || !Object.keys(blueprint).length) {
+    return check;
+  }
+
+  return Object.assign(...Object.keys(blueprint).map(key => {
+    if (typeof blueprint[key] === 'object' && typeof check[key] === 'object') {
+      if(check[key] === MARKED_FOR_REMOVAL) {
+        return { [key]: check[key] }
+      }
+
+      let childDeepFilter = filterDeep(blueprint[key], check[key]);
+      return Object.keys(childDeepFilter).length ? { [key]: childDeepFilter } : {};
+    }
+
+    if(key in check) {
+      return {[key]: check[key]};
+    }
+
+    return {};
+  }));
+}
 
 export function toRFCDateTime(date, omitTime, omitDate, milliseconds) {
   var res = omitDate ? '' : (date.getUTCFullYear() +

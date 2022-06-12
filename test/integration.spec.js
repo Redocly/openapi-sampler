@@ -947,4 +947,139 @@ describe('Integration', function() {
       expect(result).to.deep.equal(expected);
     });
   });
+
+  it('should skip properties in example which are not part of the schema', () => {
+    const spec = {
+      components: {
+        schemas: {
+          TestSchema: {
+            type: 'object',
+            properties: {
+              a: {type: 'string'},
+              b: {type: 'integer'}
+            },
+            required: ['a', 'b'],
+            example: {
+              a: 'some a string',
+              b: 1,
+              c: 'some invalid property'
+            }
+          }
+        }
+      }
+    }
+
+    const schema = {$ref: '#/components/schemas/TestSchema'}
+
+    result = OpenAPISampler.sample(schema, {}, spec);
+
+    expect(result).to.deep.equal({
+      a: 'some a string',
+      b: 1
+    });
+  });
+
+  it('should skip nested properties in example which are not part of the schema', () => {
+    const spec = {
+      components: {
+        schemas: {
+          TestSchema: {
+            type: 'object',
+            properties: {
+              a: {type: 'string'},
+              b: {type: 'integer'},
+              c: {
+                type: 'object',
+                properties: {
+                  d: {
+                    type: 'string'
+                  }
+                }
+              },
+            },
+            required: ['a', 'b'],
+            example: {
+              a: 'some a string',
+              b: 1,
+              c: {
+                d: 'some d string',
+                e: 'invalid e string'
+              }
+            }
+          }
+        }
+      }
+    }
+
+    const schema = {$ref: '#/components/schemas/TestSchema'}
+
+    result = OpenAPISampler.sample(schema, {}, spec);
+
+    expect(result).to.deep.equal({
+      a: 'some a string',
+      b: 1,
+      c: {
+        d: 'some d string'
+      }
+    });
+  });
+
+  it('should skip properties in example marked as readOnly even if required with skipReadOnly=true', () => {
+    const spec = {
+      components: {
+        schemas: {
+          TestSchema: {
+            type: 'object',
+            properties: {
+              a: {type: 'string'},
+              b: {type: 'integer', readOnly: true}
+            },
+            required: ['a', 'b'],
+            example: {
+              a: 'some a string',
+              b: 1
+            }
+          }
+        }
+      }
+    }
+
+    const schema = {$ref: '#/components/schemas/TestSchema'}
+
+    result = OpenAPISampler.sample(schema, {skipReadOnly: true}, spec);
+
+    expect(result).to.deep.equal({
+      a: 'some a string'
+    });
+  });
+
+  it('should skip properties in example marked as writeOnly even if required with skipWriteOnly=true', () => {
+    const spec = {
+      components: {
+        schemas: {
+          type: 'object',
+          TestSchema: {
+            type: 'object',
+            properties: {
+              a: {type: 'string'},
+              b: {type: 'integer', writeOnly: true}
+            },
+            required: ['a', 'b'],
+            example: {
+              a: 'some a string',
+              b: 1
+            }
+          }
+        }
+      }
+    }
+
+    const schema = {$ref: '#/components/schemas/TestSchema'}
+
+    result = OpenAPISampler.sample(schema, {skipWriteOnly: true}, spec);
+
+    expect(result).to.deep.equal({
+      a: 'some a string'
+    });
+  });
 });

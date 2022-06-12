@@ -1,7 +1,7 @@
 import { _samplers } from './openapi-sampler';
 import { allOfSample } from './allOf';
 import { inferType } from './infer';
-import { getResultForCircular, mergeDeep, popSchemaStack } from './utils';
+import {getResultForCircular, mergeDeep, popSchemaStack, filterDeep} from './utils';
 import JsonPointer from 'json-pointer';
 
 let $refCache = {};
@@ -13,12 +13,45 @@ export function clearCache() {
   seenSchemasStack = [];
 }
 
-function inferExample(schema) {
+/**
+ * Takes an example object of a schema and makes sure it is valid with the
+ * supplied schema by removing invalid properties.
+ *
+ * @param schema the schema to check and make the example valid with
+ * @param example the example of the schema to use as the base and output a valid example
+ * @param options the sampling options
+ * @param spec the whole openapi spec
+ * @param markForRemoval whether properties should be marked for removal because they should not be in the example
+ * @returns valid example
+ */
+function tryMakeExampleObjectValid(schema, example, options, spec, markForRemoval) {
+  if (typeof schema !== 'object') {
+    return example;
+  }
+  if (typeof example !== 'object') {
+    return example;
+  }
+
+  let exampleLessSchema = Object.assign({}, schema);
+  delete exampleLessSchema.example; // required to remove for traverse
+  delete exampleLessSchema.examples; // required to remove for traverse
+
+  let value = traverse(exampleLessSchema, options, spec, null, markForRemoval).value;
+  let oldValue = value;
+
+  value = mergeDeep(value, example);
+  // Remove all example properties which are not baked by a
+  // property in the schema
+  value = filterDeep(oldValue, value)
+  return value;
+}
+
+function inferExample(schema, options, spec, markForRemoval) {
   let example;
   if (schema.const !== undefined) {
     example = schema.const;
   } else if (schema.examples !== undefined && schema.examples.length) {
-    example = schema.examples[0];
+    example = tryMakeExampleObjectValid(schema, schema.examples[0], options, spec, markForRemoval);
   } else if (schema.enum !== undefined && schema.enum.length) {
     example = schema.enum[0];
   } else if (schema.default !== undefined) {
@@ -27,8 +60,8 @@ function inferExample(schema) {
   return example;
 }
 
-function tryInferExample(schema) {
-  const example = inferExample(schema);
+function tryInferExample(schema, options, spec, markForRemoval) {
+  const example = inferExample(schema, options, spec, markForRemoval);
   // case when we don't infer example from schema but take from `const`, `examples`, `default` or `enum` keywords
   if (example !== undefined) {
     return {
@@ -80,9 +113,11 @@ export function traverse(schema, options, spec, context, markForRemoval = false)
   }
 
   if (schema.example !== undefined) {
+    let value = tryMakeExampleObjectValid(schema, schema.example, options, spec, markForRemoval);
+
     popSchemaStack(seenSchemasStack, context);
     return {
-      value: schema.example,
+      value: value,
       readOnly: schema.readOnly,
       writeOnly: schema.writeOnly,
       type: schema.type,
@@ -91,7 +126,7 @@ export function traverse(schema, options, spec, context, markForRemoval = false)
 
   if (schema.allOf !== undefined) {
     popSchemaStack(seenSchemasStack, context);
-    return tryInferExample(schema) || allOfSample(
+    return tryInferExample(schema, options, spec, markForRemoval) || allOfSample(
       { ...schema, allOf: undefined },
       schema.allOf,
       options,
@@ -134,7 +169,7 @@ export function traverse(schema, options, spec, context, markForRemoval = false)
     return traverse(mergeDeep(rest, ifSchema, then), options, spec, context, markForRemoval);
   }
 
-  let example = inferExample(schema);
+  let example = inferExample(schema, options, spec, markForRemoval);
   let type = null;
   if (example === undefined) {
     example = null;
@@ -160,7 +195,7 @@ export function traverse(schema, options, spec, context, markForRemoval = false)
   };
 
   function traverseOneOrAnyOf(schema, selectedSubSchema) {
-    const inferred = tryInferExample(schema);
+    const inferred = tryInferExample(schema, options, spec, markForRemoval);
     if (inferred !== undefined) {
       return inferred;
     }

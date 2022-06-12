@@ -1,4 +1,4 @@
-import { sampleObject} from '../../src/samplers/object.js';
+import {sampleObject} from '../../src/samplers';
 import {removeForRemovalMarkedProperties} from '../../src/utils';
 
 describe('sampleObject', () => {
@@ -24,6 +24,19 @@ describe('sampleObject', () => {
       a: {type: 'string'},
       b: {type: 'integer', readOnly: true}
     }}, {skipReadOnly: true});
+    expect(res).to.deep.equal({
+      a: 'string'
+    });
+  });
+
+  it('should skip readonly properties even if required skipReadOnly=true', () => {
+    res = sampleObject({
+      properties: {
+        a: {type: 'string'},
+        b: {type: 'integer', readOnly: true}
+      },
+      required: ['a', 'b']
+      }, {skipReadOnly: true});
     expect(res).to.deep.equal({
       a: 'string'
     });
@@ -130,6 +143,19 @@ describe('sampleObject', () => {
       a: {type: 'string'},
       b: {type: 'integer', writeOnly: true}
     }}, {skipWriteOnly: true});
+    expect(res).to.deep.equal({
+      a: 'string'
+    });
+  });
+
+  it('should skip writeOnly properties even if required and skipWriteOnly=true', () => {
+    res = sampleObject({
+      properties: {
+        a: {type: 'string'},
+        b: {type: 'integer', writeOnly: true}
+      },
+      required: ['a', 'b']
+    }, {skipWriteOnly: true});
     expect(res).to.deep.equal({
       a: 'string'
     });
