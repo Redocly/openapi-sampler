@@ -32,3 +32,6 @@ bower_components
 # Users Environment Variables
 .lock-wscript
 yarn.lock
+
+# Workspace
+.idea/
