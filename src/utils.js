@@ -48,6 +48,26 @@ export function filterDeep(blueprint, check) {
   if (blueprint === undefined || blueprint === null || !Object.keys(blueprint).length) {
     return check;
   }
+  // If blueprint is:
+  //   * array of single value
+  //   * value is a primitive type
+  // and check value is:
+  //   * list of primitive types with same type
+  //
+  // return as valid for now
+  // TODO implement checks for every primitive type
+  if(Array.isArray(blueprint) && blueprint.length === 1 && isPrimitive(blueprint[0])) {
+    if(!Array.isArray(check)) {
+      // If value to be checked is no array, return nothing
+      return blueprint;
+    }
+    // Check if every value in array has same type
+    if(!check.every( (val, i, arr) => typeof val === typeof arr[0])) {
+      return blueprint;
+    }
+
+    return check;
+  }
 
   return Object.assign(...Object.keys(blueprint).map(key => {
     if (typeof blueprint[key] === 'object' && typeof check[key] === 'object') {
@@ -157,4 +177,12 @@ function jsf32(a, b, c, d) {
     d = a + t | 0;
     return (d >>> 0) / 4294967296;
   }
+}
+
+function isPrimitive(value) {
+  if(value === null){
+    return true;
+  }
+
+  return !(typeof value == 'object' || typeof value == 'function');
 }
