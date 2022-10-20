@@ -77,11 +77,11 @@ function uriTemplateSample() {
 }
 
 function iriSample() {
-  return 'http://example.com';
+  return 'http://example.com/entity/1';
 }
 
 function iriReferenceSample() {
-  return '../словник';
+  return '/entity/1';
 }
 
 function uuidSample(_min, _max, propertyName) {
