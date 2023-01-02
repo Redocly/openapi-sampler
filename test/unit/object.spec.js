@@ -183,4 +183,79 @@ describe('sampleObject', () => {
       barId: '3c966637-4898-4972-9a9d-baefa6cd6c89'
     });
   })
+
+  it('should generate both items of oneOf', () => {
+    res = sampleObject({
+      'type': 'object',
+      'properties': {
+        'my_obj': {
+          'type': 'object',
+          'properties': {
+            'elements': {
+              'items': {
+                'oneOf': [
+                  {
+                    'type': 'object',
+                    'properties': {
+                      'name': {
+                        'type': 'string',
+                        'description': '',
+                        'enum': [
+                          'obj_a'
+                        ]
+                      }
+                    },
+                    'title': 'obj_a',
+                    'required': [
+                      'name'
+                    ]
+                  },
+                  {
+                    'type': 'object',
+                    'properties': {
+                      'name': {
+                        'type': 'string',
+                        'description': '',
+                        'enum': [
+                          'obj_b'
+                        ]
+                      }
+                    },
+                    'title': 'obj_b',
+                    'required': [
+                      'name'
+                    ]
+                  }
+                ]
+              },
+              'type': 'array',
+              'minItems': 2,
+              'maxItems': 2,
+              'uniqueItems': true
+            }
+          },
+          'title': '',
+          'required': [
+            'elements'
+          ]
+        }
+      },
+      'required': [
+        'my_obj'
+      ]
+    })
+
+    expect(res).deep.equal({
+      'my_obj': {
+        'elements': [
+          {
+            'name': 'obj_a'
+          },
+          {
+            'name': 'obj_b'
+          }
+        ]
+      }
+    })
+  });
 });
