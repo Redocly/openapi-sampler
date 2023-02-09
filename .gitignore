@@ -11,7 +11,7 @@ pids
 lib-cov
 
 # dist
-dist/
+# dist/
 tmp/
 
 # Coverage directory used by tools like istanbul
