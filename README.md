@@ -1,8 +1,8 @@
-# openapi-sampler
+# openapi-sampler with randexp generator
 
 [![Travis build status](http://img.shields.io/travis/Redocly/openapi-sampler.svg?style=flat)](https://travis-ci.org/Redocly/openapi-sampler) [![Coverage Status](https://coveralls.io/repos/Redocly/openapi-sampler/badge.svg?branch=master&service=github)](https://coveralls.io/github/Redocly/openapi-sampler?branch=master) [![Dependency Status](https://david-dm.org/Redocly/openapi-sampler.svg)](https://david-dm.org/Redocly/openapi-sampler) [![devDependency Status](https://david-dm.org/Redocly/openapi-sampler/dev-status.svg)](https://david-dm.org/Redocly/openapi-sampler#info=devDependencies)
 
-Tool for generation samples based on OpenAPI payload/response schema
+Fork of [openapi-sampler](https://www.npmjs.com/package/openapi-sampler) with [randexp](https://www.npmjs.com/package/randexp) generator
 
 ## Features
 
@@ -35,16 +35,16 @@ Tool for generation samples based on OpenAPI payload/response schema
 - Infers schema type automatically following same rules as [json-schema-faker](https://www.npmjs.com/package/json-schema-faker#inferred-types)
 - Support for `$ref` resolving
 - Has basic supports for JSON Schema draft 7 (thanks to [@P0lip](https://github.com/P0lip) from [@stoplightio](https://github.com/stoplightio) for contributing)
-
+- Supports [`pattern`](https://swagger.io/docs/specification/data-models/data-types/#pattern) for swagger docs
 ## Installation
 
 Install using [npm](https://docs.npmjs.com/getting-started/what-is-npm)
 
-    npm install openapi-sampler --save
+    npm install @thatlook/openapi-sampler --save
 
 or using [yarn](https://yarnpkg.com)
 
-    yarn add openapi-sampler
+    yarn add @thatlook/openapi-sampler
 
 Then require it in your code:
 
@@ -76,8 +76,9 @@ OpenAPISampler.sample({
   properties: {
     a: {type: 'integer', minimum: 10},
     b: {type: 'string', format: 'password', minLength: 10},
-    c: {type: 'boolean', readOnly: true}
+    c: {type: 'boolean', readOnly: true},
+    d: {type: 'string', pattern: '0[xX][0-9a-fA-F]{10}', }
   }
 }, {skipReadOnly: true});
-// { a: 10, b: 'pa$$word_q' }
+// { a: 10, b: 'pa$$word_q', c: true, d: '0x1234567890'}
 ```
