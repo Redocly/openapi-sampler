@@ -138,28 +138,42 @@ describe('sampleString', () => {
     expect(res).to.equal('fb4274c7-4fcd-4035-8958-a680548957ff');
   });
 
-  it.each([
-    'email',
-    // 'idn-email', // unsupported by ajv-formats
-    // 'password', // unsupported by ajv-formats
-    'date-time',
-    'date',
-    'time',
-    'ipv4',
-    'ipv6',
-    'hostname',
-    // 'idn-hostname', // unsupported by ajv-formats
-    'uri',
-    'uri-reference',
-    'uri-template',
-    // 'iri', // unsupported by ajv-formats
-    // 'iri-reference', // unsupported by ajv-formats
-    'uuid',
-    'json-pointer',
-    'relative-json-pointer',
-    'regex'
-  ], 'should return valid %s', format => {
-    const schema = {type: 'string',format};
+  it.each(
+    [
+      'email',
+      // 'idn-email', // unsupported by ajv-formats
+      // 'password', // unsupported by ajv-formats
+      'date-time',
+      'date',
+      'time',
+      'ipv4',
+      'ipv6',
+      'hostname',
+      // 'idn-hostname', // unsupported by ajv-formats
+      'uri',
+      'uri-reference',
+      'uri-template',
+      // 'iri', // unsupported by ajv-formats
+      // 'iri-reference', // unsupported by ajv-formats
+      'uuid',
+      'json-pointer',
+      'relative-json-pointer',
+      'regex',
+    ],
+    'should return valid %s',
+    (format) => {
+      const schema = { type: 'string', format };
+      expect(ajv.compile(schema)(sampleString(schema))).to.be.true;
+    }
+  );
+
+  it('should return valid regex for regex', () => {
+    res = sampleString({ pattern: '0[xX][0-9a-fA-F]{40}' });
+    expect(res).to.match(/0[xX][0-9a-fA-F]{40}/);
+  });
+
+  it.each(['0[xX][0-9a-fA-F]{40}'], 'should return valid %s', (pattern) => {
+    const schema = { type: 'string', pattern };
     expect(ajv.compile(schema)(sampleString(schema))).to.be.true;
   });
 });
