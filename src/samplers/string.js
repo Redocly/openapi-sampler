@@ -1,5 +1,5 @@
 'use strict';
-
+import RandExp from 'randexp';
 import { ensureMinLength, toRFCDateTime, uuid } from '../utils';
 
 const passwordSymbols = 'qwerty!@#$%^123456';
@@ -150,7 +150,8 @@ const stringFormats = {
 
 export function sampleString(schema, options, spec, context) {
   let format = schema.format || 'default';
+  let pattern = schema.pattern;
   let sampler = stringFormats[format] || defaultSample;
   let propertyName = context && context.propertyName;
-  return sampler(schema.minLength | 0, schema.maxLength, propertyName);
+  return sampler(schema.minLength | 0, schema.maxLength, propertyName, pattern);
 }
