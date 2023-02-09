@@ -14,18 +14,30 @@ function passwordSample(min, max) {
   let res = 'pa$$word';
   if (min > res.length) {
     res += '_';
-    res += ensureMinLength(passwordSymbols, min - res.length).substring(0, min - res.length);
+    res += ensureMinLength(passwordSymbols, min - res.length).substring(
+      0,
+      min - res.length
+    );
   }
   return res;
 }
 
 function commonDateTimeSample({ min, max, omitTime, omitDate }) {
-  let res = toRFCDateTime(new Date('2019-08-24T14:15:22.123Z'), omitTime, omitDate, false);
+  let res = toRFCDateTime(
+    new Date('2019-08-24T14:15:22.123Z'),
+    omitTime,
+    omitDate,
+    false
+  );
   if (res.length < min) {
-    console.warn(`Using minLength = ${min} is incorrect with format "date-time"`);
+    console.warn(
+      `Using minLength = ${min} is incorrect with format "date-time"`
+    );
   }
   if (max && res.length > max) {
-    console.warn(`Using maxLength = ${max} is incorrect with format "date-time"`);
+    console.warn(
+      `Using maxLength = ${max} is incorrect with format "date-time"`
+    );
   }
   return res;
 }
@@ -39,11 +51,24 @@ function dateSample(min, max) {
 }
 
 function timeSample(min, max) {
-  return commonDateTimeSample({ min, max, omitTime: false, omitDate: true }).slice(1);
+  return commonDateTimeSample({
+    min,
+    max,
+    omitTime: false,
+    omitDate: true,
+  }).slice(1);
 }
 
-function defaultSample(min, max) {
-  let res = ensureMinLength('string', min);
+function defaultSample(min, max, _, pattern) {
+  let string = 'string';
+  if (pattern) {
+    try {
+      string = new RandExp(pattern).gen(); // generate random string based on regex
+    } catch (e) {
+      console.error('invalid regex format');
+    }
+  }
+  let res = ensureMinLength(string, min);
   if (max && res.length > max) {
     res = res.substring(0, max);
   }
@@ -101,26 +126,26 @@ function regexSample() {
 }
 
 const stringFormats = {
-  'email': emailSample,
+  email: emailSample,
   'idn-email': idnEmailSample, // https://tools.ietf.org/html/rfc6531#section-3.3
-  'password': passwordSample,
+  password: passwordSample,
   'date-time': dateTimeSample,
-  'date': dateSample,
-  'time': timeSample, // full-time in https://tools.ietf.org/html/rfc3339#section-5.6
-  'ipv4': ipv4Sample,
-  'ipv6': ipv6Sample,
-  'hostname': hostnameSample,
+  date: dateSample,
+  time: timeSample, // full-time in https://tools.ietf.org/html/rfc3339#section-5.6
+  ipv4: ipv4Sample,
+  ipv6: ipv6Sample,
+  hostname: hostnameSample,
   'idn-hostname': idnHostnameSample, // https://tools.ietf.org/html/rfc5890#section-2.3.2.3
-  'iri': iriSample, // https://tools.ietf.org/html/rfc3987
+  iri: iriSample, // https://tools.ietf.org/html/rfc3987
   'iri-reference': iriReferenceSample,
-  'uri': uriSample,
+  uri: uriSample,
   'uri-reference': uriReferenceSample, // either a URI or relative-reference https://tools.ietf.org/html/rfc3986#section-4.1
   'uri-template': uriTemplateSample,
-  'uuid': uuidSample,
-  'default': defaultSample,
+  uuid: uuidSample,
+  default: defaultSample,
   'json-pointer': jsonPointerSample,
   'relative-json-pointer': relativeJsonPointerSample, // https://tools.ietf.org/html/draft-handrews-relative-json-pointer-01
-  'regex': regexSample,
+  regex: regexSample,
 };
 
 export function sampleString(schema, options, spec, context) {
