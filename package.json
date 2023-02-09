@@ -21,7 +21,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/APIs-guru/openapi-sampler.git"
+    "url": "git+https://github.com/thatlook/openapi-sampler.git"
   },
   "keywords": [
     "OpenAPI",
@@ -92,5 +92,8 @@
     "@types/json-schema": "^7.0.7",
     "json-pointer": "0.6.2",
     "randexp": "^0.5.3"
+  },
+  "directories": {
+    "test": "test"
   }
 }
