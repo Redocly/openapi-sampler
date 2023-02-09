@@ -70,8 +70,8 @@ Available options:
 
 ## Example
 ```js
-const OpenAPISampler = require('.');
-OpenAPISampler.sample({
+import { sample } from '@thatlook/@openapi-sampler'
+sample({
   type: 'object',
   properties: {
     a: {type: 'integer', minimum: 10},
