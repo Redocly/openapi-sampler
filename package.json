@@ -1,7 +1,7 @@
 {
-  "name": "openapi-sampler",
-  "version": "1.3.1",
-  "description": "Tool for generation samples based on OpenAPI payload/response schema",
+  "name": "@thatlook/openapi-sampler",
+  "version": "1.0.0",
+  "description": "fork of openapi-sampler to apply randexp for string generator",
   "main": "dist/openapi-sampler.js",
   "module": "src/openapi-sampler.js",
   "types": "./src/types.d.ts",
@@ -30,12 +30,12 @@
     "sampler",
     "faker"
   ],
-  "author": "Roman Hotsiy <gotsijroman@gmail.com>",
+  "author": "Jenny Suh <yrysuh@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/APIs-guru/openapi-sampler/issues"
+    "url": "https://github.com/thatlook/openapi-sampler/issues"
   },
-  "homepage": "https://github.com/APIs-guru/openapi-sampler/",
+  "homepage": "https://github.com/thatlook/openapi-sampler/",
   "browserslist": "> 0.25%, not dead",
   "devDependencies": {
     "@babel/core": "^7.7.2",
