@@ -12,5 +12,6 @@
     "browser": true,
     "node": true,
     "mocha": true
-  }
+  },
+  "plugins": ["prettier"]
 }

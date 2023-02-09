@@ -7,5 +7,6 @@
   "env": {
     "browser": true,
     "node": true
-  }
+  },
+  "plugins": ["prettier"]
 }
