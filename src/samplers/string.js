@@ -61,7 +61,7 @@ function timeSample(min, max) {
 
 function defaultSample(min, max, _, pattern) {
   let string = 'string';
-  if (pattern) {
+  if (pattern && /^\/.*\/$/.test(pattern)) {
     try {
       string = new RandExp(pattern).gen(); // generate random string based on regex
     } catch (e) {
