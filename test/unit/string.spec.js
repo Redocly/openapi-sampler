@@ -130,6 +130,73 @@ describe('sampleString', () => {
     expect(res).to.equal('fb4274c7-4fcd-4035-8958-a680548957ff');
   });
 
+  it('should generate valid text for basic regexes', () => {
+    [IPV4_REGEXP, IPV6_REGEXP, HOSTNAME_REGEXP, URI_REGEXP, UUID_REGEXP]
+      .forEach((regexp) => {
+        res = sampleString(
+          {pattern: regexp.source},
+          null,
+          null,
+          {propertyName: 'fooId'},
+        );
+        expect(res).to.match(regexp);
+      });
+  });
+
+  it('should return valid string for regex with min and max', () => {
+    const regex = 'foo-0+1+2+3+4+5+6+7+8+9+-bar';
+    const regexp = new RegExp(regex);
+
+    for (let i = 0; i < 100; i++) {
+      const targetLength = Math.floor(20 + Math.random() * 80);
+      const schema = {
+        format: 'regex',
+        pattern: regex,
+        minLength: targetLength - 1,
+        maxLength: targetLength + 1,
+      };
+      res = sampleString(schema, null, null, {propertyName: 'fooId'});
+      expect(res).to.match(regexp);
+      expect(Math.abs(res.length - targetLength)).to.be.lessThan(2);
+    }
+  });
+
+  it('should handle chicken mcnugget regex', () => {
+    const regex = '(a{20}|b{9}|c{6})+';
+    const regexp = new RegExp(regex);
+
+    for (let i = 0; i < 100; i++) {
+      const targetLength = Math.floor(44 + Math.random() * 44);
+      const schema = {
+        format: 'regex',
+        pattern: regex,
+        minLength: targetLength - 3,
+        maxLength: targetLength + 3,
+      };
+      res = sampleString(schema, null, null, {propertyName: 'fooId'});
+      expect(res).to.match(regexp);
+      expect(Math.abs(res.length - targetLength)).to.be.lessThan(4);
+    }
+  });
+
+  it('should handle knapsack (subset sum) regex', () => {
+    const regex = '(a{2})?(b{5})?(c{4})?(d{11})?(e{23})?';
+    const regexp = new RegExp(regex);
+
+    for (let i = 0; i < 100; i++) {
+      const targetLength = Math.floor(Math.random() * 46);
+      const schema = {
+        format: 'regex',
+        pattern: regex,
+        minLength: targetLength - 6,
+        maxLength: targetLength + 6,
+      };
+      res = sampleString(schema, null, null, {propertyName: 'fooId'});
+      expect(res).to.match(regexp);
+      expect(Math.abs(res.length - targetLength)).to.be.lessThan(7);
+    }
+  });
+
   it.each([
     'email',
     // 'idn-email', // unsupported by ajv-formats

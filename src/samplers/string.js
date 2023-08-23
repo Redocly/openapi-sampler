@@ -1,8 +1,17 @@
 'use strict';
 
 import { ensureMinLength, toRFCDateTime, uuid } from '../utils';
+import { sampleRegex } from './regex';
 
 const passwordSymbols = 'qwerty!@#$%^123456';
+
+function truncateString(str, min, max) {
+  let res = ensureMinLength(str, min);
+  if (max && res.length > max) {
+    res = res.substring(0, max);
+  }
+  return res;
+}
 
 function emailSample() {
   return 'user@example.com';
@@ -42,12 +51,10 @@ function timeSample(min, max) {
   return commonDateTimeSample({ min, max, omitTime: false, omitDate: true }).slice(1);
 }
 
-function defaultSample(min, max) {
-  let res = ensureMinLength('string', min);
-  if (max && res.length > max) {
-    res = res.substring(0, max);
-  }
-  return res;
+function defaultSample(min, max, _propertyName, pattern) {
+  return pattern
+    ? sampleRegex(pattern, min, max)
+    : truncateString('string', min, max)
 }
 
 function ipv4Sample() {
@@ -96,8 +103,10 @@ function relativeJsonPointerSample() {
   return '1/relative/json/pointer';
 }
 
-function regexSample() {
-  return '/regex/';
+function regexSample(min, max, _propertyName, pattern) {
+  return pattern
+    ? sampleRegex(pattern, min, max)
+    : truncateString('/regex/', min, max)
 }
 
 const stringFormats = {
@@ -127,5 +136,10 @@ export function sampleString(schema, options, spec, context) {
   let format = schema.format || 'default';
   let sampler = stringFormats[format] || defaultSample;
   let propertyName = context && context.propertyName;
-  return sampler(schema.minLength | 0, schema.maxLength, propertyName);
+  return sampler(
+    schema.minLength || 0,
+    schema.maxLength,
+    propertyName,
+    schema.pattern,
+  );
 }
