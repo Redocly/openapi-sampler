@@ -1,17 +1,9 @@
 'use strict';
 
 import { ensureMinLength, toRFCDateTime, uuid } from '../utils';
-import { sampleRegex } from './regex';
+import * as faker from './string-regex';
 
 const passwordSymbols = 'qwerty!@#$%^123456';
-
-function truncateString(str, min, max) {
-  let res = ensureMinLength(str, min);
-  if (max && res.length > max) {
-    res = res.substring(0, max);
-  }
-  return res;
-}
 
 function emailSample() {
   return 'user@example.com';
@@ -52,9 +44,14 @@ function timeSample(min, max) {
 }
 
 function defaultSample(min, max, _propertyName, pattern) {
-  return pattern
-    ? sampleRegex(pattern, min, max)
-    : truncateString('string', min, max)
+  if (pattern) {
+    return faker.regexSample(pattern);
+  }
+  let res = ensureMinLength('string', min);
+  if (max && res.length > max) {
+    res = res.substring(0, max);
+  }
+  return res;
 }
 
 function ipv4Sample() {
@@ -103,10 +100,8 @@ function relativeJsonPointerSample() {
   return '1/relative/json/pointer';
 }
 
-function regexSample(min, max, _propertyName, pattern) {
-  return pattern
-    ? sampleRegex(pattern, min, max)
-    : truncateString('/regex/', min, max)
+function regexSample() {
+  return '/regex/';
 }
 
 const stringFormats = {
