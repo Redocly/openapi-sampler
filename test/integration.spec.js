@@ -21,7 +21,7 @@ describe('Integration', function() {
         'type': 'number'
       };
       result = OpenAPISampler.sample(schema);
-      expected = 0;
+      expected = 0.1;
       expect(result).to.deep.equal(expected);
     });
 
@@ -160,8 +160,8 @@ describe('Integration', function() {
       result = OpenAPISampler.sample(schema);
       expected = {
         test: 'string',
-        property1: 0,
-        property2: 0
+        property1: 0.1,
+        property2: 0.1
       };
       expect(result).to.deep.equal(expected);
     });
@@ -384,7 +384,7 @@ describe('Integration', function() {
       expected = {
         parent: {
           child1: 'string',
-          child2: 0
+          child2: 0.1
         }
       };
 
@@ -469,7 +469,7 @@ describe('Integration', function() {
       expected = {
         foo: 'user@example.com',
         bar: 'string',
-        top: 0,
+        top: 0.1,
       };
       expect(result).to.deep.equal(expected);
     })
@@ -521,7 +521,7 @@ describe('Integration', function() {
           ]
         };
         result = OpenAPISampler.sample(schema);
-        expected = 0;
+        expected = 0.1;
         expect(result).to.equal(expected);
       });
 
