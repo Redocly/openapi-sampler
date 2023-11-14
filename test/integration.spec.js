@@ -21,6 +21,26 @@ describe('Integration', function() {
         'type': 'number'
       };
       result = OpenAPISampler.sample(schema);
+      expected = 0;
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('should sample number with format float', function() {
+      schema = {
+        'type': 'number',
+        format: 'float'
+      };
+      result = OpenAPISampler.sample(schema);
+      expected = 0.1;
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('should sample number with format double', function() {
+      schema = {
+        'type': 'number',
+        format: 'double'
+      };
+      result = OpenAPISampler.sample(schema);
       expected = 0.1;
       expect(result).to.deep.equal(expected);
     });
@@ -160,8 +180,8 @@ describe('Integration', function() {
       result = OpenAPISampler.sample(schema);
       expected = {
         test: 'string',
-        property1: 0.1,
-        property2: 0.1
+        property1: 0,
+        property2: 0
       };
       expect(result).to.deep.equal(expected);
     });
@@ -384,7 +404,7 @@ describe('Integration', function() {
       expected = {
         parent: {
           child1: 'string',
-          child2: 0.1
+          child2: 0
         }
       };
 
@@ -469,7 +489,7 @@ describe('Integration', function() {
       expected = {
         foo: 'user@example.com',
         bar: 'string',
-        top: 0.1,
+        top: 0,
       };
       expect(result).to.deep.equal(expected);
     })
@@ -521,7 +541,7 @@ describe('Integration', function() {
           ]
         };
         result = OpenAPISampler.sample(schema);
-        expected = 0.1;
+        expected = 0;
         expect(result).to.equal(expected);
       });
 
