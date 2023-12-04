@@ -1,6 +1,9 @@
 export function sampleNumber(schema) {
   let res = 0;
-  if (typeof schema.exclusiveMinimum === 'boolean' || typeof schema.exclusiveMaximum === 'boolean') { //legacy support for jsonschema draft 4 of exclusiveMaximum/exclusiveMinimum as booleans 
+  if (schema.type === 'number' && (schema.format === 'float' || schema.format === 'double')) {
+    res = 0.1;
+  }
+  if (typeof schema.exclusiveMinimum === 'boolean' || typeof schema.exclusiveMaximum === 'boolean') { //legacy support for jsonschema draft 4 of exclusiveMaximum/exclusiveMinimum as booleans
     if (schema.maximum && schema.minimum) {
       res = schema.exclusiveMinimum ? Math.floor(schema.minimum) + 1 : schema.minimum;
       if ((schema.exclusiveMaximum && res >= schema.maximum) ||

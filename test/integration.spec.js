@@ -25,6 +25,26 @@ describe('Integration', function() {
       expect(result).to.deep.equal(expected);
     });
 
+    it('should sample number with format float', function() {
+      schema = {
+        'type': 'number',
+        format: 'float'
+      };
+      result = OpenAPISampler.sample(schema);
+      expected = 0.1;
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('should sample number with format double', function() {
+      schema = {
+        'type': 'number',
+        format: 'double'
+      };
+      result = OpenAPISampler.sample(schema);
+      expected = 0.1;
+      expect(result).to.deep.equal(expected);
+    });
+
     it('should sample boolean', function() {
       schema = {
         'type': 'boolean'
