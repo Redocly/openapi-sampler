@@ -49,7 +49,7 @@ or using [yarn](https://yarnpkg.com)
 Then require it in your code:
 
 ```js
-var OpenAPISampler = require('openapi-sampler');
+const OpenAPISampler = require('.');
 ```
 
 ## Usage
