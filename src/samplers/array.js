@@ -13,6 +13,9 @@ export function sampleArray(schema, options = {}, spec, context) {
     if (Array.isArray(items)) {
       return items[itemNumber] || {};
     }
+    if (items.oneOf && Array.isArray(items.oneOf)) {
+      return items.oneOf[itemNumber] || {};
+    }
     return items || {};
   };
 
