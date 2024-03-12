@@ -1,6 +1,7 @@
 'use strict';
 
 import { ensureMinLength, toRFCDateTime, uuid } from '../utils';
+import * as faker from './string-regex';
 
 const passwordSymbols = 'qwerty!@#$%^123456';
 
@@ -42,7 +43,10 @@ function timeSample(min, max) {
   return commonDateTimeSample({ min, max, omitTime: false, omitDate: true }).slice(1);
 }
 
-function defaultSample(min, max) {
+function defaultSample(min, max, _propertyName, pattern) {
+  if (pattern) {
+    return faker.regexSample(pattern);
+  }
   let res = ensureMinLength('string', min);
   if (max && res.length > max) {
     res = res.substring(0, max);
@@ -127,5 +131,10 @@ export function sampleString(schema, options, spec, context) {
   let format = schema.format || 'default';
   let sampler = stringFormats[format] || defaultSample;
   let propertyName = context && context.propertyName;
-  return sampler(schema.minLength | 0, schema.maxLength, propertyName);
+  return sampler(
+    schema.minLength || 0,
+    schema.maxLength,
+    propertyName,
+    schema.pattern,
+  );
 }

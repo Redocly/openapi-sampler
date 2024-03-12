@@ -130,6 +130,19 @@ describe('sampleString', () => {
     expect(res).to.equal('fb4274c7-4fcd-4035-8958-a680548957ff');
   });
 
+  it('should generate valid text for basic regexes', () => {
+    [/#{3}test[1-5]/, /[500-15000]/, /#{2,9}/, /#{5}/, /0x[0-9a-f]{40}/]
+      .forEach((regexp) => {
+        res = sampleString(
+          {pattern: regexp.source},
+          null,
+          null,
+          {propertyName: 'fooId'},
+        );
+        expect(res).to.match(regexp);
+      });
+  });
+
   it.each([
     'email',
     // 'idn-email', // unsupported by ajv-formats

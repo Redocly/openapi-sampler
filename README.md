@@ -11,7 +11,7 @@ Tool for generation samples based on OpenAPI payload/response schema
 - Supports `additionalProperties` with [`x-additionalPropertiesName`](https://github.com/Redocly/redoc/blob/master/docs/redoc-vendor-extensions.md#x-additionalpropertiesname)
 - Uses `const`, `examples`, `enum` and `default` where possible - in this order
 - Good array support: supports `contains`, `minItems`, `maxItems`, and tuples (`items` as an array)
-- Supports `minLength`, `maxLength`, `min`, `max`, `exclusiveMinimum`, `exclusiveMaximum`
+- Supports `minLength`, `maxLength`, `min`, `max`, `exclusiveMinimum`, `exclusiveMaximum`, ([limited](https://fakerjs.dev/api/helpers.html#fromregexp)) `pattern`
 - Supports the following `string` formats:
   - email
   - idn-email
