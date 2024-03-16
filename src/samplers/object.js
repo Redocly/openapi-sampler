@@ -33,5 +33,31 @@ export function sampleObject(schema, options = {}, spec, context) {
     res[`${String(propertyName)}1`] = traverse(schema.additionalProperties, options, spec, {depth: depth + 1 }).value;
     res[`${String(propertyName)}2`] = traverse(schema.additionalProperties, options, spec, {depth: depth + 1 }).value;
   }
+
+  // Strictly enforce maxProperties constraint
+  if (schema && typeof schema.properties === 'object' && schema.maxProperties !== undefined && Object.keys(res).length > schema.maxProperties) {
+    let filteredResult = {};
+    let propertiesAdded = 0;
+
+    // Always include required properties first, if present
+    const requiredProperties = (Array.isArray(schema.required) ? schema.required : []);
+    requiredProperties.forEach(propName => {
+        if (res[propName] !== undefined) {
+            filteredResult[propName] = res[propName];
+            propertiesAdded++;
+        }
+    });
+
+    // Add other properties until maxProperties is reached
+    Object.keys(res).forEach(propName => {
+        if (propertiesAdded < schema.maxProperties && !filteredResult.hasOwnProperty(propName)) {
+            filteredResult[propName] = res[propName];
+            propertiesAdded++;
+        }
+    });
+
+    res = filteredResult;
+  }
+
   return res;
 }
