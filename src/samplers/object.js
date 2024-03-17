@@ -4,15 +4,18 @@ export function sampleObject(schema, options = {}, spec, context) {
   const depth = (context && context.depth || 1);
 
   if (schema && typeof schema.properties === 'object') {
-    let requiredKeys = (Array.isArray(schema.required) ? schema.required : []);
-    let requiredKeyDict = requiredKeys.reduce((dict, key) => {
-      dict[key] = true;
-      return dict;
-    }, {});
+
+    // Prepare for skipNonRequired option
+    const requiredProperties = Array.isArray(schema.required) ? schema.required : [];
+    const requiredPropertiesMap = {};
+
+    for (const requiredProperty of requiredProperties) {
+        requiredPropertiesMap[requiredProperty] = true;
+    }
 
     Object.keys(schema.properties).forEach(propertyName => {
       // skip before traverse that could be costly
-      if (options.skipNonRequired && !requiredKeyDict.hasOwnProperty(propertyName)) {
+      if (options.skipNonRequired && !requiredPropertiesMap.hasOwnProperty(propertyName)) {
         return;
       }
 
@@ -36,11 +39,11 @@ export function sampleObject(schema, options = {}, spec, context) {
 
   // Strictly enforce maxProperties constraint
   if (schema && typeof schema.properties === 'object' && schema.maxProperties !== undefined && Object.keys(res).length > schema.maxProperties) {
-    let filteredResult = {};
+    const filteredResult = {};
     let propertiesAdded = 0;
 
     // Always include required properties first, if present
-    const requiredProperties = (Array.isArray(schema.required) ? schema.required : []);
+    const requiredProperties = Array.isArray(schema.required) ? schema.required : [];
     requiredProperties.forEach(propName => {
         if (res[propName] !== undefined) {
             filteredResult[propName] = res[propName];
