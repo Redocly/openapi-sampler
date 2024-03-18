@@ -182,5 +182,28 @@ describe('sampleObject', () => {
       fooId: 'fb4274c7-4fcd-4035-8958-a680548957ff',
       barId: '3c966637-4898-4972-9a9d-baefa6cd6c89'
     });
-  })
+  });
+
+  it('respects maxProperties by including no more than 2 properties in the sampled object', () => {
+    // Define a schema with four properties and a maxProperties limit of two
+    const schema = {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        email: { type: 'string', format: 'email' },
+        age: { type: 'integer', minimum: 0 },
+        phone: { type: 'string' }
+      },
+      required: ['name', 'email'], // 'name' and 'email' are required
+      maxProperties: 2
+    };
+
+    const result = sampleObject(schema);
+
+    expect(Object.keys(result).length).to.be.at.most(2);
+
+    // Assert that if 'name' and 'email' are required, they are included
+    expect(result).to.have.property('name');
+    expect(result).to.have.property('email');
+  });
 });
