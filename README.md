@@ -40,7 +40,7 @@ Tool for generation samples based on OpenAPI payload/response schema
 
 Install using [npm](https://docs.npmjs.com/getting-started/what-is-npm)
 
-    npm install openapi-sampler --save
+    npm install openapi-sampler
 
 or using [yarn](https://yarnpkg.com)
 
