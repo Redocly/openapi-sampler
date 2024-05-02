@@ -5,6 +5,7 @@ export interface Options {
   readonly skipReadOnly?: boolean;
   readonly skipWriteOnly?: boolean;
   readonly quiet?: boolean;
+  readonly enablePatterns?: boolean
 }
 
 export function sample(schema: JSONSchema7, options?: Options, document?: object): unknown;
