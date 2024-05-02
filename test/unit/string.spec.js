@@ -135,7 +135,7 @@ describe('sampleString', () => {
       .forEach((regexp) => {
         res = sampleString(
           {pattern: regexp.source},
-          null,
+          {enablePatterns: true},
           null,
           {propertyName: 'fooId'},
         );
