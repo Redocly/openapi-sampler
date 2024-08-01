@@ -77,5 +77,8 @@
   "dependencies": {
     "@types/json-schema": "^7.0.7",
     "json-pointer": "0.6.2"
+  },
+  "overrides": {
+    "braces": "3.0.3"
   }
 }
