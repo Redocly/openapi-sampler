@@ -1,6 +1,6 @@
 {
   "name": "openapi-sampler",
-  "version": "1.4.0",
+  "version": "1.5.1",
   "description": "Tool for generation samples based on OpenAPI payload/response schema",
   "main": "dist/openapi-sampler.js",
   "module": "src/openapi-sampler.js",
@@ -8,7 +8,6 @@
   "scripts": {
     "test": "gulp",
     "lint": "gulp lint",
-    "test-browser": "gulp test-browser",
     "watch": "gulp watch",
     "build": "gulp build",
     "build-dist": "gulp build",
@@ -45,10 +44,9 @@
     "ajv-formats": "^2.0.2",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
-    "babel-plugin-istanbul": "^5.2.0",
+    "babel-plugin-istanbul": "^7.0.0",
     "babelify": "^10.0.0",
     "browserify": "^16.5.0",
-    "browserify-istanbul": "^3.0.1",
     "chai": "^4.2.0",
     "core-js": "^3.4.1",
     "coveralls": "^3.0.7",
@@ -66,20 +64,10 @@
     "gulp-rename": "^1.4.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
-    "it-each": "^0.4.0",
+    "it-each": "^0.5.0",
     "json-loader": "^0.5.7",
-    "karma": "^6.3.2",
-    "karma-babel-preprocessor": "^8.0.1",
-    "karma-browserify": "^6.1.0",
-    "karma-chrome-launcher": "^3.1.0",
-    "karma-coverage": "^2.0.1",
-    "karma-firefox-launcher": "^1.2.0",
-    "karma-mocha": "^2.0.1",
-    "karma-mocha-reporter": "^2.2.5",
-    "karma-phantomjs-launcher": "^1.0.4",
-    "karma-sinon-chai": "^2.0.2",
     "lolex": "^5.1.1",
-    "mocha": "^6.2.2",
+    "mocha": "^10.6.0",
     "phantomjs-prebuilt": "^2.1.16",
     "sinon": "^7.5.0",
     "sinon-chai": "^3.3.0",
@@ -89,5 +77,8 @@
   "dependencies": {
     "@types/json-schema": "^7.0.7",
     "json-pointer": "0.6.2"
+  },
+  "overrides": {
+    "braces": "3.0.3"
   }
 }

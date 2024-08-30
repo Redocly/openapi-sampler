@@ -43,8 +43,8 @@ function timeSample(min, max) {
   return commonDateTimeSample({ min, max, omitTime: false, omitDate: true }).slice(1);
 }
 
-function defaultSample(min, max, _propertyName, pattern) {
-  if (pattern) {
+function defaultSample(min, max, _propertyName, pattern, enablePatterns = false) {
+  if (pattern && enablePatterns) {
     return faker.regexSample(pattern);
   }
   let res = ensureMinLength('string', min);
@@ -141,5 +141,6 @@ export function sampleString(schema, options, spec, context) {
     schema.maxLength,
     propertyName,
     schema.pattern,
+    options?.enablePatterns
   );
 }
