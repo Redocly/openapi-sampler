@@ -15,10 +15,13 @@ env:
   - secure: WxIg72wkIfv7pSwWqhBLRl18yxBW9tF441utXTdZ94vbDeQC/NokuxTGWOCEs2VVnbwDrnE1iQuwJJBYjqK8+mywSzcP5dnsxMVLLTkmV4aFOJUWDZrKxeWJ82NqwT8ZRCzXWdO8VPVxHE+ytf8O/CMgTfG3QmvoSTwuVno37Mv1I2eInnrqh9VPbsCgbzDto5q7BNee6XSsmITOMgsEcdnI8JeVpWRXiPWFb9U4nBm+em6rIZpdydCMH95RkWi3VsdcePxJ5pI44ksNgauR3ic6KLTxIL9GOW0KuPSk6+/BHz1xuq7Cetsl/UyZdHwDbp1XnAcOS8msYiL9HdVHbuGOLZx81V3Q3cy6fsrLOrDrCFkT+iJqUURfhaqsqc6lO9fbhcfLpCrfua6QaKJiGb5VQQHTXj8rXbHWQ7aQjW8VxGwAXfNrpDDqzSn3pESQjU5udkui3Z0QkSU8Cuvivc+6ttuqGgI2sXoXskwW03aHfAz9C3SIPZnTLEPTEKYyHzFDIDjeuZ622u2SWK+OF7nmCyRN5JGls/n6gqNYwfixMQTXXQujQXbZuZ2O9ytMMG1Aw8i+CuAvzPHU5JeO0PCWZjII4z9TsnVrBGJTmvziRtRU3bIOQeX9IDlg9UQmyfQJGAw45PhIr7hzSBKgM9qid5vYsz1mwRqRu34G4+4=
 before_script:
 - export DISPLAY=:99.0
-script: gulp test
+script:
+  - npm run test
+  - npm run coverage
+
 after_success:
-- cat coverage/*/lcov.info > coveralls.txt
-- cat coveralls.txt | node_modules/coveralls/bin/coveralls.js
+  - npm run coveralls
+
 cache:
   directories:
   - node_modules
