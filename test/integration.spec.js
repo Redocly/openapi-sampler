@@ -1,116 +1,115 @@
-'use strict';
+import { sample } from '../src/openapi-sampler.js';
 
-describe('Integration', function() {
-  var schema;
-  var result;
-  var expected;
+describe('Integration', () => {
+  let schema;
+  let result;
+  let expected;
 
-  describe('Primitives', function() {
-
-    it('should sample string', function() {
+  describe('Primitives', () => {
+    it('should sample string', () => {
       schema = {
         'type': 'string'
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = 'string';
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should sample number', function() {
+    it('should sample number', () => {
       schema = {
         'type': 'number'
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = 0;
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should sample number with format float', function() {
+    it('should sample number with format float', () => {
       schema = {
         'type': 'number',
         format: 'float'
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = 0.1;
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should sample number with format double', function() {
+    it('should sample number with format double', () => {
       schema = {
         'type': 'number',
         format: 'double'
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = 0.1;
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should sample boolean', function() {
+    it('should sample boolean', () => {
       schema = {
         'type': 'boolean'
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = true;
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should use default property', function() {
+    it('should use default property', () => {
       schema = {
         'type': 'number',
         'default': 100
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = 100;
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should support type array', function() {
+    it('should support type array', () => {
       schema = {
         'type': ['string', 'number']
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = 'string';
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should use null for null', function() {
+    it('should use null for null', () => {
       schema = {
         type: 'null'
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = null;
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should use null if type is not specified', function() {
+    it('should use null if type is not specified', () => {
       schema = {
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = null;
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should use null if type array is empty', function() {
+    it('should use null if type array is empty', () => {
       schema = {
         type: []
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = null;
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
   });
 
-  describe('Objects', function() {
-    it('should sample object without properties', function() {
+  describe('Objects', () => {
+    it('should sample object without properties', () => {
       schema = {
         'type': 'object'
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = {};
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should sample object with property', function() {
+    it('should sample object with property', () => {
       schema = {
         'type': 'object',
         'properties': {
@@ -119,14 +118,14 @@ describe('Integration', function() {
           }
         }
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = {
         'title': 'string'
       };
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should sample object with property with default value', function() {
+    it('should sample object with property with default value', () => {
       schema = {
         'type': 'object',
         'properties': {
@@ -136,14 +135,14 @@ describe('Integration', function() {
           }
         }
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = {
         'title': 'Example'
       };
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should sample object with more than one property', function() {
+    it('should sample object with more than one property', () => {
       schema = {
         'type': 'object',
         'properties': {
@@ -157,15 +156,15 @@ describe('Integration', function() {
           }
         }
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = {
         'title': 'Example',
         'amount': 10
       };
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should sample both properties and additionalProperties', function() {
+    it('should sample both properties and additionalProperties', () => {
       schema = {
         type: 'object',
         properties: {
@@ -177,18 +176,71 @@ describe('Integration', function() {
           type: 'number'
         }
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = {
         test: 'string',
         property1: 0,
         property2: 0
       };
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
   });
 
-  describe('AllOf', function() {
-    it('should sample schema with allOf', function() {
+  describe('Arrays', () => {
+    it('should sample array', () => {
+      schema = {
+        'type': 'array',
+        'items': {
+          'type': 'number'
+        }
+      };
+      result = sample(schema);
+      expected = [0];
+      expect(result).toEqual(expected);
+    });
+
+    it('should sample array with examples', () => {
+      schema = {
+        'type': 'array',
+        'items': {
+          'type': 'number'
+        },
+        'examples': [[1, 2, 3]]
+      };
+      result = sample(schema);
+      expected = [1, 2, 3];
+      expect(result).toEqual(expected);
+    });
+
+    it('should use default property', () => {
+      schema = {
+        'type': 'array',
+        'items': {
+          'type': 'number'
+        },
+        'default': [5, 6, 7]
+      };
+      result = sample(schema);
+      expected = [5, 6, 7];
+      expect(result).toEqual(expected);
+    });
+
+    it('should sample array with minItems', () => {
+      schema = {
+        'type': 'array',
+        'items': {
+          'type': 'number'
+        },
+        'minItems': 3
+      };
+      result = sample(schema);
+      expected = [0, 0, 0];
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('AllOf', () => {
+    it('should sample schema with allOf', () => {
       schema = {
         'allOf': [
           {
@@ -210,15 +262,15 @@ describe('Integration', function() {
           }
         ]
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = {
         'title': 'string',
         'amount': 1
       };
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should not throw for schemas with allOf with different types', function() {
+    it('should not throw for schemas with allOf with different types', () => {
       schema = {
         'allOf': [
           {
@@ -235,14 +287,14 @@ describe('Integration', function() {
           }
         ]
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = {
         'amount': 1
       };
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('deep array', function() {
+    it('deep array', () => {
       schema = {
         'allOf': [
           {
@@ -282,11 +334,11 @@ describe('Integration', function() {
           }
         ]
       };
-      const result = OpenAPISampler.sample(schema);
-      expect(result).to.deep.equal(expected);
+      const result = sample(schema);
+      expect(result).toEqual(expected);
     });
 
-    it('should not be confused by subschema without type', function() {
+    it('should not be confused by subschema without type', () => {
       schema = {
         'type': 'string',
         'allOf': [
@@ -295,12 +347,12 @@ describe('Integration', function() {
           }
         ]
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = 'string';
-      expect(result).to.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should not throw for array allOf', function() {
+    it('should not throw for array allOf', () => {
       schema = {
         'type': 'array',
         'allOf': [
@@ -312,11 +364,11 @@ describe('Integration', function() {
           }
         ]
       };
-      result = OpenAPISampler.sample(schema);
-      expect(result).to.be.an('array');
+      result = sample(schema);
+      expect(result).toBeInstanceOf(Array);
     });
 
-    it('should sample schema with allOf even if some type is not specified', function() {
+    it('should sample schema with allOf even if some type is not specified', () => {
       schema = {
         'properties': {
           'title': {
@@ -335,12 +387,12 @@ describe('Integration', function() {
           }
         ]
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = {
         'title': 'string',
         'amount': 1
       };
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
 
       schema = {
         'type': 'object',
@@ -360,15 +412,15 @@ describe('Integration', function() {
           }
         ]
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = {
         'title': 'string',
         'amount': 1
       };
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should merge deep properties', function() {
+    it('should merge deep properties', () => {
       schema = {
         'type': 'object',
         'allOf': [
@@ -408,14 +460,65 @@ describe('Integration', function() {
         }
       };
 
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
 
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
   });
 
-  describe('Example', function() {
-    it('should use example', function() {
+  describe('Inheritance', () => {
+    it('should support basic allOf', () => {
+      schema = {
+        'allOf': [
+          {
+            'type': 'object',
+            'properties': {
+              'test': {
+                'type': 'string'
+              }
+            }
+          }
+        ]
+      };
+      result = sample(schema);
+      expected = {
+        'test': 'string'
+      };
+      expect(result).toEqual(expected);
+    });
+
+    it('should merge properties in allOf', () => {
+      schema = {
+        'allOf': [
+          {
+            'type': 'object',
+            'properties': {
+              'test1': {
+                'type': 'string'
+              }
+            }
+          },
+          {
+            'type': 'object',
+            'properties': {
+              'test2': {
+                'type': 'number'
+              }
+            }
+          }
+        ]
+      };
+      result = sample(schema);
+      expected = {
+        'test1': 'string',
+        'test2': 0
+      };
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('Example', () => {
+    it('should use example', () => {
       var obj = {
         test: 'test',
         properties: {
@@ -428,34 +531,34 @@ describe('Integration', function() {
         type: 'object',
         example: obj
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = obj;
-      expect(result).to.deep.equal(obj);
+      expect(result).toEqual(obj);
     });
 
-    it('should use falsy example', function() {
+    it('should use falsy example', () => {
       schema = {
         type: 'string',
         example: false
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = false;
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
 
-    it('should use enum', function() {
+    it('should use enum', () => {
       schema = {
         type: 'string',
         enum: ['test1', 'test2']
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = 'test1';
-      expect(result).to.equal(expected);
+      expect(result).toEqual(expected);
     });
   });
 
-  describe('Detection', function() {
-    it('should detect autodetect types based on props', function() {
+  describe('Detection', () => {
+    it('should detect autodetect types based on props', () => {
       schema = {
         properties: {
           a: {
@@ -466,12 +569,12 @@ describe('Integration', function() {
           }
         }
       };
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = {
         a: 10,
         b: 'string'
       };
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
   });
 
@@ -485,17 +588,17 @@ describe('Integration', function() {
         else: {properties: {baz: {type: 'number'}}},
       };
 
-      result = OpenAPISampler.sample(schema);
+      result = sample(schema);
       expected = {
         foo: 'user@example.com',
         bar: 'string',
         top: 0,
       };
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     })
 
-    describe('oneOf and anyOf', function () {
-      it('should support oneOf', function () {
+    describe('oneOf and anyOf', () => {
+      it('should support oneOf', () => {
         schema = {
           oneOf: [
             {
@@ -506,12 +609,12 @@ describe('Integration', function() {
             }
           ]
         };
-        result = OpenAPISampler.sample(schema);
+        result = sample(schema);
         expected = 'string';
-        expect(result).to.equal(expected);
+        expect(result).toEqual(expected);
       });
 
-      it('should support anyOf', function () {
+      it('should support anyOf', () => {
         schema = {
           anyOf: [
             {
@@ -522,12 +625,12 @@ describe('Integration', function() {
             }
           ]
         };
-        result = OpenAPISampler.sample(schema);
+        result = sample(schema);
         expected = 'string';
-        expect(result).to.equal(expected);
+        expect(result).toEqual(expected);
       });
 
-      it('should prefer oneOf if anyOf and oneOf are on the same level', function () {
+      it('should prefer oneOf if anyOf and oneOf are on the same level', () => {
         schema = {
           anyOf: [
             {
@@ -540,13 +643,13 @@ describe('Integration', function() {
             }
           ]
         };
-        result = OpenAPISampler.sample(schema);
+        result = sample(schema);
         expected = 0;
-        expect(result).to.equal(expected);
+        expect(result).toEqual(expected);
       });
 
-      it('should work with nested circular oneOf', function () {
-        result = OpenAPISampler.sample({ $ref: '#/definitions/A' }, {}, {
+      it('should work with nested circular oneOf', () => {
+        result = sample({ $ref: '#/definitions/A' }, {}, {
           definitions: {
             A: {
               properties: {
@@ -559,11 +662,11 @@ describe('Integration', function() {
           }
         });
         expected = { a: 'string' }
-        expect(result).to.deep.equal(expected);
+        expect(result).toEqual(expected);
       });
 
-      it('should work with nested circular anyOf', function () {
-        result = OpenAPISampler.sample({ $ref: '#/definitions/A' }, {}, {
+      it('should work with nested circular anyOf', () => {
+        result = sample({ $ref: '#/definitions/A' }, {}, {
           definitions: {
             A: {
               properties: {
@@ -576,11 +679,11 @@ describe('Integration', function() {
           }
         });
         expected = { a: 'string' }
-        expect(result).to.deep.equal(expected);
+        expect(result).toEqual(expected);
       });
     });
 
-    describe('inferring type from root schema', function() {
+    describe('inferring type from root schema', () => {
       const basicSchema = {
         oneOf: [
           {
@@ -622,349 +725,155 @@ describe('Integration', function() {
         else: {properties: {baz: {type: 'number'}}},
       };
 
-      it('should infer example from root schema which has defined const keyword', function() {
+      it('should infer example from root schema which has defined const keyword', () => {
         schema = {
           ...basicSchema,
           const: 'foobar'
         };
-        result = OpenAPISampler.sample(schema);
+        result = sample(schema);
         expected = 'foobar';
-        expect(result).to.equal(expected);
+        expect(result).toEqual(expected);
       });
 
-      it('should infer example from root schema which has defined examples keyword', function() {
+      it('should infer example from root schema which has defined examples keyword', () => {
         schema = {
           ...basicSchema,
           examples: ['foobar']
         };
-        result = OpenAPISampler.sample(schema);
+        result = sample(schema);
         expected = 'foobar';
-        expect(result).to.equal(expected);
+        expect(result).toEqual(expected);
       });
 
-      it('should infer example from root schema which has defined default keyword', function() {
+      it('should infer example from root schema which has defined default keyword', () => {
         schema = {
           ...basicSchema,
-          const: 'foobar'
+          default: 'foobar'
         };
-        result = OpenAPISampler.sample(schema);
+        result = sample(schema);
         expected = 'foobar';
-        expect(result).to.equal(expected);
+        expect(result).toEqual(expected);
       });
 
-      it('should infer example from root schema which has defined enum keyword', function() {
+      it('should infer example from root schema which has defined enum keyword', () => {
         schema = {
           ...basicSchema,
           enum: ['foobar']
         };
-        result = OpenAPISampler.sample(schema);
+        result = sample(schema);
         expected = 'foobar';
-        expect(result).to.equal(expected);
+        expect(result).toEqual(expected);
       });
 
-      it('should infer example from root schema which has defined const and examples keyword (const has higher priority)', function() {
+      it('should infer example from root schema which has defined const and examples keyword (const has higher priority)', () => {
         schema = {
           ...basicSchema,
           const: 'foobar',
           examples: ['barfoo']
         };
-        result = OpenAPISampler.sample(schema);
+        result = sample(schema);
         expected = 'foobar';
-        expect(result).to.equal(expected);
+        expect(result).toEqual(expected);
       });
 
-      it('should infer example from root schema which has defined examples and enum keyword (examples have higher priority)', function() {
+      it('should infer example from root schema which has defined examples and enum keyword (examples have higher priority)', () => {
         schema = {
           ...basicSchema,
           enum: ['barfoo'],
           examples: ['foobar']
         };
-        result = OpenAPISampler.sample(schema);
+        result = sample(schema);
         expected = 'foobar';
-        expect(result).to.equal(expected);
+        expect(result).toEqual(expected);
       });
 
-      it('should infer example from root schema which has defined enum and default keyword (enum have higher priority)', function() {
+      it('should infer example from root schema which has defined enum and default keyword (enum have higher priority)', () => {
         schema = {
           ...basicSchema,
           default: 'barfoo',
           enum: ['foobar']
         };
-        result = OpenAPISampler.sample(schema);
+        result = sample(schema);
         expected = 'foobar';
-        expect(result).to.equal(expected);
+        expect(result).toEqual(expected);
       });
+
     });
   });
 
-  describe('$refs', function() {
-    it('should follow $ref', function() {
-      const schema = {
-        properties: {
-          test: {
-            $ref: '#/defs/Schema'
-          }
-        },
-      };
-      result = OpenAPISampler.sample(schema, {}, { defs: {
-        Schema: {
-          type: 'object',
-          properties: {
-            a: {
-              type: 'string'
-            }
-          }
-        }
-      }});
-      expected = {
-        test: {
-          a: 'string'
-        }
-      };
-      expect(result).to.deep.equal(expected);
-    });
-
-    it('should not follow circular $ref', function() {
+  describe('$ref', () => {
+    it('should follow $ref', () => {
       schema = {
-        $ref: '#/defs/Schema'
+        $ref: '#/definitions/Pet'
       };
       const spec = {
-        defs: {
-          str: {
-            type: 'string'
-          },
-          Schema: {
+        definitions: {
+          Pet: {
             type: 'object',
             properties: {
-              a: {
-                $ref: '#/defs/str'
-              },
-              b: {
-                $ref: '#/defs/Schema'
+              name: {
+                type: 'string'
               }
             }
           }
         }
       };
-      result = OpenAPISampler.sample(schema, {}, spec);
+      result = sample(schema, {}, spec);
       expected = {
-        a: 'string',
-        b: {}
+        name: 'string'
       };
-      expect(result).to.deep.equal(expected);
-    });
-
-    it('should not follow circular $ref if more than one in properties', function() {
-      schema = {
-        $ref: '#/defs/Schema'
-      };
-      const spec = {
-        defs: {
-          Schema: {
-            type: 'object',
-            properties: {
-              a: {
-                $ref: '#/defs/Schema'
-              },
-              b: {
-                $ref: '#/defs/Schema'
-              }
-            }
-          }
-        }
-      };
-      result = OpenAPISampler.sample(schema, {}, spec);
-      expected = {
-        a: {},
-        b: {}
-      };
-      expect(result).to.deep.equal(expected);
-    });
-
-    it('should throw if schema has $ref and spec is not provided', function() {
-      schema = {
-        $ref: '#/defs/Schema'
-      };
-
-      expect(() => OpenAPISampler.sample(schema)).to
-      .throw(/You must provide full specification in the third parameter/);
-    });
-
-    it('should ignore readOnly params if referenced', function() {
-      schema = {
-        type: 'object',
-        properties: {
-          a: {
-            allOf: [
-              { $ref: '#/defs/Prop' }
-            ],
-            description: 'prop A'
-          },
-          b: {
-            type: 'string'
-          }
-        }
-      };
-
-      const spec = {
-        defs: {
-          Prop: {
-            type: 'string',
-            readOnly: true
-          }
-        }
-      };
-
-      expected = {
-        b: 'string'
-      };
-
-      result = OpenAPISampler.sample(schema, {skipReadOnly: true}, spec);
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
   });
 
-  describe('circular references in JS object', function() {
-    let result, schema, expected;
-
-    it('should not follow circular references in JS object', function() {
-      const someType = {
-        type: 'string'
-      };
-
-      const circularSchema = {
-        type: 'object',
-        properties: {
-          a: someType
-        }
-      }
-
-      circularSchema.properties.b = circularSchema;
-      schema = circularSchema;
-      result = OpenAPISampler.sample(schema);
-      expected = {
-        a: 'string',
-        b: {
-          a: 'string',
-          b: {}
-        }
-      };
-      expect(result).to.deep.equal(expected);
-    });
-
-    it('should not detect false-positive circular references in JS object', function() {
-      const a = {
-        type: 'string',
-        example: 'test'
-      };
-
-      const b = {
-        type: 'integer',
-        example: 1
-      };
-
-      const c = {
-        type: 'object',
-        properties: {
-          test: {
-            'type': 'string'
+  describe('discriminator', () => {
+    it('should support discriminator', () => {
+      schema = {
+        oneOf: [
+          {
+            type: 'object',
+            required: ['pet_type'],
+            properties: {
+              pet_type: {
+                type: 'string',
+                enum: ['Cat']
+              },
+              name: {
+                type: 'string'
+              },
+              huntingSkill: {
+                type: 'string'
+              }
+            }
+          },
+          {
+            type: 'object',
+            required: ['pet_type'],
+            properties: {
+              pet_type: {
+                type: 'string',
+                enum: ['Dog']
+              },
+              name: {
+                type: 'string'
+              },
+              packSize: {
+                type: 'number'
+              }
+            }
           }
+        ],
+        discriminator: {
+          propertyName: 'pet_type'
         }
       };
-
-      const d = {
-        type: 'array',
-        items: {
-          'type': 'string',
-        }
-      };
-
-      const e = {
-        allOf: [ c, c ]
-      };
-
-      const f = {
-        oneOf: [d, d ]
-      };
-
-      const g = {
-        anyOf: [ c, c ]
-      };
-
-      const h = { $ref: '#/a' };
-
-      const nonCircularSchema = {
-        type: 'object',
-        properties: {
-          a: a,
-          aa: a,
-          b: b,
-          bb: b,
-          c: c,
-          cc: c,
-          d: d,
-          dd: d,
-          e: e,
-          ee: e,
-          f: f,
-          ff: f,
-          g: g,
-          gg: g,
-          h: h,
-          hh: h
-        }
-      }
-
-      const spec = {
-          nonCircularSchema,
-          a: a
-      }
-      result = OpenAPISampler.sample(nonCircularSchema, {}, spec);
-
+      result = sample(schema);
       expected = {
-        a: 'test',
-        aa: 'test',
-        b: 1,
-        bb: 1,
-        c: {'test': 'string'},
-        cc: {'test': 'string'},
-        d: ['string'],
-        dd: ['string'],
-        e: {'test': 'string'},
-        ee: {'test': 'string'},
-        f: ['string'],
-        ff: ['string'],
-        g: {'test': 'string'},
-        gg: {'test': 'string'},
-        h: 'test',
-        hh: 'test'
+        pet_type: 'Cat',
+        name: 'string',
+        huntingSkill: 'string'
       };
-      expect(result).to.deep.equal(expected);
-    });
-
-    it('should not follow circular references in JS object when more that one circular reference present', function() {
-
-      const circularSchema = {
-        type: 'object',
-        properties: {}
-      }
-
-      circularSchema.properties.a = circularSchema;
-      circularSchema.properties.b = circularSchema;
-
-      schema = circularSchema;
-      result = OpenAPISampler.sample(schema);
-      expected = {
-        a: {
-          a: {},
-          b: {}
-        },
-        b: {
-          a: {},
-          b: {}
-        }
-      };
-      expect(result).to.deep.equal(expected);
+      expect(result).toEqual(expected);
     });
   });
 });

@@ -4,4 +4,4 @@ import './gulp-tasks';
 // Load all of our Gulp plugins
 global.$ = gulpLoadPlugins();
 
-gulp.task('default', gulp.series('test'));
+gulp.task('default', gulp.series('build'));

@@ -27,4 +27,4 @@ function build() {
     .pipe(gulp.dest(config.destinationFolder));
 }
 
-gulp.task('build', gulp.series(gulp.parallel('lint', 'clean'), build));
+gulp.task('build', gulp.series(gulp.parallel('clean'), build));
