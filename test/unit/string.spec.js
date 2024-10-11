@@ -137,7 +137,7 @@ describe('sampleString', () => {
 
   it('should return binary for format binary', () => {
     res = sampleString({format: 'binary'});
-    expect(res).to.deep.equal([116, 101, 115, 116]);
+    expect(res).toEqual([116, 101, 115, 116]);
   });
   
   it.each([
