@@ -1,5 +1,13 @@
 import { traverse, clearCache } from './traverse';
 import { sampleArray, sampleBoolean, sampleNumber, sampleObject, sampleString } from './samplers/index';
+import { XMLBuilder } from 'fast-xml-parser';
+
+const builder = new XMLBuilder({
+  ignoreAttributes : false,
+  format: true,
+  attributeNamePrefix: '$',
+  textNodeName: '#text',
+});
 
 export var _samplers = {};
 
@@ -11,7 +19,14 @@ const defaults = {
 export function sample(schema, options, spec) {
   let opts = Object.assign({}, defaults, options);
   clearCache();
-  return traverse(schema, opts, spec).value;
+  let result = traverse(schema, opts, spec).value;
+  if (opts.format === 'xml') {
+    if (Object.keys(result).length > 1) {
+      result = { [schema?.xml?.name || 'root']: result };
+    }
+    return builder.build(result);
+  }
+  return result;
 };
 
 export function _registerSampler(type, sampler) {

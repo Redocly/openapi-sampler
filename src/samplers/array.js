@@ -1,4 +1,6 @@
 import { traverse } from '../traverse';
+import { applyXMLAttributes } from '../utils';
+
 export function sampleArray(schema, options = {}, spec, context) {
   const depth = (context && context.depth || 1);
 
@@ -22,7 +24,19 @@ export function sampleArray(schema, options = {}, spec, context) {
   for (let i = 0; i < arrayLength; i++) {
     let itemSchema = itemSchemaGetter(i);
     let { value: sample } = traverse(itemSchema, options, spec, {depth: depth + 1});
-    res.push(sample);
+    if (options?.format === 'xml') {
+      const { value, propertyName } = applyXMLAttributes({value: sample}, itemSchema);
+      if (propertyName) {
+        if (!res?.[propertyName]) {
+          res = { ...res, [propertyName]: [] };
+        }
+        res[propertyName].push(value);
+      } else {
+        res.push(sample);
+      }
+    } else {
+      res.push(sample);
+    }
   }
   return res;
 }
