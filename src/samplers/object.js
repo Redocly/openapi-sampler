@@ -38,7 +38,7 @@ export function sampleObject(schema, options = {}, spec, context) {
           res = { ...res, ...value };
         }
       } else {
-        res[sample.propertyName] = sample.value;
+        res[propertyName] = sample.value;
       }
     });
   }
