@@ -1093,11 +1093,11 @@ describe('Integration', () => {
       const result = sample(schema, options, {});
 
       expect(result).toMatchInlineSnapshot(`
-  "<parent:booksLibrary>
-    <parent:booksLibrary>string</parent:booksLibrary>
-  </parent:booksLibrary>
-  "
-  `);
+"<parent:booksLibrary>
+  <child:books>string</child:books>
+</parent:booksLibrary>
+"
+`);
     });
 
     it('should build XML for an nested object', () => {

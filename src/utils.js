@@ -81,9 +81,9 @@ export function getXMLAttributes(schema) {
   };
 }
 
-export function applyXMLAttributes(result, schema, context) {
+export function applyXMLAttributes(result, schema = {}, context = {}) {
   const { value: oldValue } = result;
-  const { propertyName: oldPropertyName } = context || {};
+  const { propertyName: oldPropertyName } = context;
   const { name, prefix, namespace, attribute, wrapped } =
     getXMLAttributes(schema);
   let propertyName = name || oldPropertyName ? `${prefix ? prefix + ':' : ''}${name || oldPropertyName}` : null;
@@ -109,13 +109,17 @@ export function applyXMLAttributes(result, schema, context) {
   if (schema.type === 'array') {
     if (wrapped && Array.isArray(value)) {
       value = { [propertyName]: [...value] };
-    } else if (!wrapped) {
+    }
+    if (!wrapped) {
       propertyName = null;
     }
 
     if (schema.example !== undefined && !wrapped) {
       propertyName = schema.items.xml?.name || propertyName;
     }
+  }
+  if (schema.oneOf || schema.anyOf || schema.allOf || schema.$ref) {
+    propertyName = null;
   }
 
   return {

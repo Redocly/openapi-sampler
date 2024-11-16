@@ -31,7 +31,7 @@ export function sampleObject(schema, options = {}, spec, context) {
       }
 
       if (options?.format === 'xml') {
-        const { propertyName: newPropertyName, value } = applyXMLAttributes(sample, schema.properties[propertyName], {propertyName});
+        const { propertyName: newPropertyName, value } = applyXMLAttributes(sample, schema.properties[propertyName], { propertyName });
         if (newPropertyName) {
           res[newPropertyName] = value;
         } else {
