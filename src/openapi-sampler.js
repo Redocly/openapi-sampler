@@ -10,7 +10,7 @@ const defaults = {
 };
 
 function convertJsonToXml(obj, schema) {
-  if (!obj || typeof obj !== 'object') {
+  if (!obj) {
     throw new Error('Unknown format output for building XML.');
   }
   if (Array.isArray(obj) || Object.keys(obj).length > 1) {
@@ -29,7 +29,7 @@ export function sample(schema, options, spec) {
   let opts = Object.assign({}, defaults, options);
   clearCache();
   let result = traverse(schema, opts, spec).value;
-  if (opts.format === 'xml') {
+  if (opts?.format === 'xml') {
     return convertJsonToXml(result, schema);
   }
   return result;

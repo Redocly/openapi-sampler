@@ -73,7 +73,7 @@ export function traverse(schema, options, spec, context) {
       const traverseResult = traverse(referenced, options, spec, context);
       if (options.format === 'xml') {
         const {propertyName, value} = applyXMLAttributes(traverseResult, referenced, context);
-        result = {...traverseResult, value: {[propertyName]:value}};
+        result = {...traverseResult, value: {[propertyName || 'root']: value}};
       } else {
         result = traverseResult;
       }
