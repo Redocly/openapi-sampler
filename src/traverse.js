@@ -3,6 +3,7 @@ import { allOfSample } from './allOf';
 import { inferType } from './infer';
 import { getResultForCircular, mergeDeep, popSchemaStack } from './utils';
 import JsonPointer from 'json-pointer';
+import { applyXMLAttributes } from './utils';
 
 let $refCache = {};
 // for circular JS references we use additional array and not object as we need to compare entire schemas and not strings
@@ -69,7 +70,14 @@ export function traverse(schema, options, spec, context) {
 
     if ($refCache[ref] !== true) {
       $refCache[ref] = true;
-      result = traverse(referenced, options, spec, context);
+      const traverseResult = traverse(referenced, options, spec, context);
+      if (options.format === 'xml') {
+        const {propertyName, value} = applyXMLAttributes(traverseResult, referenced, context);
+        result = {...traverseResult, value: {[propertyName || 'root']: value}};
+      } else {
+        result = traverseResult;
+      }
+
       $refCache[ref] = false;
     } else {
       const referencedType = inferType(referenced);
