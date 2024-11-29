@@ -881,6 +881,30 @@ describe('Integration', () => {
     const options = {
       format: 'xml',
     };
+
+    it('should build XML for an array with nested array', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'array',
+            items: {
+              type: 'string',
+              example: ['John', 'Smith'],
+            }
+          }
+        }
+      };
+      const result = sample(schema, options, {});
+
+      expect(result.trim()).toMatchInlineSnapshot(`
+"<name>
+  <0>John</0>
+  <1>Smith</1>
+</name>"
+`);
+    });
+
     it('should build XML for an array with wrapped elements without examples', () => {
       const schema = {
         type: 'object',

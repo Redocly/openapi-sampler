@@ -115,7 +115,7 @@ export function applyXMLAttributes(result, schema = {}, context = {}) {
     }
 
     if (schema.example !== undefined && !wrapped) {
-      propertyName = schema.items.xml?.name || propertyName;
+      propertyName = schema.items?.xml?.name || propertyName;
     }
   }
   if (schema.oneOf || schema.anyOf || schema.allOf || schema.$ref) {
