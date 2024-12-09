@@ -1,4 +1,6 @@
 import { traverse } from '../traverse';
+import { applyXMLAttributes } from '../utils';
+
 export function sampleObject(schema, options = {}, spec, context) {
   let res = {};
   const depth = (context && context.depth || 1);
@@ -27,7 +29,17 @@ export function sampleObject(schema, options = {}, spec, context) {
       if (options.skipWriteOnly && sample.writeOnly) {
         return;
       }
-      res[propertyName] = sample.value;
+
+      if (options?.format === 'xml') {
+        const { propertyName: newPropertyName, value } = applyXMLAttributes(sample, schema.properties[propertyName], { propertyName });
+        if (newPropertyName) {
+          res[newPropertyName] = value;
+        } else {
+          res = { ...res, ...value };
+        }
+      } else {
+        res[propertyName] = sample.value;
+      }
     });
   }
 

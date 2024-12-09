@@ -71,6 +71,63 @@ export function popSchemaStack(seenSchemasStack, context) {
   if (context) seenSchemasStack.pop();
 }
 
+export function getXMLAttributes(schema) {
+  return {
+    name: schema?.xml?.name || '',
+    prefix: schema?.xml?.prefix || '',
+    namespace: schema?.xml?.namespace || null,
+    attribute: schema?.xml?.attribute ?? false,
+    wrapped: schema?.xml?.wrapped ?? false,
+  };
+}
+
+export function applyXMLAttributes(result, schema = {}, context = {}) {
+  const { value: oldValue } = result;
+  const { propertyName: oldPropertyName } = context;
+  const { name, prefix, namespace, attribute, wrapped } =
+    getXMLAttributes(schema);
+  let propertyName = name || oldPropertyName ? `${prefix ? prefix + ':' : ''}${name || oldPropertyName}` : null;
+
+  let value = typeof oldValue === 'object'
+    ? Array.isArray(oldValue)
+    ? [...oldValue]
+    : { ...oldValue }
+    : oldValue;
+
+  if (attribute && propertyName) {
+    propertyName = `$${propertyName}`;
+  }
+
+  if (namespace) {
+    if (typeof value === 'object') {
+      value[`$xmlns${prefix ? ':' + prefix : ''}`] = namespace;
+    } else {
+      value = { [`$xmlns${prefix ? ':' + prefix : ''}`]: namespace, ['#text']: value };
+    }
+  }
+
+  if (schema.type === 'array') {
+    if (wrapped && Array.isArray(value)) {
+      value = { [propertyName]: [...value] };
+    }
+    if (!wrapped) {
+      propertyName = null;
+    }
+
+    if (schema.example !== undefined && !wrapped) {
+      propertyName = schema.items?.xml?.name || propertyName;
+    }
+  }
+  if (schema.oneOf || schema.anyOf || schema.allOf || schema.$ref) {
+    propertyName = null;
+  }
+
+  return {
+    propertyName,
+    value,
+  };
+}
+
 function hashCode(str) {
   var hash = 0;
   if (str.length == 0) return hash;

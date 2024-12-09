@@ -1,12 +1,13 @@
 {
   "name": "openapi-sampler",
-  "version": "1.5.1",
+  "version": "1.6.1",
   "description": "Tool for generation samples based on OpenAPI payload/response schema",
   "main": "dist/openapi-sampler.js",
   "module": "src/openapi-sampler.js",
   "types": "./src/types.d.ts",
   "scripts": {
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "test": "npm run lint && jest",
     "test:watch": "jest --watch",
     "coverage": "jest --coverage",
@@ -67,6 +68,7 @@
   },
   "dependencies": {
     "@types/json-schema": "^7.0.7",
+    "fast-xml-parser": "^4.5.0",
     "json-pointer": "0.6.2"
   },
   "overrides": {
