@@ -123,7 +123,7 @@ describe('sampleString', () => {
   });
 
   it('should generate valid text for basic regexes', () => {
-    [/#{3}test[1-5]/, /[500-15000]/, /#{2,9}/, /#{5}/, /0x[0-9a-f]{40}/]
+    [/#{3}test[1-5]/, /[500-15000]/, /#{2,9}/, /#{5}/, /0x[0-9a-f]{40}/, /^[0-9]$/]
       .forEach((regexp) => {
         res = sampleString(
           {pattern: regexp.source},
