@@ -186,7 +186,9 @@ export function regexSample(pattern) {
     pattern = pattern.toString();
     pattern = pattern.match(/\/(.+?)\//)?.[1] ?? ''; // Remove frontslash from front and back of RegExp
   }
-
+  
+  pattern = pattern.replace(/^(\^)?(.*?)(\$)?$/, '$2'); // Remove anchors if present
+  
   let min
   let max
   let repetitions
