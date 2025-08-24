@@ -48,7 +48,7 @@
     "babel-jest": "^29.7.0",
     "babel-loader": "^8.0.6",
     "babelify": "^10.0.0",
-    "browserify": "^16.5.0",
+    "browserify": "^17.0.1",
     "core-js": "^3.4.1",
     "coveralls-next": "^4.2.1",
     "del": "^5.1.0",
@@ -74,8 +74,6 @@
   "overrides": {
     "braces": "3.0.3",
     "elliptic@<6.6.0": ">=6.6.0",
-    "form-data": "4.0.4",
-    "cipher-base": ">=1.0.5",
-    "sha.js": ">=2.4.12"
+    "form-data": "4.0.4"
   }
 }
