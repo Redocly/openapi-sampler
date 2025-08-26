@@ -48,7 +48,7 @@
     "babel-jest": "^29.7.0",
     "babel-loader": "^8.0.6",
     "babelify": "^10.0.0",
-    "browserify": "^16.5.0",
+    "browserify": "^17.0.1",
     "core-js": "^3.4.1",
     "coveralls-next": "^4.2.1",
     "del": "^5.1.0",
