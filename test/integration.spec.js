@@ -464,6 +464,30 @@ describe('Integration', () => {
 
       expect(result).toEqual(expected);
     });
+
+
+    it('should repsect readOnly from schemas in allOf', () => {
+      const schema = {
+        allOf: [
+          {
+            type: 'object',
+            properties: {
+              a: { type: 'string' },
+              b: { type: 'integer' },
+            },
+          },
+          {
+            properties: {
+              b: { readOnly: true },
+            },
+          }
+        ],
+      };
+      const result = sample(schema, { skipReadOnly: true });
+      expect(result).toEqual({
+        a: 'string',
+      });
+    });
   });
 
   describe('Inheritance', () => {
