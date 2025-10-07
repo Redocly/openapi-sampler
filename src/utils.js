@@ -1,5 +1,7 @@
 'use strict';
 
+export const SKIP_SYMBOL = Symbol('skip');
+
 function pad(number) {
   if (number < 10) {
     return '0' + number;

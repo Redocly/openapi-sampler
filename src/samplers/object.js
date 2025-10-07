@@ -1,5 +1,6 @@
 import { traverse } from '../traverse';
 import { applyXMLAttributes } from '../utils';
+import { SKIP_SYMBOL } from '../utils';
 
 export function sampleObject(schema, options = {}, spec, context) {
   let res = {};
@@ -23,10 +24,16 @@ export function sampleObject(schema, options = {}, spec, context) {
 
       const sample = traverse(schema.properties[propertyName], options, spec, { propertyName, depth: depth + 1 });
       if (options.skipReadOnly && sample.readOnly) {
+        if (context?.isAllOfChild) {
+          res[propertyName] = SKIP_SYMBOL;
+        }
         return;
       }
 
       if (options.skipWriteOnly && sample.writeOnly) {
+        if (context?.isAllOfChild) {
+          res[propertyName] = SKIP_SYMBOL;
+        }
         return;
       }
 
