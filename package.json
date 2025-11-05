@@ -74,6 +74,7 @@
   "overrides": {
     "braces": "3.0.3",
     "elliptic@<6.6.0": ">=6.6.0",
-    "form-data": "4.0.4"
+    "form-data": "4.0.4",
+    "tmp": ">=0.2.4"
   }
 }
