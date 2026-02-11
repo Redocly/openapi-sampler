@@ -149,7 +149,6 @@ export function applyXMLAttributes(result, schema = {}, context = {}) {
       }
       break;
 
-    case 'element':
     default:
       if (schema.type === 'array') {
         if (Array.isArray(value)) {
