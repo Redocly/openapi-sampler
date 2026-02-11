@@ -13,7 +13,7 @@ export function sampleObject(schema, options = {}, spec, context) {
     const requiredPropertiesMap = {};
 
     for (const requiredProperty of requiredProperties) {
-        requiredPropertiesMap[requiredProperty] = true;
+      requiredPropertiesMap[requiredProperty] = true;
     }
 
     Object.keys(schema.properties).forEach(propertyName => {
@@ -41,7 +41,7 @@ export function sampleObject(schema, options = {}, spec, context) {
         const { propertyName: newPropertyName, value } = applyXMLAttributes(sample, schema.properties[propertyName], { propertyName });
         if (newPropertyName) {
           res[newPropertyName] = value;
-        } else {
+        } else if (value !== null && typeof value === 'object') {
           res = { ...res, ...value };
         }
       } else {
@@ -52,8 +52,8 @@ export function sampleObject(schema, options = {}, spec, context) {
 
   if (schema && typeof schema.additionalProperties === 'object') {
     const propertyName = schema.additionalProperties['x-additionalPropertiesName'] || 'property';
-    res[`${String(propertyName)}1`] = traverse(schema.additionalProperties, options, spec, {depth: depth + 1 }).value;
-    res[`${String(propertyName)}2`] = traverse(schema.additionalProperties, options, spec, {depth: depth + 1 }).value;
+    res[`${String(propertyName)}1`] = traverse(schema.additionalProperties, options, spec, { depth: depth + 1 }).value;
+    res[`${String(propertyName)}2`] = traverse(schema.additionalProperties, options, spec, { depth: depth + 1 }).value;
   }
 
   // Strictly enforce maxProperties constraint
@@ -64,18 +64,18 @@ export function sampleObject(schema, options = {}, spec, context) {
     // Always include required properties first, if present
     const requiredProperties = Array.isArray(schema.required) ? schema.required : [];
     requiredProperties.forEach(propName => {
-        if (res[propName] !== undefined) {
-            filteredResult[propName] = res[propName];
-            propertiesAdded++;
-        }
+      if (res[propName] !== undefined) {
+        filteredResult[propName] = res[propName];
+        propertiesAdded++;
+      }
     });
 
     // Add other properties until maxProperties is reached
     Object.keys(res).forEach(propName => {
-        if (propertiesAdded < schema.maxProperties && !filteredResult.hasOwnProperty(propName)) {
-            filteredResult[propName] = res[propName];
-            propertiesAdded++;
-        }
+      if (propertiesAdded < schema.maxProperties && !filteredResult.hasOwnProperty(propName)) {
+        filteredResult[propName] = res[propName];
+        propertiesAdded++;
+      }
     });
 
     res = filteredResult;

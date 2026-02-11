@@ -17,10 +17,11 @@ function convertJsonToXml(obj, schema) {
     obj = { [schema?.xml?.name || 'root']: obj }; // XML document must contain one root element
   }
   const builder = new XMLBuilder({
-    ignoreAttributes : false,
+    ignoreAttributes: false,
     format: true,
     attributeNamePrefix: '$',
     textNodeName: '#text',
+    cdataPropName: '#cdata',
   });
   return builder.build(obj);
 }
