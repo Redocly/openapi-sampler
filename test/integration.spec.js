@@ -606,10 +606,10 @@ describe('Integration', () => {
     it('should support basic if/then/else usage', () => {
       schema = {
         type: 'object',
-        properties: {top: {type: 'number'}},
-        if: {properties: {foo: {type: 'string', format: 'email'}}},
-        then: {properties: {bar: {type: 'string'}}},
-        else: {properties: {baz: {type: 'number'}}},
+        properties: { top: { type: 'number' } },
+        if: { properties: { foo: { type: 'string', format: 'email' } } },
+        then: { properties: { bar: { type: 'string' } } },
+        else: { properties: { baz: { type: 'number' } } },
       };
 
       result = sample(schema);
@@ -744,9 +744,9 @@ describe('Integration', () => {
             }
           }
         ],
-        if: {properties: {foo: {type: 'string', format: 'email'}}},
-        then: {properties: {bar: {type: 'string'}}},
-        else: {properties: {baz: {type: 'number'}}},
+        if: { properties: { foo: { type: 'string', format: 'email' } } },
+        then: { properties: { bar: { type: 'string' } } },
+        else: { properties: { baz: { type: 'number' } } },
       };
 
       it('should infer example from root schema which has defined const keyword', () => {
@@ -1396,6 +1396,604 @@ describe('Integration', () => {
   </loc:eventLocation>
   "
   `);
+    });
+  });
+
+  describe('xml nodeType', () => {
+    const options = {
+      format: 'xml',
+    };
+
+    describe('nodeType: "attribute"', () => {
+      it('should render property as XML attribute using nodeType: attribute', () => {
+        const schema = {
+          type: 'object',
+          properties: {
+            person: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'integer',
+                  xml: {
+                    nodeType: 'attribute',
+                  },
+                  example: 123,
+                },
+                name: {
+                  type: 'string',
+                  example: 'Alice',
+                },
+              },
+              xml: {
+                name: 'person',
+              },
+            },
+          },
+        };
+        const result = sample(schema, options, {});
+
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<person id="123">
+  <name>Alice</name>
+</person>"
+`);
+      });
+
+      it('should render nodeType: attribute with prefix and namespace (spec example: Person)', () => {
+        const spec = {
+          components: {
+            schemas: {
+              Person: {
+                type: 'object',
+                properties: {
+                  id: {
+                    type: 'integer',
+                    format: 'int32',
+                    xml: {
+                      nodeType: 'attribute',
+                    },
+                    example: 123,
+                  },
+                  name: {
+                    type: 'string',
+                    xml: {
+                      namespace: 'https://example.com/schema/sample',
+                      prefix: 'sample',
+                    },
+                    example: 'example',
+                  },
+                },
+              },
+            },
+          },
+        };
+
+        const schema = { $ref: '#/components/schemas/Person' };
+        const result = sample(schema, options, spec);
+
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<Person id="123">
+  <sample:name xmlns:sample="https://example.com/schema/sample">example</sample:name>
+</Person>"
+`);
+      });
+
+      it('should produce identical output for nodeType: attribute and legacy attribute: true', () => {
+        const schemaNodeType = {
+          type: 'object',
+          properties: {
+            item: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'number',
+                  xml: { nodeType: 'attribute', name: 'itemId' },
+                  example: 42,
+                },
+              },
+              xml: { name: 'item' },
+            },
+          },
+        };
+
+        const schemaLegacy = {
+          type: 'object',
+          properties: {
+            item: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'number',
+                  xml: { attribute: true, name: 'itemId' },
+                  example: 42,
+                },
+              },
+              xml: { name: 'item' },
+            },
+          },
+        };
+
+        const resultNodeType = sample(schemaNodeType, options, {});
+        const resultLegacy = sample(schemaLegacy, options, {});
+        expect(resultNodeType).toEqual(resultLegacy);
+      });
+    });
+
+    describe('nodeType: "element"', () => {
+      it('should render a basic element', () => {
+        const schema = {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              xml: {
+                nodeType: 'element',
+                name: 'fullName',
+              },
+              example: 'Alice',
+            },
+          },
+          xml: { name: 'person' },
+        };
+        const result = sample(schema, options, {});
+
+        expect(result.trim()).toMatchInlineSnapshot('"<fullName>Alice</fullName>"');
+      });
+
+      it('should wrap array when nodeType: element is set (spec example)', () => {
+        const schema = {
+          type: 'object',
+          xml: { name: 'document' },
+          properties: {
+            animals: {
+              type: 'array',
+              xml: { nodeType: 'element' },
+              items: {
+                type: 'string',
+                xml: { name: 'animal' },
+              },
+            },
+          },
+        };
+        const result = sample(schema, options, {});
+
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<animals>
+  <animal>string</animal>
+</animals>"
+`);
+      });
+
+      it('should wrap array with nodeType: element and custom wrapper name', () => {
+        const schema = {
+          type: 'object',
+          xml: { name: 'document' },
+          properties: {
+            animals: {
+              type: 'array',
+              xml: { name: 'aliens', nodeType: 'element' },
+              items: {
+                type: 'string',
+                xml: { name: 'animal' },
+              },
+            },
+          },
+        };
+        const result = sample(schema, options, {});
+
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<aliens>
+  <animal>string</animal>
+</aliens>"
+`);
+      });
+
+      it('should produce identical output for nodeType: element and legacy wrapped: true on arrays', () => {
+        const schemaNodeType = {
+          type: 'object',
+          properties: {
+            books: {
+              type: 'array',
+              items: { type: 'string', xml: { name: 'book' } },
+              xml: { nodeType: 'element', name: 'booksLibrary' },
+            },
+          },
+        };
+
+        const schemaLegacy = {
+          type: 'object',
+          properties: {
+            books: {
+              type: 'array',
+              items: { type: 'string', xml: { name: 'book' } },
+              xml: { wrapped: true, name: 'booksLibrary' },
+            },
+          },
+        };
+
+        const resultNodeType = sample(schemaNodeType, options, {});
+        const resultLegacy = sample(schemaLegacy, options, {});
+        expect(resultNodeType).toEqual(resultLegacy);
+      });
+    });
+
+    describe('nodeType: "text"', () => {
+      it('should render property as text node inside an element', () => {
+        const schema = {
+          type: 'object',
+          properties: {
+            item: {
+              type: 'object',
+              properties: {
+                kind: {
+                  type: 'string',
+                  xml: { nodeType: 'attribute' },
+                  example: 'Cat',
+                },
+                name: {
+                  type: 'string',
+                  xml: { nodeType: 'text' },
+                  example: 'Fluffy',
+                },
+              },
+              xml: { name: 'animal' },
+            },
+          },
+        };
+        const result = sample(schema, options, {});
+
+        expect(result.trim()).toMatchInlineSnapshot('"<animal kind="Cat">Fluffy</animal>"');
+      });
+
+      it('should ignore xml.name for nodeType: text', () => {
+        const schema = {
+          type: 'object',
+          properties: {
+            wrapper: {
+              type: 'object',
+              properties: {
+                content: {
+                  type: 'string',
+                  xml: { nodeType: 'text', name: 'ignoredName' },
+                  example: 'Hello world',
+                },
+              },
+              xml: { name: 'greeting' },
+            },
+          },
+        };
+        const result = sample(schema, options, {});
+
+        expect(result.trim()).toMatchInlineSnapshot('"<greeting>Hello world</greeting>"');
+      });
+    });
+
+    describe('nodeType: "cdata"', () => {
+      it('should render property as CDATA section', () => {
+        const schema = {
+          type: 'object',
+          properties: {
+            item: {
+              type: 'object',
+              properties: {
+                content: {
+                  type: 'string',
+                  xml: { nodeType: 'cdata' },
+                  example: '<html>bold</html>',
+                },
+              },
+              xml: { name: 'note' },
+            },
+          },
+        };
+        const result = sample(schema, options, {});
+
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<note>
+  <![CDATA[<html>bold</html>]]>
+</note>"
+`);
+      });
+
+      it('should ignore xml.name for nodeType: cdata', () => {
+        const schema = {
+          type: 'object',
+          properties: {
+            item: {
+              type: 'object',
+              properties: {
+                body: {
+                  type: 'string',
+                  xml: { nodeType: 'cdata', name: 'shouldBeIgnored' },
+                  example: 'raw content',
+                },
+              },
+              xml: { name: 'message' },
+            },
+          },
+        };
+        const result = sample(schema, options, {});
+
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<message>
+  <![CDATA[raw content]]>
+</message>"
+`);
+      });
+
+      it('should render element with attribute and CDATA content', () => {
+        const schema = {
+          type: 'object',
+          properties: {
+            item: {
+              type: 'object',
+              properties: {
+                type: {
+                  type: 'string',
+                  xml: { nodeType: 'attribute' },
+                  example: 'html',
+                },
+                body: {
+                  type: 'string',
+                  xml: { nodeType: 'cdata' },
+                  example: '<p>Hello</p>',
+                },
+              },
+              xml: { name: 'content' },
+            },
+          },
+        };
+        const result = sample(schema, options, {});
+
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<content type="html">
+  <![CDATA[<p>Hello</p>]]>
+</content>"
+`);
+      });
+    });
+
+    describe('nodeType: "none"', () => {
+      it('should default to none for arrays (items inline under parent)', () => {
+        const schema = {
+          type: 'object',
+          xml: { name: 'document' },
+          properties: {
+            animals: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+            },
+          },
+        };
+        const result = sample(schema, options, {});
+
+        expect(result.trim()).toMatchInlineSnapshot('"<animals>string</animals>"');
+      });
+
+      it('should allow explicit nodeType: none on an array', () => {
+        const schema = {
+          type: 'object',
+          xml: { name: 'document' },
+          properties: {
+            animals: {
+              type: 'array',
+              xml: { nodeType: 'none', name: 'aliens' },
+              items: {
+                type: 'string',
+                xml: { name: 'animal' },
+              },
+            },
+          },
+        };
+        const result = sample(schema, options, {});
+
+        expect(result.trim()).toMatchInlineSnapshot('"<animal>string</animal>"');
+      });
+
+      it('should exclude a primitive property with nodeType: none from XML output', () => {
+        const schema = {
+          type: 'object',
+          xml: { name: 'Product' },
+          properties: {
+            title: {
+              type: 'string',
+              example: 'Widget',
+              xml: { nodeType: 'element' },
+            },
+            internalCode: {
+              type: 'string',
+              example: 'INT-7742-X',
+              xml: { nodeType: 'none' },
+            },
+            visible: {
+              type: 'boolean',
+              example: true,
+              xml: { nodeType: 'element' },
+            },
+          },
+        };
+        const result = sample(schema, options, {});
+
+        expect(result).not.toContain('internalCode');
+        expect(result).not.toContain('INT-7742-X');
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<Product>
+  <title>Widget</title>
+  <visible>true</visible>
+</Product>"
+`);
+      });
+
+      it('should exclude a numeric property with nodeType: none from XML output', () => {
+        const schema = {
+          type: 'object',
+          xml: { name: 'Item' },
+          properties: {
+            name: {
+              type: 'string',
+              example: 'Test',
+            },
+            secretScore: {
+              type: 'integer',
+              example: 42,
+              xml: { nodeType: 'none' },
+            },
+          },
+        };
+        const result = sample(schema, options, {});
+
+        expect(result).not.toContain('secretScore');
+        expect(result).not.toContain('42');
+        expect(result.trim()).toMatchInlineSnapshot('"<name>Test</name>"');
+      });
+    });
+
+    describe('combined nodeTypes (spec-style examples)', () => {
+      it('should build XML with attribute + text nodes (Elements With Attributes And Text)', () => {
+        const schema = {
+          type: 'object',
+          properties: {
+            pet: {
+              type: 'object',
+              properties: {
+                kind: {
+                  type: 'string',
+                  xml: { nodeType: 'attribute' },
+                  example: 'Cat',
+                },
+                name: {
+                  type: 'string',
+                  xml: { nodeType: 'text' },
+                  example: 'Fluffy',
+                },
+              },
+              xml: { name: 'animal' },
+            },
+          },
+        };
+
+        const result = sample(schema, options, {});
+        expect(result.trim()).toMatchInlineSnapshot('"<animal kind="Cat">Fluffy</animal>"');
+      });
+
+      it('should build XML with attribute + cdata nodes', () => {
+        const schema = {
+          type: 'object',
+          properties: {
+            entry: {
+              type: 'object',
+              properties: {
+                format: {
+                  type: 'string',
+                  xml: { nodeType: 'attribute' },
+                  example: 'html',
+                },
+                body: {
+                  type: 'string',
+                  xml: { nodeType: 'cdata' },
+                  example: '<b>important</b>',
+                },
+              },
+              xml: { name: 'entry' },
+            },
+          },
+        };
+
+        const result = sample(schema, options, {});
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<entry format="html">
+  <![CDATA[<b>important</b>]]>
+</entry>"
+`);
+      });
+
+      it('should handle mixed element, attribute and text children', () => {
+        const schema = {
+          type: 'object',
+          properties: {
+            item: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'integer',
+                  xml: { nodeType: 'attribute' },
+                  example: 1,
+                },
+                label: {
+                  type: 'string',
+                  xml: { nodeType: 'element', name: 'label' },
+                  example: 'My Item',
+                },
+                description: {
+                  type: 'string',
+                  xml: { nodeType: 'text' },
+                  example: 'A fine item',
+                },
+              },
+              xml: { name: 'item' },
+            },
+          },
+        };
+
+        const result = sample(schema, options, {});
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<item id="1">
+  <label>My Item</label>
+A fine item</item>"
+`);
+      });
+
+      it('should handle all nodeType values together (Artifact-style schema)', () => {
+        const schema = {
+          type: 'object',
+          xml: { name: 'Artifact' },
+          properties: {
+            catalogId: {
+              type: 'string',
+              example: 'ART-2024-001',
+              xml: { nodeType: 'attribute' },
+            },
+            era: {
+              type: 'string',
+              example: 'Renaissance',
+              xml: { name: 'era', nodeType: 'attribute' },
+            },
+            title: {
+              type: 'string',
+              example: 'Mona Lisa',
+              xml: { nodeType: 'element' },
+            },
+            description: {
+              type: 'string',
+              example: 'Portrait painting by Leonardo da Vinci',
+              xml: { nodeType: 'text' },
+            },
+            rawNotes: {
+              type: 'string',
+              example: '<note>Handle with <b>extreme</b> care</note>',
+              xml: { nodeType: 'cdata' },
+            },
+            internalCode: {
+              type: 'string',
+              example: 'INT-7742-X',
+              xml: { nodeType: 'none' },
+            },
+          },
+        };
+
+        const result = sample(schema, options, {});
+
+        expect(result).not.toContain('internalCode');
+        expect(result).not.toContain('INT-7742-X');
+
+        expect(result).toContain('catalogId="ART-2024-001"');
+        expect(result).toContain('era="Renaissance"');
+        expect(result).toContain('<title>Mona Lisa</title>');
+        expect(result).toContain('Portrait painting by Leonardo da Vinci');
+        expect(result).toContain('<![CDATA[<note>Handle with <b>extreme</b> care</note>]]>');
+      });
     });
   });
 });

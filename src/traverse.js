@@ -72,8 +72,10 @@ export function traverse(schema, options, spec, context) {
       $refCache[ref] = true;
       const traverseResult = traverse(referenced, options, spec, context);
       if (options.format === 'xml') {
-        const {propertyName, value} = applyXMLAttributes(traverseResult, referenced, context);
-        result = {...traverseResult, value: {[propertyName || 'root']: value}};
+        const refName = ref.split('/').pop();
+        const xmlContext = { ...context, propertyName: context?.propertyName || refName };
+        const { propertyName, value } = applyXMLAttributes(traverseResult, referenced, xmlContext);
+        result = { ...traverseResult, value: { [propertyName || 'root']: value } };
       } else {
         result = traverseResult;
       }
@@ -172,12 +174,12 @@ export function traverse(schema, options, spec, context) {
       return inferred;
     }
 
-    const localExample = traverse({...schema, oneOf: undefined, anyOf: undefined }, options, spec, context);
+    const localExample = traverse({ ...schema, oneOf: undefined, anyOf: undefined }, options, spec, context);
     const subSchemaExample = traverse(selectedSubSchema, options, spec, context);
 
     if (typeof localExample.value === 'object' && typeof subSchemaExample.value === 'object') {
       const mergedExample = mergeDeep(localExample.value, subSchemaExample.value);
-      return {...subSchemaExample, value: mergedExample };
+      return { ...subSchemaExample, value: mergedExample };
     }
 
     return subSchemaExample;

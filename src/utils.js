@@ -64,7 +64,7 @@ export function uuid(str) {
 export function getResultForCircular(type) {
   return {
     value: type === 'object' ?
-        {}
+      {}
       : type === 'array' ? [] : undefined
   };
 }
@@ -83,45 +83,87 @@ export function getXMLAttributes(schema) {
   };
 }
 
+function resolveNodeType(schema) {
+  const xml = schema?.xml;
+
+  if (xml?.nodeType) {
+    return xml.nodeType;
+  }
+
+  if (xml?.attribute === true) {
+    return 'attribute';
+  }
+
+  if (xml?.wrapped === true && schema?.type === 'array') {
+    return 'element';
+  }
+
+  if (schema?.$ref || schema?.$dynamicRef || schema?.type === 'array') {
+    return 'none';
+  }
+
+  if (schema?.oneOf || schema?.anyOf || schema?.allOf) {
+    return 'none';
+  }
+
+  return 'element';
+}
+
 export function applyXMLAttributes(result, schema = {}, context = {}) {
   const { value: oldValue } = result;
   const { propertyName: oldPropertyName } = context;
-  const { name, prefix, namespace, attribute, wrapped } =
-    getXMLAttributes(schema);
+  const { name, prefix, namespace } = getXMLAttributes(schema);
+  const effectiveNodeType = resolveNodeType(schema);
+
   let propertyName = name || oldPropertyName ? `${prefix ? prefix + ':' : ''}${name || oldPropertyName}` : null;
 
   let value = typeof oldValue === 'object'
     ? Array.isArray(oldValue)
-    ? [...oldValue]
-    : { ...oldValue }
+      ? [...oldValue]
+      : { ...oldValue }
     : oldValue;
 
-  if (attribute && propertyName) {
-    propertyName = `$${propertyName}`;
+  switch (effectiveNodeType) {
+    case 'attribute':
+      if (propertyName) {
+        propertyName = `$${propertyName}`;
+      }
+      break;
+
+    case 'text':
+      propertyName = '#text';
+      break;
+
+    case 'cdata':
+      propertyName = '#cdata';
+      break;
+
+    case 'none':
+      if (schema.type === 'array') {
+        propertyName = null;
+        if (schema.example !== undefined) {
+          propertyName = schema.items?.xml?.name || propertyName;
+        }
+      } else {
+        propertyName = null;
+      }
+      break;
+
+    default:
+      if (schema.type === 'array') {
+        if (Array.isArray(value)) {
+          value = { [propertyName]: [...value] };
+        }
+      }
+      break;
   }
 
-  if (namespace) {
+  if (namespace && effectiveNodeType !== 'text' && effectiveNodeType !== 'cdata' && effectiveNodeType !== 'none') {
     if (typeof value === 'object') {
       value[`$xmlns${prefix ? ':' + prefix : ''}`] = namespace;
     } else {
       value = { [`$xmlns${prefix ? ':' + prefix : ''}`]: namespace, ['#text']: value };
     }
-  }
-
-  if (schema.type === 'array') {
-    if (wrapped && Array.isArray(value)) {
-      value = { [propertyName]: [...value] };
-    }
-    if (!wrapped) {
-      propertyName = null;
-    }
-
-    if (schema.example !== undefined && !wrapped) {
-      propertyName = schema.items?.xml?.name || propertyName;
-    }
-  }
-  if (schema.oneOf || schema.anyOf || schema.allOf || schema.$ref) {
-    propertyName = null;
   }
 
   return {
