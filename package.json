@@ -15,7 +15,7 @@
     "build": "gulp build",
     "prepublishOnly": "npm run build",
     "changeset": "npx @changesets/cli --",
-    "release": "npm run build && npm run changeset publish --tag next"
+    "release": "npm run build && npm run changeset publish"
   },
   "files": [
     "src/",

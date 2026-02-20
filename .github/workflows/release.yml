@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -24,16 +25,16 @@ jobs:
         with:
           node-version: 24.11.1
           cache: "npm"
+          registry-url: "https://registry.npmjs.org"
       - name: Install Dependencies
         run: npm ci
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
-        uses: RomanHotsiy/changesets-action@v1
+        uses: changesets/action@v1
         with:
           publish: npm run release
           commit: "chore: 🔖 release new versions"
           title: "chore: 🔖 release new versions"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
