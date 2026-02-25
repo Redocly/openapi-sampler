@@ -13,7 +13,9 @@
     "coverage": "jest --coverage",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "build": "gulp build",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "changeset": "npx @changesets/cli --",
+    "release": "npm run build && npm run changeset publish"
   },
   "files": [
     "src/",
@@ -41,6 +43,7 @@
     "@babel/core": "^7.7.2",
     "@babel/preset-env": "^7.7.1",
     "@babel/register": "^7.7.0",
+    "@changesets/cli": "^2.29.8",
     "@types/jest": "^29.5.12",
     "ajv": "^8.1.0",
     "ajv-formats": "^2.0.2",
