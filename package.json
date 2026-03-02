@@ -23,7 +23,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/redocly/openapi-sampler.git"
+    "url": "https://github.com/Redocly/openapi-sampler.git"
   },
   "keywords": [
     "OpenAPI",
@@ -35,9 +35,9 @@
   "author": "Roman Hotsiy <gotsijroman@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/redocly/openapi-sampler/issues"
+    "url": "https://github.com/Redocly/openapi-sampler/issues"
   },
-  "homepage": "https://github.com/redocly/openapi-sampler/",
+  "homepage": "https://github.com/Redocly/openapi-sampler/",
   "browserslist": "> 0.25%, not dead",
   "devDependencies": {
     "@babel/core": "^7.7.2",
