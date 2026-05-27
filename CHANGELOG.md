@@ -1,5 +1,11 @@
 # openapi-sampler
 
+## 1.7.4
+
+### Patch Changes
+
+- bb5c8c5: Fixed security vulnerability `CWE-1321` by updating `picomatch` to version `2.3.2`.
+
 ## 1.7.3
 
 ### Patch Changes
