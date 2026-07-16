@@ -53,7 +53,7 @@
     "babelify": "^10.0.0",
     "browserify": "^17.0.1",
     "core-js": "^3.4.1",
-    "coveralls-next": "^4.2.1",
+    "coveralls-next": "^6.0.2",
     "del": "^5.1.0",
     "eslint": "^7.27.0",
     "glob": "^7.1.6",
