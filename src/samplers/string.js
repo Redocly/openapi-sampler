@@ -104,6 +104,10 @@ function regexSample() {
   return '/regex/';
 }
 
+function binarySample() {
+  return [116, 101, 115, 116];
+}
+
 const stringFormats = {
   'email': emailSample,
   'idn-email': idnEmailSample, // https://tools.ietf.org/html/rfc6531#section-3.3
@@ -125,6 +129,7 @@ const stringFormats = {
   'json-pointer': jsonPointerSample,
   'relative-json-pointer': relativeJsonPointerSample, // https://tools.ietf.org/html/draft-handrews-relative-json-pointer-01
   'regex': regexSample,
+  'binary': binarySample,
 };
 
 export function sampleString(schema, options, spec, context) {
