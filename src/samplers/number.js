@@ -4,7 +4,7 @@ export function sampleNumber(schema) {
     res = 0.1;
   }
   if (typeof schema.exclusiveMinimum === 'boolean' || typeof schema.exclusiveMaximum === 'boolean') { //legacy support for jsonschema draft 4 of exclusiveMaximum/exclusiveMinimum as booleans
-    if (schema.maximum && schema.minimum) {
+    if (Number.isFinite(schema.maximum) && Number.isFinite(schema.minimum)) {
       res = schema.exclusiveMinimum ? Math.floor(schema.minimum) + 1 : schema.minimum;
       if ((schema.exclusiveMaximum && res >= schema.maximum) ||
         ((!schema.exclusiveMaximum && res > schema.maximum))) {
@@ -12,14 +12,14 @@ export function sampleNumber(schema) {
       }
       return res;
     }
-    if (schema.minimum) {
+    if (Number.isFinite(schema.minimum)) {
       if (schema.exclusiveMinimum) {
         return Math.floor(schema.minimum) + 1;
       } else {
         return schema.minimum;
       }
     }
-    if (schema.maximum) {
+    if (Number.isFinite(schema.maximum)) {
       if (schema.exclusiveMaximum) {
         return (schema.maximum > 0) ? 0 : Math.floor(schema.maximum) - 1;
       } else {
@@ -27,18 +27,18 @@ export function sampleNumber(schema) {
       }
     }
   } else {
-    if (schema.minimum) {
+    if (Number.isFinite(schema.minimum)) {
       return schema.minimum;
     }
-    if (schema.exclusiveMinimum) {
+    if (Number.isFinite(schema.exclusiveMinimum)) {
       res = Math.floor(schema.exclusiveMinimum) + 1;
 
       if (res === schema.exclusiveMaximum) {
         res = (res + Math.floor(schema.exclusiveMaximum) - 1) / 2;
       }
-    } else if (schema.exclusiveMaximum) {
+    } else if (Number.isFinite(schema.exclusiveMaximum)) {
       res = Math.floor(schema.exclusiveMaximum) - 1;
-    } else if (schema.maximum) {
+    } else if (Number.isFinite(schema.maximum)) {
       res = schema.maximum;
     }
   }
