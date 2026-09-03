@@ -1,5 +1,11 @@
 # openapi-sampler
 
+## 1.7.5
+
+### Patch Changes
+
+- e21f4b3: Fixed generated samples that violated the schema when a numeric boundary was `0`.
+
 ## 1.7.4
 
 ### Patch Changes
