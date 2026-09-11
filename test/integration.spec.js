@@ -638,6 +638,65 @@ describe('Integration', () => {
         expect(result).toEqual(expected);
       });
 
+      it('should match exactly one oneOf subschema when required is used on alternatives', () => {
+        schema = {
+          type: 'object',
+          properties: {
+            a: { type: 'string' },
+            b: { type: 'string' },
+          },
+          oneOf: [
+            { required: ['a'] },
+            { required: ['b'] },
+          ],
+        };
+        result = sample(schema);
+        expected = {
+          a: 'string'
+        };
+        expect(result).toEqual(expected);
+      });
+
+      it('should apply oneOf required when skipNonRequired is true', () => {
+        schema = {
+          type: 'object',
+          properties: {
+            a: { type: 'string' },
+            b: { type: 'string' },
+          },
+          oneOf: [
+            { required: ['a'] },
+            { required: ['b'] },
+          ],
+        };
+        result = sample(schema, { skipNonRequired: true });
+        expected = {
+          a: 'string'
+        };
+        expect(result).toEqual(expected);
+      });
+
+      it('should keep properties that are not required by other oneOf subschemas', () => {
+        schema = {
+          type: 'object',
+          properties: {
+            a: { type: 'string' },
+            b: { type: 'string' },
+            c: { type: 'string' },
+          },
+          oneOf: [
+            { required: ['a'] },
+            { required: ['b'] },
+          ],
+        };
+        result = sample(schema);
+        expected = {
+          a: 'string',
+          c: 'string'
+        };
+        expect(result).toEqual(expected);
+      });
+
       it('should support anyOf', () => {
         schema = {
           anyOf: [
