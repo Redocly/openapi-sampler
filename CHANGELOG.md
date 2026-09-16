@@ -1,5 +1,11 @@
 # openapi-sampler
 
+## 1.7.6
+
+### Patch Changes
+
+- f320fef: Fixed security vulnerability `CVE-2025-14505` by replacing the `browserify` build with `rollup`.
+
 ## 1.7.5
 
 ### Patch Changes
