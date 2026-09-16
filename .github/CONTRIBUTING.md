@@ -64,8 +64,6 @@ Run unit tests with this command: `npm run test`.
 
 - **`dist/`**: contains the compiled JavaScript code after building the project.
 
-- **`gulp/`**: likely contains Gulp tasks for building, testing, and other development processes.
-
 - **`.github/`**: contains GitHub-specific files, such as this `CONTRIBUTING.md`.
 
 - **`coverage/`**: contains code coverage reports generated after running tests.
@@ -74,7 +72,7 @@ Run unit tests with this command: `npm run test`.
 
 - **`package.json`**: defines the project's npm dependencies, scripts, and other metadata.
 
-- **`gulpfile.js`**: contains the Gulp configuration for various build and development tasks.
+- **`rollup.config.mjs`**: contains the Rollup configuration that builds the `dist/` bundle.
 
 - **`README.md`**: provides an overview of the project, its features, and usage instructions.
 
