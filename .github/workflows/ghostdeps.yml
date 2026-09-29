@@ -1,0 +1,27 @@
+name: GhostDeps
+
+# Advisory dependency scan as a check run (rowkavdev/ghostdeps action, pinned
+# by full SHA). Informational only: continue-on-error keeps it from gating CI
+# while the signal proves out, mirroring the upstream dogfood shape.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: read
+
+jobs:
+  ghostdeps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: GhostDeps scan
+        continue-on-error: true
+        uses: rowkavdev/ghostdeps/packages/action@39ca6d615ad40f8acc1b4ca324dd80de18477f7a
+        with:
+          path: "."
