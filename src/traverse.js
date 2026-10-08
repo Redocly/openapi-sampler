@@ -42,6 +42,35 @@ function tryInferExample(schema) {
   return;
 }
 
+function getRequired(schema) {
+  return Array.isArray(schema && schema.required) ? schema.required : [];
+}
+
+// oneOf is exclusive: a property required only by a sibling alternative would
+// make the sample match more than one subschema (see issue #151).
+function omitSiblingOneOfRequired(sampleValue, schema, selectedRequired) {
+  if (!sampleValue || typeof sampleValue !== 'object' || Array.isArray(sampleValue)) {
+    return;
+  }
+
+  const keep = {};
+  for (const prop of getRequired(schema)) {
+    keep[prop] = true;
+  }
+  for (const prop of selectedRequired) {
+    keep[prop] = true;
+  }
+
+  for (let i = 1; i < schema.oneOf.length; i++) {
+    const altRequired = getRequired(schema.oneOf[i]);
+    for (const prop of altRequired) {
+      if (!keep[prop]) {
+        delete sampleValue[prop];
+      }
+    }
+  }
+}
+
 export function traverse(schema, options, spec, context) {
   // checking circular JS references by checking context
   // because context is passed only when traversing through nested objects happens
@@ -174,11 +203,22 @@ export function traverse(schema, options, spec, context) {
       return inferred;
     }
 
-    const localExample = traverse({ ...schema, oneOf: undefined, anyOf: undefined }, options, spec, context);
+    const rest = { ...schema, oneOf: undefined, anyOf: undefined };
+    const selectedRequired = getRequired(selectedSubSchema);
+
+    // Lift required from the selected alternative so skipNonRequired sees it.
+    if (schema.oneOf && selectedRequired.length) {
+      rest.required = getRequired(rest).concat(selectedRequired);
+    }
+
+    const localExample = traverse(rest, options, spec, context);
     const subSchemaExample = traverse(selectedSubSchema, options, spec, context);
 
     if (typeof localExample.value === 'object' && typeof subSchemaExample.value === 'object') {
       const mergedExample = mergeDeep(localExample.value, subSchemaExample.value);
+      if (schema.oneOf) {
+        omitSiblingOneOfRequired(mergedExample, schema, selectedRequired);
+      }
       return { ...subSchemaExample, value: mergedExample };
     }
 
