@@ -1,5 +1,5 @@
 import { traverse } from './traverse';
-import { isSingleRefAllOf, mergeDeep, SKIP_SYMBOL, stripSkipped } from './utils';
+import { isAnnotatedRef, mergeDeep, SKIP_SYMBOL, stripSkipped } from './utils';
 
 
 export function allOfSample(into, children, options, spec, context) {
@@ -8,8 +8,9 @@ export function allOfSample(into, children, options, spec, context) {
 
   // In XML, a $ref is normally wrapped in an element named after it. The children of a
   // composed allOf describe one element together, so their properties are merged flat.
-  // A lone $ref keeps its wrapper, so it is named like a plain $ref would be.
-  const flattenXmlRefs = options.format === 'xml' && !isSingleRefAllOf(children);
+  // A lone $ref keeps its wrapper, so it is named like a plain $ref would be, unless the
+  // schema adds properties or its own xml to it: then it is composed like any other allOf.
+  const flattenXmlRefs = options.format === 'xml' && !isAnnotatedRef({ ...into, allOf: children });
 
   for (let subSchema of children) {
     const { type, readOnly, writeOnly, value } = traverse({ type: res.type, ...subSchema }, options, spec, {
