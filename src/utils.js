@@ -1,5 +1,7 @@
 'use strict';
 
+import { inferType } from './infer';
+
 export const SKIP_SYMBOL = Symbol('skip');
 
 function pad(number) {
@@ -92,11 +94,16 @@ export function isSingleRefAllOf(allOf) {
   return refs.length === 1 && allOf.every(child => child?.$ref || isAnnotationOnly(child));
 }
 
+// An allOf of a single $ref on a schema that adds nothing else of its own (no properties,
+// no xml override): it only annotates the referenced schema, so it is named like a plain $ref.
+export function isAnnotatedRef(schema) {
+  return !!schema && isSingleRefAllOf(schema.allOf) && schema.xml === undefined
+    && isAnnotationOnly({ ...schema, allOf: undefined });
+}
+
+// Same type resolution as traverse(): the first listed type, or the one inferred from keywords
 export function isArraySchema(schema) {
-  const type = schema?.type;
-  if (Array.isArray(type)) return type.includes('array');
-  if (type) return type === 'array';
-  return schema?.items !== undefined || schema?.prefixItems !== undefined;
+  return !!schema && typeof schema === 'object' && inferType(schema) === 'array';
 }
 
 export function stripSkipped(value) {
@@ -125,7 +132,7 @@ export function getXMLAttributes(schema) {
   };
 }
 
-function resolveNodeType(schema) {
+function resolveNodeType(schema, resultType) {
   const xml = schema?.xml;
 
   if (xml?.nodeType) {
@@ -144,15 +151,17 @@ function resolveNodeType(schema) {
     return 'none';
   }
 
-  if (schema?.allOf && !isSingleRefAllOf(schema.allOf)) {
-    return 'element';
+  if (schema?.allOf && !isAnnotatedRef(schema)) {
+    // A composed allOf is one element, unless it was sampled as an array: then, like any
+    // other array, its items are the nodes
+    return resultType === 'array' ? 'none' : 'element';
   }
 
   const variants = schema?.oneOf || schema?.anyOf;
   if (Array.isArray(variants) && variants.length) {
     // The sample is taken from the first variant, so it decides the node type: a $ref
     // or array variant names its own nodes, any other variant is this property's element.
-    return resolveNodeType(variants[0]) === 'element' ? 'element' : 'none';
+    return resolveNodeType(variants[0], resultType) === 'element' ? 'element' : 'none';
   }
 
   if (schema?.oneOf || schema?.anyOf || schema?.allOf) {
@@ -166,7 +175,7 @@ export function applyXMLAttributes(result, schema = {}, context = {}) {
   const { value: oldValue } = result;
   const { propertyName: oldPropertyName } = context;
   const { name, prefix, namespace } = getXMLAttributes(schema);
-  const effectiveNodeType = resolveNodeType(schema);
+  const effectiveNodeType = resolveNodeType(schema, result.type);
 
   let propertyName = name || oldPropertyName ? `${prefix ? prefix + ':' : ''}${name || oldPropertyName}` : null;
 
