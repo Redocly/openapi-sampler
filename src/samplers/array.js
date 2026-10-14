@@ -1,5 +1,5 @@
 import { traverse } from '../traverse';
-import { applyXMLAttributes } from '../utils';
+import { applyXMLAttributes, getXMLAttributes } from '../utils';
 
 export function sampleArray(schema, options = {}, spec, context) {
   const depth = (context && context.depth || 1);
@@ -25,7 +25,14 @@ export function sampleArray(schema, options = {}, spec, context) {
     let itemSchema = itemSchemaGetter(i);
     let { value: sample } = traverse(itemSchema, options, spec, { depth: depth + 1 });
     if (options?.format === 'xml') {
-      const { value, propertyName } = applyXMLAttributes({ value: sample }, itemSchema, context);
+      const xmlResult = applyXMLAttributes({ value: sample }, itemSchema, context);
+      const { value } = xmlResult;
+      let { propertyName } = xmlResult;
+      if (!propertyName && (value === null || typeof value !== 'object')) {
+        // An unnamed scalar item takes the array's name (spreading it would split a string into characters)
+        const { name, prefix } = getXMLAttributes(schema);
+        propertyName = `${prefix ? prefix + ':' : ''}${name || 'root'}`;
+      }
       if (propertyName) {
         if (!res?.[propertyName]) {
           res = { ...res, [propertyName]: [] };

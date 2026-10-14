@@ -71,7 +71,7 @@ export function traverse(schema, options, spec, context) {
     if ($refCache[ref] !== true) {
       $refCache[ref] = true;
       const traverseResult = traverse(referenced, options, spec, context);
-      if (options.format === 'xml') {
+      if (options.format === 'xml' && !context?.flattenXmlRef) {
         const refName = ref.split('/').pop();
         const xmlContext = { ...context, propertyName: context?.propertyName || refName };
         const { propertyName, value } = applyXMLAttributes(traverseResult, referenced, xmlContext);

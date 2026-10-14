@@ -1,15 +1,21 @@
 import { traverse } from './traverse';
-import { mergeDeep, SKIP_SYMBOL } from './utils';
+import { isSingleRefAllOf, mergeDeep, SKIP_SYMBOL, stripSkipped } from './utils';
 
 
 export function allOfSample(into, children, options, spec, context) {
   let res = traverse(into, options, spec);
   const subSamples = [];
 
+  // In XML, a $ref is normally wrapped in an element named after it. The children of a
+  // composed allOf describe one element together, so their properties are merged flat.
+  // A lone $ref keeps its wrapper, so it is named like a plain $ref would be.
+  const flattenXmlRefs = options.format === 'xml' && !isSingleRefAllOf(children);
+
   for (let subSchema of children) {
     const { type, readOnly, writeOnly, value } = traverse({ type: res.type, ...subSchema }, options, spec, {
       ...context,
       isAllOfChild: true,
+      ...(flattenXmlRefs && { flattenXmlRef: true }),
     });
     if (res.type && type && type !== res.type) {
       console.warn('allOf: schemas with different types can\'t be merged');
@@ -27,6 +33,10 @@ export function allOfSample(into, children, options, spec, context) {
       if (res.value[key] === SKIP_SYMBOL) {
         delete res.value[key];
       }
+    }
+    if (options.format === 'xml') {
+      // An XML $ref wrapper nests the skipped properties one level down
+      stripSkipped(res.value);
     }
     return res;
   } else {

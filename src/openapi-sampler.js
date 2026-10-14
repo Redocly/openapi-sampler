@@ -1,6 +1,7 @@
 import { traverse, clearCache } from './traverse';
 import { sampleArray, sampleBoolean, sampleNumber, sampleObject, sampleString } from './samplers/index';
 import { XMLBuilder } from 'fast-xml-parser';
+import { getXMLAttributes, isArraySchema } from './utils';
 
 export var _samplers = {};
 
@@ -10,11 +11,20 @@ const defaults = {
 };
 
 function convertJsonToXml(obj, schema) {
-  if (!obj) {
+  if (obj === undefined || obj === null) {
     throw new Error('Unknown format output for building XML.');
   }
-  if (Array.isArray(obj) || Object.keys(obj).length > 1) {
-    obj = { [schema?.xml?.name || 'root']: obj }; // XML document must contain one root element
+  const { name, prefix, namespace } = getXMLAttributes(schema);
+  const nodeType = schema?.xml?.nodeType;
+  const isPrimitive = typeof obj !== 'object';
+  const isArray = isArraySchema(schema);
+  if (name && !isArray && (!nodeType || nodeType === 'element')) {
+    // The root schema names the document element, whatever its content is
+    obj = { [`${prefix ? prefix + ':' : ''}${name}`]: withNamespace(obj, prefix, namespace) };
+  } else if (isPrimitive || Array.isArray(obj) || Object.keys(obj).length > 1) {
+    obj = { [name || 'root']: obj }; // XML document must contain one root element
+  } else if (isArray && hasRepeatedRootElement(obj)) {
+    obj = { root: obj }; // unwrapped root array items would otherwise be sibling root elements
   }
   const builder = new XMLBuilder({
     ignoreAttributes: false,
@@ -24,6 +34,21 @@ function convertJsonToXml(obj, schema) {
     cdataPropName: '#cdata',
   });
   return builder.build(obj);
+}
+
+function hasRepeatedRootElement(obj) {
+  const [value] = Object.values(obj);
+  return Array.isArray(value) && value.length > 1;
+}
+
+function withNamespace(value, prefix, namespace) {
+  if (!namespace) {
+    return value;
+  }
+  const attribute = `$xmlns${prefix ? ':' + prefix : ''}`;
+  return typeof value === 'object' && !Array.isArray(value)
+    ? { ...value, [attribute]: namespace }
+    : { [attribute]: namespace, '#text': value };
 }
 
 export function sample(schema, options, spec) {

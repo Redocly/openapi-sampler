@@ -73,6 +73,48 @@ export function popSchemaStack(seenSchemasStack, context) {
   if (context) seenSchemasStack.pop();
 }
 
+const STRUCTURAL_KEYWORDS = [
+  '$ref', '$dynamicRef', 'properties', 'patternProperties', 'additionalProperties',
+  'items', 'prefixItems', 'allOf', 'oneOf', 'anyOf',
+];
+
+function isAnnotationOnly(schema) {
+  return !!schema && typeof schema === 'object'
+    && !STRUCTURAL_KEYWORDS.some(keyword => schema[keyword] !== undefined);
+}
+
+// `allOf: [{ $ref }]`, optionally next to annotation-only siblings such as
+// `{ description }` or `{ nullable: true }`, is the usual way to annotate a $ref:
+// it describes the referenced schema, so it is named like a plain $ref.
+export function isSingleRefAllOf(allOf) {
+  if (!Array.isArray(allOf)) return false;
+  const refs = allOf.filter(child => child?.$ref);
+  return refs.length === 1 && allOf.every(child => child?.$ref || isAnnotationOnly(child));
+}
+
+export function isArraySchema(schema) {
+  const type = schema?.type;
+  if (Array.isArray(type)) return type.includes('array');
+  if (type) return type === 'array';
+  return schema?.items !== undefined || schema?.prefixItems !== undefined;
+}
+
+export function stripSkipped(value) {
+  if (Array.isArray(value)) {
+    return value.map(stripSkipped);
+  }
+  if (value && typeof value === 'object') {
+    for (const key of Object.keys(value)) {
+      if (value[key] === SKIP_SYMBOL) {
+        delete value[key];
+      } else {
+        value[key] = stripSkipped(value[key]);
+      }
+    }
+  }
+  return value;
+}
+
 export function getXMLAttributes(schema) {
   return {
     name: schema?.xml?.name || '',
@@ -94,12 +136,23 @@ function resolveNodeType(schema) {
     return 'attribute';
   }
 
-  if (xml?.wrapped === true && schema?.type === 'array') {
+  if (xml?.wrapped === true && isArraySchema(schema)) {
     return 'element';
   }
 
-  if (schema?.$ref || schema?.$dynamicRef || schema?.type === 'array') {
+  if (schema?.$ref || schema?.$dynamicRef || isArraySchema(schema)) {
     return 'none';
+  }
+
+  if (schema?.allOf && !isSingleRefAllOf(schema.allOf)) {
+    return 'element';
+  }
+
+  const variants = schema?.oneOf || schema?.anyOf;
+  if (Array.isArray(variants) && variants.length) {
+    // The sample is taken from the first variant, so it decides the node type: a $ref
+    // or array variant names its own nodes, any other variant is this property's element.
+    return resolveNodeType(variants[0]) === 'element' ? 'element' : 'none';
   }
 
   if (schema?.oneOf || schema?.anyOf || schema?.allOf) {
@@ -139,7 +192,7 @@ export function applyXMLAttributes(result, schema = {}, context = {}) {
       break;
 
     case 'none':
-      if (schema.type === 'array') {
+      if (isArraySchema(schema)) {
         propertyName = null;
         if (schema.example !== undefined) {
           propertyName = schema.items?.xml?.name || propertyName;
@@ -150,7 +203,7 @@ export function applyXMLAttributes(result, schema = {}, context = {}) {
       break;
 
     default:
-      if (schema.type === 'array') {
+      if (isArraySchema(schema)) {
         if (Array.isArray(value)) {
           value = { [propertyName]: [...value] };
         }
