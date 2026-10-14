@@ -1399,6 +1399,471 @@ describe('Integration', () => {
     });
   });
 
+  describe('xml document root', () => {
+    const options = {
+      format: 'xml',
+    };
+
+    it('should use the root schema xml.name as the root element when it has a single property', () => {
+      const schema = {
+        type: 'object',
+        xml: { name: 'Thing' },
+        properties: {
+          foo: { type: 'string' },
+        },
+      };
+
+      expect(sample(schema, options, {})).toMatchInlineSnapshot(`
+"<Thing>
+  <foo>string</foo>
+</Thing>
+"
+`);
+    });
+
+    it('should apply the root schema xml.prefix and xml.namespace to the root element', () => {
+      const schema = {
+        type: 'object',
+        xml: { name: 'Pet', prefix: 'p', namespace: 'http://example.com/ns' },
+        properties: {
+          a: { type: 'string' },
+          b: { type: 'string' },
+        },
+      };
+
+      expect(sample(schema, options, {})).toMatchInlineSnapshot(`
+"<p:Pet xmlns:p="http://example.com/ns">
+  <a>string</a>
+  <b>string</b>
+</p:Pet>
+"
+`);
+    });
+
+    it('should apply the root schema xml.namespace without a prefix', () => {
+      const schema = {
+        type: 'object',
+        xml: { name: 'Pet', namespace: 'http://example.com/schema' },
+        properties: {
+          name: { type: 'string', example: 'Guru' },
+          lang: { type: 'string', example: 'en', xml: { attribute: true } },
+        },
+      };
+
+      expect(sample(schema, options, {})).toMatchInlineSnapshot(`
+"<Pet lang="en" xmlns="http://example.com/schema">
+  <name>Guru</name>
+</Pet>
+"
+`);
+    });
+
+    it('should keep the existing root for a schema without xml.name', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          foo: { type: 'string' },
+          bar: { type: 'string' },
+        },
+      };
+
+      expect(sample(schema, options, {})).toMatchInlineSnapshot(`
+"<root>
+  <foo>string</foo>
+  <bar>string</bar>
+</root>
+"
+`);
+    });
+
+    it.each([
+      ['integer', { type: 'integer' }, '<root>0</root>'],
+      ['boolean', { type: 'boolean' }, '<root>true</root>'],
+      ['empty string', { type: 'string', example: '' }, '<root></root>'],
+      ['single-character string', { type: 'string', example: 'a' }, '<root>a</root>'],
+      ['named string', { type: 'string', xml: { name: 'Message' } }, '<Message>string</Message>'],
+    ])('should build XML for a root %s', (_label, schema, expected) => {
+      expect(sample(schema, options, {}).trim()).toBe(expected);
+    });
+
+    it('should not split a root array of strings into characters', () => {
+      const schema = {
+        type: 'array',
+        items: { type: 'string' },
+      };
+
+      expect(sample(schema, options, {})).toMatchInlineSnapshot(`
+"<root>string</root>
+"
+`);
+    });
+
+    it('should name root array items after the array xml.name', () => {
+      const schema = {
+        type: 'array',
+        minItems: 2,
+        items: { type: 'string', example: 'tag' },
+        xml: { name: 'Tags', wrapped: true },
+      };
+
+      expect(sample(schema, options, {})).toMatchInlineSnapshot(`
+"<Tags>
+  <Tags>tag</Tags>
+  <Tags>tag</Tags>
+</Tags>
+"
+`);
+    });
+  });
+
+  describe('xml root arrays', () => {
+    const options = {
+      format: 'xml',
+    };
+    const spec = {
+      components: {
+        schemas: {
+          Pet: {
+            type: 'object',
+            xml: { name: 'Animal', prefix: 'p', namespace: 'http://example.com/pet' },
+            properties: { name: { type: 'string' } },
+          },
+        },
+      },
+    };
+
+    it('should wrap a nullable root array once', () => {
+      const schema = {
+        type: ['array', 'null'],
+        xml: { name: 'Pets', wrapped: true },
+        items: { $ref: '#/components/schemas/Pet' },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<Pets>
+  <p:Animal xmlns:p="http://example.com/pet">
+    <name>string</name>
+  </p:Animal>
+</Pets>
+"
+`);
+    });
+
+    it('should treat a root schema with items but no type as an array', () => {
+      const schema = {
+        xml: { name: 'Tags' },
+        items: { type: 'string' },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<Tags>string</Tags>
+"
+`);
+    });
+
+    it('should keep a single root element for several unnamed scalar items', () => {
+      const schema = {
+        type: 'array',
+        minItems: 2,
+        items: { type: 'string' },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<root>
+  <root>string</root>
+  <root>string</root>
+</root>
+"
+`);
+    });
+  });
+
+  describe('xml allOf', () => {
+    const options = {
+      format: 'xml',
+    };
+    const spec = {
+      components: {
+        schemas: {
+          Base: {
+            type: 'object',
+            properties: {
+              id: { type: 'integer', example: 7 },
+            },
+          },
+          Tag: {
+            type: 'object',
+            xml: { name: 'Tag' },
+            properties: {
+              label: { type: 'string', example: 'cute' },
+            },
+          },
+        },
+      },
+    };
+
+    it('should merge a $ref into the root allOf instead of wrapping it', () => {
+      const schema = {
+        allOf: [
+          { $ref: '#/components/schemas/Base' },
+          { type: 'object', properties: { name: { type: 'string' } } },
+        ],
+        xml: { name: 'Merged' },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<Merged>
+  <id>7</id>
+  <name>string</name>
+</Merged>
+"
+`);
+    });
+
+    it('should keep a composed allOf property in its own element', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          pet: {
+            allOf: [
+              { $ref: '#/components/schemas/Base' },
+              { type: 'object', properties: { name: { type: 'string' } } },
+            ],
+          },
+          owner: { type: 'string' },
+        },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<root>
+  <pet>
+    <id>7</id>
+    <name>string</name>
+  </pet>
+  <owner>string</owner>
+</root>
+"
+`);
+    });
+
+    it('should keep an inline allOf property in its own element', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          pet: {
+            allOf: [{ type: 'object', properties: { name: { type: 'string' } } }],
+            xml: { name: 'Animal' },
+          },
+          owner: { type: 'string' },
+        },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<root>
+  <Animal>
+    <name>string</name>
+  </Animal>
+  <owner>string</owner>
+</root>
+"
+`);
+    });
+
+    it('should keep naming a property that wraps a single $ref in allOf after the referenced schema', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          tag: {
+            allOf: [{ $ref: '#/components/schemas/Tag' }],
+            description: 'A tag',
+          },
+          owner: { type: 'string' },
+        },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<root>
+  <Tag>
+    <label>cute</label>
+  </Tag>
+  <owner>string</owner>
+</root>
+"
+`);
+    });
+  });
+
+  describe('xml annotated $ref and oneOf properties', () => {
+    const options = {
+      format: 'xml',
+    };
+    const spec = {
+      components: {
+        schemas: {
+          Base: {
+            type: 'object',
+            properties: {
+              id: { type: 'integer', example: 7 },
+            },
+          },
+          Pet: {
+            type: 'object',
+            xml: { name: 'Animal', prefix: 'p', namespace: 'http://example.com/pet' },
+            properties: { name: { type: 'string' } },
+          },
+          Account: {
+            type: 'object',
+            properties: {
+              id: { type: 'integer', example: 7 },
+              secret: { type: 'string', readOnly: true },
+            },
+          },
+        },
+      },
+    };
+
+    it('should name a root allOf of a $ref and an annotation like the $ref', () => {
+      const schema = {
+        allOf: [{ $ref: '#/components/schemas/Pet' }, { description: 'A pet' }],
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<p:Animal xmlns:p="http://example.com/pet">
+  <name>string</name>
+</p:Animal>
+"
+`);
+    });
+
+    it('should name an allOf property of a $ref and an annotation like the $ref', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          pet: { allOf: [{ $ref: '#/components/schemas/Pet' }, { nullable: true }] },
+          owner: { type: 'string' },
+        },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<root>
+  <p:Animal xmlns:p="http://example.com/pet">
+    <name>string</name>
+  </p:Animal>
+  <owner>string</owner>
+</root>
+"
+`);
+    });
+
+    it('should skip readOnly properties of an allOf $ref without throwing', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          account: { allOf: [{ $ref: '#/components/schemas/Account' }] },
+          owner: { type: 'string' },
+        },
+      };
+
+      expect(sample(schema, { ...options, skipReadOnly: true }, spec)).toMatchInlineSnapshot(`
+"<root>
+  <account>
+    <id>7</id>
+  </account>
+  <owner>string</owner>
+</root>
+"
+`);
+    });
+
+    it('should keep a oneOf property whose variant is a composed allOf in its own element', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          pet: {
+            oneOf: [
+              {
+                allOf: [
+                  { $ref: '#/components/schemas/Base' },
+                  { type: 'object', properties: { name: { type: 'string' } } },
+                ],
+              },
+            ],
+          },
+          owner: { type: 'string' },
+        },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<root>
+  <pet>
+    <id>7</id>
+    <name>string</name>
+  </pet>
+  <owner>string</owner>
+</root>
+"
+`);
+    });
+
+    it('should keep a oneOf property whose variant is an inline object in its own element', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          pet: { oneOf: [{ type: 'object', properties: { name: { type: 'string' } } }] },
+          owner: { type: 'string' },
+        },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<root>
+  <pet>
+    <name>string</name>
+  </pet>
+  <owner>string</owner>
+</root>
+"
+`);
+    });
+
+    it('should keep a oneOf property whose variant is a scalar', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          code: { oneOf: [{ type: 'string' }, { type: 'integer' }] },
+          owner: { type: 'string' },
+        },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<root>
+  <code>string</code>
+  <owner>string</owner>
+</root>
+"
+`);
+    });
+
+    it('should keep naming a oneOf property whose variant is a $ref after the referenced schema', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          pet: { oneOf: [{ $ref: '#/components/schemas/Pet' }] },
+          owner: { type: 'string' },
+        },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<root>
+  <p:Animal xmlns:p="http://example.com/pet">
+    <name>string</name>
+  </p:Animal>
+  <owner>string</owner>
+</root>
+"
+`);
+    });
+  });
+
   describe('xml nodeType', () => {
     const options = {
       format: 'xml',
@@ -1537,7 +2002,11 @@ describe('Integration', () => {
         };
         const result = sample(schema, options, {});
 
-        expect(result.trim()).toMatchInlineSnapshot('"<fullName>Alice</fullName>"');
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<person>
+  <fullName>Alice</fullName>
+</person>"
+`);
       });
 
       it('should wrap array when nodeType: element is set (spec example)', () => {
@@ -1558,9 +2027,11 @@ describe('Integration', () => {
         const result = sample(schema, options, {});
 
         expect(result.trim()).toMatchInlineSnapshot(`
-"<animals>
-  <animal>string</animal>
-</animals>"
+"<document>
+  <animals>
+    <animal>string</animal>
+  </animals>
+</document>"
 `);
       });
 
@@ -1582,9 +2053,11 @@ describe('Integration', () => {
         const result = sample(schema, options, {});
 
         expect(result.trim()).toMatchInlineSnapshot(`
-"<aliens>
-  <animal>string</animal>
-</aliens>"
+"<document>
+  <aliens>
+    <animal>string</animal>
+  </aliens>
+</document>"
 `);
       });
 
@@ -1769,7 +2242,11 @@ describe('Integration', () => {
         };
         const result = sample(schema, options, {});
 
-        expect(result.trim()).toMatchInlineSnapshot('"<animals>string</animals>"');
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<document>
+  <animals>string</animals>
+</document>"
+`);
       });
 
       it('should allow explicit nodeType: none on an array', () => {
@@ -1789,7 +2266,11 @@ describe('Integration', () => {
         };
         const result = sample(schema, options, {});
 
-        expect(result.trim()).toMatchInlineSnapshot('"<animal>string</animal>"');
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<document>
+  <animal>string</animal>
+</document>"
+`);
       });
 
       it('should exclude a primitive property with nodeType: none from XML output', () => {
@@ -1846,7 +2327,11 @@ describe('Integration', () => {
 
         expect(result).not.toContain('secretScore');
         expect(result).not.toContain('42');
-        expect(result.trim()).toMatchInlineSnapshot('"<name>Test</name>"');
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<Item>
+  <name>Test</name>
+</Item>"
+`);
       });
     });
 
