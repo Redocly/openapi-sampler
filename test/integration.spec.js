@@ -848,6 +848,98 @@ describe('Integration', () => {
       };
       expect(result).toEqual(expected);
     });
+
+    describe('keywords that are siblings of $ref', () => {
+      const refSiblingsSchema = {
+        type: 'object',
+        properties: {
+          example: { $ref: '#/components/schemas/Num', example: 10 },
+          examples: { $ref: '#/components/schemas/Num', examples: [55] },
+          minimum: { $ref: '#/components/schemas/Num', minimum: 51 },
+          override: { $ref: '#/components/schemas/NumWithExample', example: 99 },
+          plain: { $ref: '#/components/schemas/Num' },
+          extended: { $ref: '#/components/schemas/Pet', properties: { age: { type: 'integer' } } },
+        }
+      };
+      const refSiblingsSpec = (version) => ({
+        ...version,
+        components: {
+          schemas: {
+            Num: { type: 'number' },
+            NumWithExample: { type: 'number', example: 7 },
+            Pet: { type: 'object', properties: { name: { type: 'string' } } },
+          }
+        }
+      });
+
+      it('should ignore them in Swagger 2.0 and OpenAPI 3.0', () => {
+        for (const spec of [refSiblingsSpec({ swagger: '2.0' }), refSiblingsSpec({ openapi: '3.0.3' })]) {
+          result = sample(refSiblingsSchema, {}, spec);
+          expected = {
+            example: 0,
+            examples: 0,
+            minimum: 0,
+            override: 7,
+            plain: 0,
+            extended: { name: 'string' },
+          };
+          expect(result).toEqual(expected);
+        }
+      });
+
+      it('should keep required names of both the referenced schema and its siblings', () => {
+        const spec = {
+          openapi: '3.1.0',
+          components: {
+            schemas: {
+              Base: {
+                type: 'object',
+                required: ['a', 'b'],
+                properties: { a: { type: 'string' }, b: { type: 'string' }, c: { type: 'string' } },
+              },
+            },
+          },
+        };
+        result = sample({ $ref: '#/components/schemas/Base', required: ['c'] }, { skipNonRequired: true }, spec);
+        expect(result).toEqual({ a: 'string', b: 'string', c: 'string' });
+      });
+
+      it('should sample a circular $ref that has siblings', () => {
+        const spec = {
+          openapi: '3.1.0',
+          components: {
+            schemas: {
+              Node: {
+                type: 'object',
+                properties: { child: { $ref: '#/components/schemas/Node', description: 'next' } },
+              },
+            },
+          },
+        };
+        result = sample({ $ref: '#/components/schemas/Node' }, {}, spec);
+        expect(result).toEqual({ child: {} });
+      });
+
+      it('should apply them in OpenAPI 3.1+ and when no version is given', () => {
+        for (const spec of [
+          refSiblingsSpec({ openapi: '3.1.0' }),
+          refSiblingsSpec({ openapi: '3.2.0' }),
+          refSiblingsSpec({}),
+        ]) {
+          result = sample(refSiblingsSchema, {}, spec);
+          expected = {
+            example: 10,
+            examples: 55,
+            minimum: 51,
+            override: 99,
+            plain: 0,
+            extended: { name: 'string', age: 0 },
+          };
+          expect(result).toEqual(expected);
+          expect(spec.components.schemas.Num).toEqual({ type: 'number' });
+        }
+      });
+    });
   });
 
   describe('discriminator', () => {

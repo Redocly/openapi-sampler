@@ -14,6 +14,19 @@ export function clearCache() {
   seenSchemasStack = [];
 }
 
+function shouldIgnoreRefSiblings(spec) {
+  return String(spec.openapi ?? '').startsWith('3.0') || spec.swagger !== undefined;
+}
+
+function mergeRefSiblings(referenced, siblings) {
+  const merged = mergeDeep(referenced, siblings);
+  // mergeDeep merges arrays by index, which would drop required names of the referenced schema
+  if (Array.isArray(referenced.required) && Array.isArray(siblings.required)) {
+    merged.required = [...new Set([...referenced.required, ...siblings.required])];
+  }
+  return merged;
+}
+
 function inferExample(schema) {
   let example;
   if (schema.const !== undefined) {
@@ -65,7 +78,10 @@ export function traverse(schema, options, spec, context) {
       ref = ref.substring(1);
     }
 
-    const referenced = JsonPointer.get(spec, ref);
+    const { $ref: _, ...siblings } = schema;
+    const referenced = Object.keys(siblings).length && !shouldIgnoreRefSiblings(spec)
+      ? mergeRefSiblings(JsonPointer.get(spec, ref), siblings)
+      : JsonPointer.get(spec, ref);
     let result;
 
     if ($refCache[ref] !== true) {
