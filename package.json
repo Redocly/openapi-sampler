@@ -14,7 +14,7 @@
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "build": "rollup -c",
     "prepublishOnly": "npm run build",
-    "changeset": "npx @changesets/cli --",
+    "changeset": "changeset",
     "release": "npm run build && npm run changeset publish"
   },
   "files": [
