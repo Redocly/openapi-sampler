@@ -61,7 +61,7 @@ export function traverse(schema, options, spec, context) {
     if ($refCache[ref] !== true) {
       $refCache[ref] = true;
       const traverseResult = traverse(referenced, options, spec, context);
-      // In a composed allOf, a $ref's properties merge into one element; an array keeps its own nodes
+      // In a composed allOf, a $ref's properties merge into one element; a $ref typed as an array keeps its own nodes
       if (options.format === 'xml' && !(context?.flattenXmlRef && traverseResult.type !== 'array')) {
         const refName = ref.split('/').pop();
         const xmlContext = { ...context, propertyName: context?.propertyName || refName };

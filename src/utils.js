@@ -171,7 +171,7 @@ export function resolveRef(schema, spec) {
 }
 
 // The xml of a $ref, named after the referenced component when it has no xml.name.
-// traverse() never resolves a $ref under a value it takes as is (an example or default),
+// traverse() never resolves a $ref under a value it takes as is (example, default, const, enum or examples),
 // so here the $ref may be missing or external: then there is no xml to use.
 export function refXml(schema, spec) {
   if (!spec || !JsonPointer.has(spec, refPointer(schema.$ref))) {
@@ -185,7 +185,7 @@ export function isComposedAllOf(schema) {
   return !!schema?.allOf && !isAnnotatedRef(schema);
 }
 
-// A composed allOf merges its $refs into one element, named after the first one
+// A composed allOf without a name of its own is named after its first $ref
 export function firstRefXml(allOf, spec) {
   const ref = allOf.find(child => child?.$ref);
   const xml = ref && refXml(ref, spec);
