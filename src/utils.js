@@ -1,5 +1,6 @@
 'use strict';
 
+import JsonPointer from 'json-pointer';
 import { inferType } from './infer';
 
 export const SKIP_SYMBOL = Symbol('skip');
@@ -80,22 +81,22 @@ const STRUCTURAL_KEYWORDS = [
   'items', 'prefixItems', 'allOf', 'oneOf', 'anyOf',
 ];
 
+function hasOwnValue(schema) {
+  return schema.example !== undefined || schema.const !== undefined || schema.default !== undefined
+    || !!schema.examples?.length || !!schema.enum?.length;
+}
+
 function isAnnotationOnly(schema) {
-  return !!schema && typeof schema === 'object'
+  return !!schema && typeof schema === 'object' && !hasOwnValue(schema)
     && !STRUCTURAL_KEYWORDS.some(keyword => schema[keyword] !== undefined);
 }
 
-// `allOf: [{ $ref }]`, optionally next to annotation-only siblings such as
-// `{ description }` or `{ nullable: true }`, is the usual way to annotate a $ref:
-// it describes the referenced schema, so it is named like a plain $ref.
-export function isSingleRefAllOf(allOf) {
+function isSingleRefAllOf(allOf) {
   if (!Array.isArray(allOf)) return false;
   const refs = allOf.filter(child => child?.$ref);
   return refs.length === 1 && allOf.every(child => child?.$ref || isAnnotationOnly(child));
 }
 
-// An allOf of a single $ref on a schema that adds nothing else of its own (no properties,
-// no xml override): it only annotates the referenced schema, so it is named like a plain $ref.
 export function isAnnotatedRef(schema) {
   return !!schema && isSingleRefAllOf(schema.allOf) && schema.xml === undefined
     && isAnnotationOnly({ ...schema, allOf: undefined });
@@ -106,20 +107,90 @@ export function isArraySchema(schema) {
   return !!schema && typeof schema === 'object' && inferType(schema) === 'array';
 }
 
+// Copies only the objects it removes something from, so examples from the spec are never written to
 export function stripSkipped(value) {
-  if (Array.isArray(value)) {
-    return value.map(stripSkipped);
+  if (!value || typeof value !== 'object') {
+    return value;
   }
-  if (value && typeof value === 'object') {
-    for (const key of Object.keys(value)) {
-      if (value[key] === SKIP_SYMBOL) {
-        delete value[key];
-      } else {
-        value[key] = stripSkipped(value[key]);
-      }
+  let result = value;
+  for (const [key, child] of Object.entries(value)) {
+    const stripped = child === SKIP_SYMBOL ? child : stripSkipped(child);
+    if (stripped === child && child !== SKIP_SYMBOL) {
+      continue;
+    }
+    if (result === value) {
+      result = Array.isArray(value) ? [...value] : { ...value };
+    }
+    if (child === SKIP_SYMBOL) {
+      delete result[key];
+    } else {
+      result[key] = stripped;
     }
   }
-  return value;
+  return result;
+}
+
+function shouldIgnoreRefSiblings(spec) {
+  return String(spec.openapi ?? '').startsWith('3.0') || spec.swagger !== undefined;
+}
+
+function mergeRefSiblings(referenced, siblings) {
+  const merged = mergeDeep(referenced, siblings);
+  // mergeDeep merges arrays by index, which would drop required names of the referenced schema
+  if (Array.isArray(referenced.required) && Array.isArray(siblings.required)) {
+    merged.required = [...new Set([...referenced.required, ...siblings.required])];
+  }
+  return merged;
+}
+
+// The schema a $ref points to, with the keywords next to the $ref merged in
+// (except in OpenAPI 3.0 and Swagger 2.0, where they are ignored)
+export function resolveRef(schema, spec) {
+  if (!spec) {
+    throw new Error('Your schema contains $ref. You must provide full specification in the third parameter.');
+  }
+  let pointer = decodeURIComponent(schema.$ref);
+  if (pointer.startsWith('#')) {
+    pointer = pointer.substring(1);
+  }
+  const siblings = Object.fromEntries(
+    Object.entries(schema).filter(([key, value]) => key !== '$ref' && value !== undefined),
+  );
+  const referenced = Object.keys(siblings).length && !shouldIgnoreRefSiblings(spec)
+    ? mergeRefSiblings(JsonPointer.get(spec, pointer), siblings)
+    : JsonPointer.get(spec, pointer);
+  return { pointer, referenced };
+}
+
+// The xml of a $ref, named after the referenced component when it has no xml.name
+export function refXml(schema, spec) {
+  const { pointer, referenced } = resolveRef(schema, spec);
+  return { ...referenced?.xml, name: referenced?.xml?.name || pointer.split('/').pop() };
+}
+
+export function prefixed(name, prefix) {
+  return prefix ? `${prefix}:${name}` : name;
+}
+
+export function withNamespace(value, prefix, namespace) {
+  if (!namespace) {
+    return value;
+  }
+  const attribute = `$xmlns${prefix ? ':' + prefix : ''}`;
+  if (value !== null && typeof value === 'object') {
+    return Object.assign(Array.isArray(value) ? [...value] : { ...value }, { [attribute]: namespace });
+  }
+  return { [attribute]: namespace, '#text': value };
+}
+
+// Names the items of a literal array (an example or default) like sampleArray names sampled items
+export function nameLiteralItems(values, schema, spec, fallbackName) {
+  const items = schema?.items;
+  const item = getXMLAttributes(items?.$ref && spec ? { xml: refXml(items, spec) } : items);
+  return {
+    name: item.name ? prefixed(item.name, item.prefix) : fallbackName,
+    values: values.map(value => withNamespace(value, item.prefix, item.namespace)),
+  };
 }
 
 export function getXMLAttributes(schema) {
@@ -151,16 +222,18 @@ function resolveNodeType(schema, resultType) {
     return 'none';
   }
 
+  if ((schema?.allOf || schema?.oneOf || schema?.anyOf) && hasOwnValue(schema)) {
+    // traverse() takes this value before the subschemas, so no $ref in them names it
+    return 'element';
+  }
+
   if (schema?.allOf && !isAnnotatedRef(schema)) {
-    // A composed allOf is one element, unless it was sampled as an array: then, like any
-    // other array, its items are the nodes
     return resultType === 'array' ? 'none' : 'element';
   }
 
   const variants = schema?.oneOf || schema?.anyOf;
   if (Array.isArray(variants) && variants.length) {
-    // The sample is taken from the first variant, so it decides the node type: a $ref
-    // or array variant names its own nodes, any other variant is this property's element.
+    // The first variant is the one that gets sampled, so it decides the node type
     return resolveNodeType(variants[0], resultType) === 'element' ? 'element' : 'none';
   }
 
@@ -171,13 +244,15 @@ function resolveNodeType(schema, resultType) {
   return 'element';
 }
 
-export function applyXMLAttributes(result, schema = {}, context = {}) {
+export function applyXMLAttributes(result, schema = {}, context = {}, spec) {
   const { value: oldValue } = result;
   const { propertyName: oldPropertyName } = context;
   const { name, prefix, namespace } = getXMLAttributes(schema);
   const effectiveNodeType = resolveNodeType(schema, result.type);
 
-  let propertyName = name || oldPropertyName ? `${prefix ? prefix + ':' : ''}${name || oldPropertyName}` : null;
+  let propertyName = name || oldPropertyName ? prefixed(name || oldPropertyName, prefix) : null;
+  // In XML, sampled arrays are objects by now, so an array here is an example or default
+  const isLiteralArray = isArraySchema(schema) && Array.isArray(oldValue);
 
   let value = typeof oldValue === 'object'
     ? Array.isArray(oldValue)
@@ -201,31 +276,24 @@ export function applyXMLAttributes(result, schema = {}, context = {}) {
       break;
 
     case 'none':
-      if (isArraySchema(schema)) {
-        propertyName = null;
-        if (schema.example !== undefined) {
-          propertyName = schema.items?.xml?.name || propertyName;
-        }
+      if (isLiteralArray) {
+        // An unwrapped array's own xml.name is ignored, so its items are named after the property
+        ({ name: propertyName, values: value } = nameLiteralItems(value, schema, spec, oldPropertyName || propertyName));
       } else {
         propertyName = null;
       }
       break;
 
     default:
-      if (isArraySchema(schema)) {
-        if (Array.isArray(value)) {
-          value = { [propertyName]: [...value] };
-        }
+      if (isLiteralArray) {
+        const items = nameLiteralItems(value, schema, spec, propertyName);
+        value = { [items.name]: items.values };
       }
       break;
   }
 
-  if (namespace && effectiveNodeType !== 'text' && effectiveNodeType !== 'cdata' && effectiveNodeType !== 'none') {
-    if (typeof value === 'object') {
-      value[`$xmlns${prefix ? ':' + prefix : ''}`] = namespace;
-    } else {
-      value = { [`$xmlns${prefix ? ':' + prefix : ''}`]: namespace, ['#text']: value };
-    }
+  if (effectiveNodeType !== 'text' && effectiveNodeType !== 'cdata' && effectiveNodeType !== 'none') {
+    value = withNamespace(value, prefix, namespace);
   }
 
   return {

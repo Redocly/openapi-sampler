@@ -1,5 +1,5 @@
 import { traverse } from '../traverse';
-import { applyXMLAttributes, getXMLAttributes } from '../utils';
+import { applyXMLAttributes, getXMLAttributes, prefixed } from '../utils';
 
 export function sampleArray(schema, options = {}, spec, context) {
   const depth = (context && context.depth || 1);
@@ -25,13 +25,12 @@ export function sampleArray(schema, options = {}, spec, context) {
     let itemSchema = itemSchemaGetter(i);
     let { value: sample } = traverse(itemSchema, options, spec, { depth: depth + 1 });
     if (options?.format === 'xml') {
-      const xmlResult = applyXMLAttributes({ value: sample }, itemSchema, context);
+      const xmlResult = applyXMLAttributes({ value: sample }, itemSchema, context, spec);
       const { value } = xmlResult;
       let { propertyName } = xmlResult;
       if (!propertyName && (value === null || typeof value !== 'object')) {
-        // An unnamed scalar item takes the array's name (spreading it would split a string into characters)
         const { name, prefix } = getXMLAttributes(schema);
-        propertyName = `${prefix ? prefix + ':' : ''}${name || 'root'}`;
+        propertyName = prefixed(name || 'root', prefix);
       }
       if (propertyName) {
         if (!res?.[propertyName]) {
@@ -47,7 +46,7 @@ export function sampleArray(schema, options = {}, spec, context) {
   }
 
   if (options?.format === 'xml' && depth === 1) {
-    const { value, propertyName } = applyXMLAttributes({ value: null }, schema, context);
+    const { value, propertyName } = applyXMLAttributes({ value: null }, schema, context, spec);
     if (propertyName) {
       if (value) {
         res = Array.isArray(res) ? { [propertyName]: { ...value, ...res.map(item => ({ ['#text']: { ...item } })) } } : { [propertyName]: { ...res, ...value } };

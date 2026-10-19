@@ -16,6 +16,24 @@ describe('utils', () => {
         list: [{ keep: true }, 'text'],
       });
     });
+
+    it('should not modify its input', () => {
+      const nested = Object.freeze({ keep: 'a', drop: SKIP_SYMBOL });
+      const untouched = Object.freeze({ tags: Object.freeze(['a', 'b']) });
+      const value = Object.freeze({ drop: SKIP_SYMBOL, nested, untouched });
+
+      const result = stripSkipped(value);
+
+      expect(result).toEqual({ nested: { keep: 'a' }, untouched: { tags: ['a', 'b'] } });
+      expect(result.untouched).toBe(untouched);
+      expect(nested.drop).toBe(SKIP_SYMBOL);
+    });
+
+    it('should return the same object when there is nothing to remove', () => {
+      const value = { keep: 1, nested: { list: [1, 2] } };
+
+      expect(stripSkipped(value)).toBe(value);
+    });
   });
 
   describe('isArraySchema', () => {
@@ -39,6 +57,8 @@ describe('utils', () => {
       expect(isAnnotatedRef({ allOf: [ref], properties: { nick: { type: 'string' } } })).toBe(false);
       expect(isAnnotatedRef({ allOf: [ref, { properties: {} }] })).toBe(false);
       expect(isAnnotatedRef({ allOf: [ref, ref] })).toBe(false);
+      expect(isAnnotatedRef({ allOf: [ref, { example: { id: 1 } }] })).toBe(false);
+      expect(isAnnotatedRef({ allOf: [ref], default: 'active' })).toBe(false);
     });
   });
 });

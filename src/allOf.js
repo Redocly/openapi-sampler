@@ -6,10 +6,6 @@ export function allOfSample(into, children, options, spec, context) {
   let res = traverse(into, options, spec);
   const subSamples = [];
 
-  // In XML, a $ref is normally wrapped in an element named after it. The children of a
-  // composed allOf describe one element together, so their properties are merged flat.
-  // A lone $ref keeps its wrapper, so it is named like a plain $ref would be, unless the
-  // schema adds properties or its own xml to it: then it is composed like any other allOf.
   const flattenXmlRefs = options.format === 'xml' && !isAnnotatedRef({ ...into, allOf: children });
 
   for (let subSchema of children) {
@@ -38,7 +34,7 @@ export function allOfSample(into, children, options, spec, context) {
     }
     if (options.format === 'xml') {
       // An XML $ref wrapper nests the skipped properties one level down
-      stripSkipped(res.value);
+      res.value = stripSkipped(res.value);
     }
     return res;
   } else {
