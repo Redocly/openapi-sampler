@@ -939,6 +939,54 @@ describe('Integration', () => {
           expect(spec.components.schemas.Num).toEqual({ type: 'number' });
         }
       });
+
+      it('should apply a null sibling written in the document', () => {
+        result = sample({ $ref: '#/components/schemas/Num', default: null }, {}, refSiblingsSpec({ openapi: '3.1.0' }));
+        expect(result).toBeNull();
+      });
+
+      it('should not apply the type that allOf passes to its items to a $ref', () => {
+        for (const spec of [refSiblingsSpec({ openapi: '3.1.0' }), refSiblingsSpec({})]) {
+          result = sample({ allOf: [{ $ref: '#/components/schemas/Pet' }] }, {}, spec);
+          expect(result).toEqual({ name: 'string' });
+
+          result = sample({
+            allOf: [
+              { $ref: '#/components/schemas/Pet' },
+              { properties: { age: { type: 'integer' } } },
+            ]
+          }, {}, spec);
+          expect(result).toEqual({ name: 'string', age: 0 });
+        }
+      });
+
+      it('should keep readOnly and writeOnly of a $ref in oneOf and anyOf', () => {
+        for (const version of [{ openapi: '3.1.0' }, {}]) {
+          const spec = {
+            ...version,
+            components: {
+              schemas: {
+                Id: { type: 'string', readOnly: true },
+                Password: { type: 'string', writeOnly: true },
+              },
+            },
+          };
+          const schema = {
+            type: 'object',
+            properties: {
+              id: { oneOf: [{ $ref: '#/components/schemas/Id' }] },
+              password: { anyOf: [{ $ref: '#/components/schemas/Password' }] },
+              name: { type: 'string' },
+            },
+          };
+
+          result = sample(schema, { skipReadOnly: true }, spec);
+          expect(result).toEqual({ password: 'string', name: 'string' });
+
+          result = sample(schema, { skipWriteOnly: true }, spec);
+          expect(result).toEqual({ id: 'string', name: 'string' });
+        }
+      });
     });
   });
 

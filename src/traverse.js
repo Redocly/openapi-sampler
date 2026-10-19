@@ -78,7 +78,9 @@ export function traverse(schema, options, spec, context) {
       ref = ref.substring(1);
     }
 
-    const { $ref: _, ...siblings } = schema;
+    const siblings = Object.fromEntries(
+      Object.entries(schema).filter(([key, value]) => key !== '$ref' && value !== undefined),
+    );
     const referenced = Object.keys(siblings).length && !shouldIgnoreRefSiblings(spec)
       ? mergeRefSiblings(JsonPointer.get(spec, ref), siblings)
       : JsonPointer.get(spec, ref);
