@@ -848,6 +848,65 @@ describe('Integration', () => {
       };
       expect(result).toEqual(expected);
     });
+
+    describe('keywords that are siblings of $ref', () => {
+      const refSiblingsSchema = {
+        type: 'object',
+        properties: {
+          example: { $ref: '#/components/schemas/Num', example: 10 },
+          examples: { $ref: '#/components/schemas/Num', examples: [55] },
+          minimum: { $ref: '#/components/schemas/Num', minimum: 51 },
+          override: { $ref: '#/components/schemas/NumWithExample', example: 99 },
+          plain: { $ref: '#/components/schemas/Num' },
+          extended: { $ref: '#/components/schemas/Pet', properties: { age: { type: 'integer' } } },
+        }
+      };
+      const refSiblingsSpec = (version) => ({
+        ...version,
+        components: {
+          schemas: {
+            Num: { type: 'number' },
+            NumWithExample: { type: 'number', example: 7 },
+            Pet: { type: 'object', properties: { name: { type: 'string' } } },
+          }
+        }
+      });
+
+      it('should ignore them in Swagger 2.0 and OpenAPI 3.0', () => {
+        for (const spec of [refSiblingsSpec({ swagger: '2.0' }), refSiblingsSpec({ openapi: '3.0.3' })]) {
+          result = sample(refSiblingsSchema, {}, spec);
+          expected = {
+            example: 0,
+            examples: 0,
+            minimum: 0,
+            override: 7,
+            plain: 0,
+            extended: { name: 'string' },
+          };
+          expect(result).toEqual(expected);
+        }
+      });
+
+      it('should apply them in OpenAPI 3.1+ and when no version is given', () => {
+        for (const spec of [
+          refSiblingsSpec({ openapi: '3.1.0' }),
+          refSiblingsSpec({ openapi: '3.2.0' }),
+          refSiblingsSpec({}),
+        ]) {
+          result = sample(refSiblingsSchema, {}, spec);
+          expected = {
+            example: 10,
+            examples: 55,
+            minimum: 51,
+            override: 99,
+            plain: 0,
+            extended: { name: 'string', age: 0 },
+          };
+          expect(result).toEqual(expected);
+          expect(spec.components.schemas.Num).toEqual({ type: 'number' });
+        }
+      });
+    });
   });
 
   describe('discriminator', () => {

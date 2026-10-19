@@ -14,6 +14,10 @@ export function clearCache() {
   seenSchemasStack = [];
 }
 
+function shouldIgnoreRefSiblings(spec) {
+  return String(spec.openapi ?? '').startsWith('3.0') || spec.swagger !== undefined;
+}
+
 function inferExample(schema) {
   let example;
   if (schema.const !== undefined) {
@@ -65,7 +69,10 @@ export function traverse(schema, options, spec, context) {
       ref = ref.substring(1);
     }
 
-    const referenced = JsonPointer.get(spec, ref);
+    const { $ref: _, ...siblings } = schema;
+    const referenced = Object.keys(siblings).length && !shouldIgnoreRefSiblings(spec)
+      ? mergeDeep(JsonPointer.get(spec, ref), siblings)
+      : JsonPointer.get(spec, ref);
     let result;
 
     if ($refCache[ref] !== true) {

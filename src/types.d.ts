@@ -7,6 +7,7 @@ export interface Options {
   readonly quiet?: boolean;
   readonly enablePatterns?: boolean;
   readonly format?: 'json' | 'xml';
+  readonly maxSampleDepth?: number;
 }
 
 export function sample(schema: JSONSchema7, options?: Options, document?: object): unknown;
