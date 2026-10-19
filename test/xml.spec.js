@@ -151,14 +151,17 @@ describe('XML', () => {
 `);
     });
 
-    it('should treat a root schema with items but no type as an array', () => {
+    it('should wrap the items of a root schema with items but no type in one element', () => {
+      // Without `type: "array"`, the nodeType defaults to element, so the array is its own element
       const schema = {
         xml: { name: 'Tags' },
         items: { type: 'string' },
       };
 
       expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
-"<Tags>string</Tags>
+"<Tags>
+  <Tags>string</Tags>
+</Tags>
 "
 `);
     });
@@ -789,7 +792,8 @@ describe('XML', () => {
 `);
     });
 
-    it('should not wrap an unwrapped untyped array property twice', () => {
+    it('should wrap an untyped array property in its own element', () => {
+      // Without `type: "array"`, the nodeType defaults to element
       const schema = {
         type: 'object',
         properties: {
@@ -800,7 +804,9 @@ describe('XML', () => {
 
       expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
 "<root>
-  <tags>string</tags>
+  <tags>
+    <tags>string</tags>
+  </tags>
   <owner>string</owner>
 </root>
 "
@@ -1238,6 +1244,114 @@ describe('XML', () => {
       expect(ownSchema.allOf[1].example.meta).toBe(meta);
       expect(meta.tags).toBe(tags);
       expect(tags).toEqual(['a', 'b']);
+    });
+  });
+
+  describe('xml arrays in compositions and unusual values', () => {
+    const options = { format: 'xml', quiet: true };
+    const spec = {
+      openapi: '3.0.3',
+      components: {
+        schemas: {
+          Tags: { type: 'array', items: { type: 'string' }, example: ['a', 'b'] },
+          Item: { type: 'object', xml: { name: 'item' }, properties: { id: { type: 'integer' } } },
+        },
+      },
+    };
+
+    it('should name the items of an example array under an allOf $ref with its own xml', () => {
+      const schema = {
+        type: 'object',
+        xml: { name: 'Doc' },
+        properties: {
+          tags: { allOf: [{ $ref: '#/components/schemas/Tags' }], xml: { name: 'tag' } },
+        },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<Doc>
+  <tags>a</tags>
+  <tags>b</tags>
+</Doc>
+"
+`);
+    });
+
+    it('should name the items of an example array whose $ref items cannot be resolved after the property', () => {
+      const schema = {
+        type: 'object',
+        xml: { name: 'Doc' },
+        properties: {
+          pets: { type: 'array', items: { $ref: '#/components/schemas/Missing' }, example: [{ id: 1 }] },
+        },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<Doc>
+  <pets>
+    <id>1</id>
+  </pets>
+</Doc>
+"
+`);
+    });
+
+    it('should wrap a root composed allOf with an example and an external $ref in root', () => {
+      const schema = {
+        allOf: [{ $ref: 'pets.yaml#/Pet' }, { properties: { id: { type: 'integer' } } }],
+        example: { id: 1 },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<root>
+  <id>1</id>
+</root>
+"
+`);
+    });
+
+    it('should keep an empty element for a null array property', () => {
+      const schema = {
+        type: 'object',
+        xml: { name: 'Doc' },
+        properties: {
+          tags: { type: ['array', 'null'], items: { type: 'string' }, default: null },
+        },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<Doc>
+  <tags></tags>
+</Doc>
+"
+`);
+    });
+
+    it('should name the composed allOf items of a root array after their first $ref', () => {
+      const schema = {
+        type: 'array',
+        minItems: 2,
+        items: {
+          allOf: [
+            { $ref: '#/components/schemas/Item' },
+            { type: 'object', properties: { note: { type: 'string' } } },
+          ],
+        },
+      };
+
+      expect(sample(schema, options, spec)).toMatchInlineSnapshot(`
+"<root>
+  <item>
+    <id>0</id>
+    <note>string</note>
+  </item>
+  <item>
+    <id>0</id>
+    <note>string</note>
+  </item>
+</root>
+"
+`);
     });
   });
 });
