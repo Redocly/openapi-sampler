@@ -887,6 +887,39 @@ describe('Integration', () => {
         }
       });
 
+      it('should keep required names of both the referenced schema and its siblings', () => {
+        const spec = {
+          openapi: '3.1.0',
+          components: {
+            schemas: {
+              Base: {
+                type: 'object',
+                required: ['a', 'b'],
+                properties: { a: { type: 'string' }, b: { type: 'string' }, c: { type: 'string' } },
+              },
+            },
+          },
+        };
+        result = sample({ $ref: '#/components/schemas/Base', required: ['c'] }, { skipNonRequired: true }, spec);
+        expect(result).toEqual({ a: 'string', b: 'string', c: 'string' });
+      });
+
+      it('should sample a circular $ref that has siblings', () => {
+        const spec = {
+          openapi: '3.1.0',
+          components: {
+            schemas: {
+              Node: {
+                type: 'object',
+                properties: { child: { $ref: '#/components/schemas/Node', description: 'next' } },
+              },
+            },
+          },
+        };
+        result = sample({ $ref: '#/components/schemas/Node' }, {}, spec);
+        expect(result).toEqual({ child: {} });
+      });
+
       it('should apply them in OpenAPI 3.1+ and when no version is given', () => {
         for (const spec of [
           refSiblingsSpec({ openapi: '3.1.0' }),
