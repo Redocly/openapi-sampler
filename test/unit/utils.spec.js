@@ -37,11 +37,11 @@ describe('utils', () => {
   });
 
   describe('isArraySchema', () => {
-    it('should use the type that is sampled', () => {
+    it('should accept type array, or a list of types that starts with array', () => {
       expect(isArraySchema({ type: 'array' })).toBe(true);
       expect(isArraySchema({ type: ['array', 'null'] })).toBe(true);
       expect(isArraySchema({ type: ['string', 'array'] })).toBe(false);
-      expect(isArraySchema({ items: { type: 'string' } })).toBe(true);
+      expect(isArraySchema({ items: { type: 'string' } })).toBe(false);
       expect(isArraySchema({ type: 'object' })).toBe(false);
       expect(isArraySchema(undefined)).toBe(false);
     });

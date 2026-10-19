@@ -1,8 +1,7 @@
 import { _samplers } from './openapi-sampler';
 import { allOfSample } from './allOf';
 import { inferType } from './infer';
-import { getResultForCircular, mergeDeep, popSchemaStack, resolveRef } from './utils';
-import { applyXMLAttributes } from './utils';
+import { applyXMLAttributes, getResultForCircular, mergeDeep, popSchemaStack, resolveRef } from './utils';
 
 let $refCache = {};
 // for circular JS references we use additional array and not object as we need to compare entire schemas and not strings
@@ -62,7 +61,8 @@ export function traverse(schema, options, spec, context) {
     if ($refCache[ref] !== true) {
       $refCache[ref] = true;
       const traverseResult = traverse(referenced, options, spec, context);
-      if (options.format === 'xml' && !context?.flattenXmlRef) {
+      // In a composed allOf, a $ref's properties merge into one element; an array keeps its own nodes
+      if (options.format === 'xml' && !(context?.flattenXmlRef && traverseResult.type !== 'array')) {
         const refName = ref.split('/').pop();
         const xmlContext = { ...context, propertyName: context?.propertyName || refName };
         const { propertyName, value } = applyXMLAttributes(traverseResult, referenced, xmlContext, spec);

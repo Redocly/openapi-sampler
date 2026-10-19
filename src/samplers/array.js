@@ -25,9 +25,7 @@ export function sampleArray(schema, options = {}, spec, context) {
     let itemSchema = itemSchemaGetter(i);
     let { value: sample } = traverse(itemSchema, options, spec, { depth: depth + 1 });
     if (options?.format === 'xml') {
-      const xmlResult = applyXMLAttributes({ value: sample }, itemSchema, context, spec);
-      const { value } = xmlResult;
-      let { propertyName } = xmlResult;
+      let { value, propertyName } = applyXMLAttributes({ value: sample }, itemSchema, context, spec);
       if (!propertyName && (value === null || typeof value !== 'object')) {
         const { name, prefix } = getXMLAttributes(schema);
         propertyName = prefixed(name || 'root', prefix);

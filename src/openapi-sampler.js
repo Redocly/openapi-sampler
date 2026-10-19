@@ -1,7 +1,7 @@
 import { traverse, clearCache } from './traverse';
 import { sampleArray, sampleBoolean, sampleNumber, sampleObject, sampleString } from './samplers/index';
 import { XMLBuilder } from 'fast-xml-parser';
-import { getXMLAttributes, isAnnotatedRef, isArraySchema, nameLiteralItems, prefixed, refXml, withNamespace } from './utils';
+import { firstRefXml, getXMLAttributes, isArraySchema, isComposedAllOf, isSampledAsArray, nameLiteralItems, prefixed, withNamespace } from './utils';
 
 export var _samplers = {};
 
@@ -16,12 +16,12 @@ function convertJsonToXml(obj, schema, spec) {
   }
   // traverse() has already named the element of a root $ref, after the $ref and its siblings
   const rootSchema = schema?.$ref ? undefined : schema;
-  const isComposed = !!rootSchema?.allOf && !isAnnotatedRef(rootSchema);
+  const isComposed = isComposedAllOf(rootSchema);
   const xmlSource = isComposed && !rootSchema.xml?.name ? firstRefXml(rootSchema.allOf, spec) : rootSchema;
   const { name, prefix, namespace } = getXMLAttributes(xmlSource);
   const nodeType = rootSchema?.xml?.nodeType;
   const isPrimitive = typeof obj !== 'object';
-  const isArray = isArraySchema(rootSchema);
+  const isArray = isSampledAsArray(rootSchema);
   if (Array.isArray(obj)) {
     obj = literalArrayToXml(obj, rootSchema, spec);
   }
@@ -43,15 +43,8 @@ function convertJsonToXml(obj, schema, spec) {
 }
 
 function hasRepeatedRootElement(obj) {
-  const [value] = Object.values(obj);
-  return Array.isArray(value) && value.length > 1;
-}
-
-function firstRefXml(allOf, spec) {
-  const ref = allOf.find(child => child?.$ref);
-  // Without a spec, traverse() did not resolve the $ref: the root's example, default, const or enum was used
-  if (!ref || !spec) return null;
-  return { xml: refXml(ref, spec) };
+  const [key, value] = Object.entries(obj)[0] || [];
+  return Array.isArray(value) && value.length > 1 && !key.startsWith('#') && !key.startsWith('$');
 }
 
 function literalArrayToXml(values, schema, spec) {

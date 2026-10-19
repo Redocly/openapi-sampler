@@ -102,9 +102,15 @@ export function isAnnotatedRef(schema) {
     && isAnnotationOnly({ ...schema, allOf: undefined });
 }
 
-// Same type resolution as traverse(): the first listed type, or the one inferred from keywords
-export function isArraySchema(schema) {
+// traverse() samples a schema as an array when its first type, or the type inferred from its keywords, is array
+export function isSampledAsArray(schema) {
   return !!schema && typeof schema === 'object' && inferType(schema) === 'array';
+}
+
+// `type: "array"`, which makes `none` the default nodeType; a list of types is sampled as its first
+export function isArraySchema(schema) {
+  const type = schema?.type;
+  return (Array.isArray(type) ? type[0] : type) === 'array';
 }
 
 // Copies only the objects it removes something from, so examples from the spec are never written to
@@ -143,16 +149,18 @@ function mergeRefSiblings(referenced, siblings) {
   return merged;
 }
 
+function refPointer($ref) {
+  const pointer = decodeURIComponent($ref);
+  return pointer.startsWith('#') ? pointer.substring(1) : pointer;
+}
+
 // The schema a $ref points to, with the keywords next to the $ref merged in
 // (except in OpenAPI 3.0 and Swagger 2.0, where they are ignored)
 export function resolveRef(schema, spec) {
   if (!spec) {
     throw new Error('Your schema contains $ref. You must provide full specification in the third parameter.');
   }
-  let pointer = decodeURIComponent(schema.$ref);
-  if (pointer.startsWith('#')) {
-    pointer = pointer.substring(1);
-  }
+  const pointer = refPointer(schema.$ref);
   const siblings = Object.fromEntries(
     Object.entries(schema).filter(([key, value]) => key !== '$ref' && value !== undefined),
   );
@@ -162,10 +170,26 @@ export function resolveRef(schema, spec) {
   return { pointer, referenced };
 }
 
-// The xml of a $ref, named after the referenced component when it has no xml.name
+// The xml of a $ref, named after the referenced component when it has no xml.name.
+// traverse() never resolves a $ref under a value it takes as is (an example or default),
+// so here the $ref may be missing or external: then there is no xml to use.
 export function refXml(schema, spec) {
+  if (!spec || !JsonPointer.has(spec, refPointer(schema.$ref))) {
+    return null;
+  }
   const { pointer, referenced } = resolveRef(schema, spec);
   return { ...referenced?.xml, name: referenced?.xml?.name || pointer.split('/').pop() };
+}
+
+export function isComposedAllOf(schema) {
+  return !!schema?.allOf && !isAnnotatedRef(schema);
+}
+
+// A composed allOf merges its $refs into one element, named after the first one
+export function firstRefXml(allOf, spec) {
+  const ref = allOf.find(child => child?.$ref);
+  const xml = ref && refXml(ref, spec);
+  return xml ? { xml } : null;
 }
 
 export function prefixed(name, prefix) {
@@ -183,10 +207,11 @@ export function withNamespace(value, prefix, namespace) {
   return { [attribute]: namespace, '#text': value };
 }
 
-// Names the items of a literal array (an example or default) like sampleArray names sampled items
+// Names the items of a literal array: by their own xml.name or $ref, else by fallbackName
 export function nameLiteralItems(values, schema, spec, fallbackName) {
   const items = schema?.items;
-  const item = getXMLAttributes(items?.$ref && spec ? { xml: refXml(items, spec) } : items);
+  const itemRefXml = items?.$ref && refXml(items, spec);
+  const item = getXMLAttributes(itemRefXml ? { xml: itemRefXml } : items);
   return {
     name: item.name ? prefixed(item.name, item.prefix) : fallbackName,
     values: values.map(value => withNamespace(value, item.prefix, item.namespace)),
@@ -227,7 +252,7 @@ function resolveNodeType(schema, resultType) {
     return 'element';
   }
 
-  if (schema?.allOf && !isAnnotatedRef(schema)) {
+  if (isComposedAllOf(schema)) {
     return resultType === 'array' ? 'none' : 'element';
   }
 
@@ -247,12 +272,18 @@ function resolveNodeType(schema, resultType) {
 export function applyXMLAttributes(result, schema = {}, context = {}, spec) {
   const { value: oldValue } = result;
   const { propertyName: oldPropertyName } = context;
-  const { name, prefix, namespace } = getXMLAttributes(schema);
+  // An unnamed composed allOf item, with no property to name it, is named like a root one
+  const xmlSource = !schema.xml?.name && !oldPropertyName && isComposedAllOf(schema)
+    ? firstRefXml(schema.allOf, spec) || schema
+    : schema;
+  const { name, prefix, namespace } = getXMLAttributes(xmlSource);
   const effectiveNodeType = resolveNodeType(schema, result.type);
 
   let propertyName = name || oldPropertyName ? prefixed(name || oldPropertyName, prefix) : null;
-  // In XML, sampled arrays are objects by now, so an array here is an example or default
-  const isLiteralArray = isArraySchema(schema) && Array.isArray(oldValue);
+  // Sampled arrays are objects by now (unless empty), so an array here is an example, default, etc.
+  const isLiteralArray = Array.isArray(oldValue) && (isSampledAsArray(schema) || result.type === 'array');
+  // An array property whose value is null or a scalar (e.g. `default: null`) has no items: it stays one element
+  const isItemlessArray = isArraySchema(schema) && !!oldPropertyName && (oldValue === null || typeof oldValue !== 'object');
 
   let value = typeof oldValue === 'object'
     ? Array.isArray(oldValue)
@@ -277,9 +308,9 @@ export function applyXMLAttributes(result, schema = {}, context = {}, spec) {
 
     case 'none':
       if (isLiteralArray) {
-        // An unwrapped array's own xml.name is ignored, so its items are named after the property
+        // An unwrapped array's own xml.name is ignored, so unnamed items are named after the property
         ({ name: propertyName, values: value } = nameLiteralItems(value, schema, spec, oldPropertyName || propertyName));
-      } else {
+      } else if (!isItemlessArray) {
         propertyName = null;
       }
       break;
