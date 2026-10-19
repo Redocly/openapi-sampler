@@ -1,5 +1,17 @@
 # openapi-sampler
 
+## 1.7.8
+
+### Patch Changes
+
+- 35ee280: Fixed a regression from 1.7.7: a `$ref` inside `allOf` was sampled as `null`, and `skipReadOnly`/`skipWriteOnly` ignored a `$ref` inside `oneOf` or `anyOf`.
+
+## 1.7.7
+
+### Patch Changes
+
+- e96c77e: Fixed an issue where keywords next to `$ref` (such as `example`, `examples`, `minimum`) were ignored. They are now applied unless the document is Swagger 2.0 or OpenAPI 3.0.
+
 ## 1.7.6
 
 ### Patch Changes

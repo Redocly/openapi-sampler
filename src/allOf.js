@@ -13,7 +13,8 @@ export function allOfSample(into, children, options, spec, context) {
   const flattenXmlRefs = options.format === 'xml' && !isAnnotatedRef({ ...into, allOf: children });
 
   for (let subSchema of children) {
-    const { type, readOnly, writeOnly, value } = traverse({ type: res.type, ...subSchema }, options, spec, {
+    const childSchema = subSchema.$ref ? subSchema : { type: res.type, ...subSchema };
+    const { type, readOnly, writeOnly, value } = traverse(childSchema, options, spec, {
       ...context,
       isAllOfChild: true,
       ...(flattenXmlRefs && { flattenXmlRef: true }),
