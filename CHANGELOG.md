@@ -1,5 +1,11 @@
 # openapi-sampler
 
+## 1.7.8
+
+### Patch Changes
+
+- 35ee280: Fixed a regression from 1.7.7: a `$ref` inside `allOf` was sampled as `null`, and `skipReadOnly`/`skipWriteOnly` ignored a `$ref` inside `oneOf` or `anyOf`.
+
 ## 1.7.7
 
 ### Patch Changes
