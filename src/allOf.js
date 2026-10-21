@@ -1,16 +1,19 @@
 import { traverse } from './traverse';
-import { mergeDeep, SKIP_SYMBOL } from './utils';
+import { isAnnotatedRef, mergeDeep, SKIP_SYMBOL, stripSkipped } from './utils';
 
 
 export function allOfSample(into, children, options, spec, context) {
   let res = traverse(into, options, spec);
   const subSamples = [];
 
+  const flattenXmlRefs = options.format === 'xml' && !isAnnotatedRef({ ...into, allOf: children });
+
   for (let subSchema of children) {
     const childSchema = subSchema.$ref ? { ...subSchema } : { type: res.type, ...subSchema };
     const { type, readOnly, writeOnly, value } = traverse(childSchema, options, spec, {
       ...context,
       isAllOfChild: true,
+      ...(flattenXmlRefs && { flattenXmlRef: true }),
     });
     if (res.type && type && type !== res.type) {
       console.warn('allOf: schemas with different types can\'t be merged');
@@ -28,6 +31,10 @@ export function allOfSample(into, children, options, spec, context) {
       if (res.value[key] === SKIP_SYMBOL) {
         delete res.value[key];
       }
+    }
+    if (options.format === 'xml') {
+      // An XML $ref wrapper nests the skipped properties one level down
+      res.value = stripSkipped(res.value);
     }
     return res;
   } else {

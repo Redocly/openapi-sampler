@@ -1166,8 +1166,8 @@ describe('Integration', () => {
       const result = sample(schema, options, {});
       expect(result.trim()).toMatchInlineSnapshot(`
   "<booksLibrary>
-    <booksLibrary>test1</booksLibrary>
-    <booksLibrary>test2</booksLibrary>
+    <book>test1</book>
+    <book>test2</book>
   </booksLibrary>"
   `);
     });
@@ -1211,8 +1211,8 @@ describe('Integration', () => {
       const result = sample(schema, options, {});
       expect(result.trim()).toMatchInlineSnapshot(`
   "<books>
-    <books>test1</books>
-    <books>test2</books>
+    <book>test1</book>
+    <book>test2</book>
   </books>"
   `);
     });
@@ -1234,8 +1234,8 @@ describe('Integration', () => {
 
       expect(result).toMatchInlineSnapshot(`
   "<root>
-    <0>test1</0>
-    <1>test2</1>
+    <books>test1</books>
+    <books>test2</books>
   </root>
   "
   `);
@@ -1257,8 +1257,10 @@ describe('Integration', () => {
       const result = sample(schema, options, {});
 
       expect(result).toMatchInlineSnapshot(`
-  "<book>test1</book>
-  <book>test2</book>
+  "<root>
+    <book>test1</book>
+    <book>test2</book>
+  </root>
   "
   `);
     });
@@ -1278,8 +1280,10 @@ describe('Integration', () => {
       const result = sample(schema, options, {});
 
       expect(result).toMatchInlineSnapshot(`
-  "<book>test1</book>
-  <book>test2</book>
+  "<root>
+    <book>test1</book>
+    <book>test2</book>
+  </root>
   "
   `);
     });
@@ -1698,7 +1702,11 @@ describe('Integration', () => {
         };
         const result = sample(schema, options, {});
 
-        expect(result.trim()).toMatchInlineSnapshot('"<fullName>Alice</fullName>"');
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<person>
+  <fullName>Alice</fullName>
+</person>"
+`);
       });
 
       it('should wrap array when nodeType: element is set (spec example)', () => {
@@ -1719,9 +1727,11 @@ describe('Integration', () => {
         const result = sample(schema, options, {});
 
         expect(result.trim()).toMatchInlineSnapshot(`
-"<animals>
-  <animal>string</animal>
-</animals>"
+"<document>
+  <animals>
+    <animal>string</animal>
+  </animals>
+</document>"
 `);
       });
 
@@ -1743,9 +1753,11 @@ describe('Integration', () => {
         const result = sample(schema, options, {});
 
         expect(result.trim()).toMatchInlineSnapshot(`
-"<aliens>
-  <animal>string</animal>
-</aliens>"
+"<document>
+  <aliens>
+    <animal>string</animal>
+  </aliens>
+</document>"
 `);
       });
 
@@ -1930,7 +1942,11 @@ describe('Integration', () => {
         };
         const result = sample(schema, options, {});
 
-        expect(result.trim()).toMatchInlineSnapshot('"<animals>string</animals>"');
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<document>
+  <animals>string</animals>
+</document>"
+`);
       });
 
       it('should allow explicit nodeType: none on an array', () => {
@@ -1950,7 +1966,11 @@ describe('Integration', () => {
         };
         const result = sample(schema, options, {});
 
-        expect(result.trim()).toMatchInlineSnapshot('"<animal>string</animal>"');
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<document>
+  <animal>string</animal>
+</document>"
+`);
       });
 
       it('should exclude a primitive property with nodeType: none from XML output', () => {
@@ -2007,7 +2027,11 @@ describe('Integration', () => {
 
         expect(result).not.toContain('secretScore');
         expect(result).not.toContain('42');
-        expect(result.trim()).toMatchInlineSnapshot('"<name>Test</name>"');
+        expect(result.trim()).toMatchInlineSnapshot(`
+"<Item>
+  <name>Test</name>
+</Item>"
+`);
       });
     });
 
