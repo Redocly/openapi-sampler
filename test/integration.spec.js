@@ -960,6 +960,27 @@ describe('Integration', () => {
         }
       });
 
+      it('should sample a recursive $ref inside allOf as an empty object', () => {
+        for (const version of [{ openapi: '3.0.0' }, { openapi: '3.1.0' }]) {
+          const spec = {
+            ...version,
+            components: {
+              schemas: {
+                Node: {
+                  type: 'object',
+                  properties: {
+                    name: { type: 'string' },
+                    child: { allOf: [{ $ref: '#/components/schemas/Node' }] },
+                  },
+                },
+              },
+            },
+          };
+          result = sample(spec.components.schemas.Node, {}, spec);
+          expect(result).toEqual({ name: 'string', child: { name: 'string', child: {} } });
+        }
+      });
+
       it('should keep readOnly and writeOnly of a $ref in oneOf and anyOf', () => {
         for (const version of [{ openapi: '3.1.0' }, {}]) {
           const spec = {

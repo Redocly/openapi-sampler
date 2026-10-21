@@ -7,7 +7,7 @@ export function allOfSample(into, children, options, spec, context) {
   const subSamples = [];
 
   for (let subSchema of children) {
-    const childSchema = subSchema.$ref ? subSchema : { type: res.type, ...subSchema };
+    const childSchema = subSchema.$ref ? { ...subSchema } : { type: res.type, ...subSchema };
     const { type, readOnly, writeOnly, value } = traverse(childSchema, options, spec, {
       ...context,
       isAllOfChild: true,
