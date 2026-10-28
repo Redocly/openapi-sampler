@@ -1,9 +1,7 @@
 import { _samplers } from './openapi-sampler';
 import { allOfSample } from './allOf';
 import { inferType } from './infer';
-import { getResultForCircular, mergeDeep, popSchemaStack } from './utils';
-import JsonPointer from 'json-pointer';
-import { applyXMLAttributes } from './utils';
+import { applyXMLAttributes, getResultForCircular, mergeDeep, popSchemaStack, resolveRef } from './utils';
 
 let $refCache = {};
 // for circular JS references we use additional array and not object as we need to compare entire schemas and not strings
@@ -12,19 +10,6 @@ let seenSchemasStack = [];
 export function clearCache() {
   $refCache = {};
   seenSchemasStack = [];
-}
-
-function shouldIgnoreRefSiblings(spec) {
-  return String(spec.openapi ?? '').startsWith('3.0') || spec.swagger !== undefined;
-}
-
-function mergeRefSiblings(referenced, siblings) {
-  const merged = mergeDeep(referenced, siblings);
-  // mergeDeep merges arrays by index, which would drop required names of the referenced schema
-  if (Array.isArray(referenced.required) && Array.isArray(siblings.required)) {
-    merged.required = [...new Set([...referenced.required, ...siblings.required])];
-  }
-  return merged;
 }
 
 function inferExample(schema) {
@@ -70,29 +55,17 @@ export function traverse(schema, options, spec, context) {
   }
 
   if (schema.$ref) {
-    if (!spec) {
-      throw new Error('Your schema contains $ref. You must provide full specification in the third parameter.');
-    }
-    let ref = decodeURIComponent(schema.$ref);
-    if (ref.startsWith('#')) {
-      ref = ref.substring(1);
-    }
-
-    const siblings = Object.fromEntries(
-      Object.entries(schema).filter(([key, value]) => key !== '$ref' && value !== undefined),
-    );
-    const referenced = Object.keys(siblings).length && !shouldIgnoreRefSiblings(spec)
-      ? mergeRefSiblings(JsonPointer.get(spec, ref), siblings)
-      : JsonPointer.get(spec, ref);
+    const { pointer: ref, referenced } = resolveRef(schema, spec);
     let result;
 
     if ($refCache[ref] !== true) {
       $refCache[ref] = true;
       const traverseResult = traverse(referenced, options, spec, context);
-      if (options.format === 'xml') {
+      // In a composed allOf, a $ref's properties merge into one element; a $ref typed as an array keeps its own nodes
+      if (options.format === 'xml' && !(context?.flattenXmlRef && traverseResult.type !== 'array')) {
         const refName = ref.split('/').pop();
         const xmlContext = { ...context, propertyName: context?.propertyName || refName };
-        const { propertyName, value } = applyXMLAttributes(traverseResult, referenced, xmlContext);
+        const { propertyName, value } = applyXMLAttributes(traverseResult, referenced, xmlContext, spec);
         result = { ...traverseResult, value: { [propertyName || 'root']: value } };
       } else {
         result = traverseResult;
