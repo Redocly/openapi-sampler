@@ -41,6 +41,11 @@ export function mergeDeep(...objects) {
       const pVal = prev[key];
       const oVal = obj[key];
 
+      // A later allOf sample must not restore a property that was skipped.
+      if (pVal === SKIP_SYMBOL) {
+        return;
+      }
+
       if (isObject(pVal) && isObject(oVal)) {
         prev[key] = mergeDeep(pVal, oVal);
       } else {
