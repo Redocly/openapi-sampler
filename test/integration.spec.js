@@ -488,6 +488,29 @@ describe('Integration', () => {
         a: 'string',
       });
     });
+
+    it.each([
+      ['readOnly', 'skipReadOnly', 'first'],
+      ['readOnly', 'skipReadOnly', 'last'],
+      ['writeOnly', 'skipWriteOnly', 'first'],
+      ['writeOnly', 'skipWriteOnly', 'last'],
+    ])('should respect %s with %s when its allOf schema comes %s', (annotation, option, position) => {
+      const restriction = { type: 'object', properties: { b: { [annotation]: true } } };
+      const base = {
+        type: 'object',
+        properties: {
+          a: { type: 'string' },
+          b: { type: 'integer', [annotation]: false },
+        },
+      };
+      const schema = {
+        allOf: position === 'first' ? [restriction, base] : [base, restriction],
+      };
+      const result = sample(schema, { [option]: true });
+      expect(result).toEqual({
+        a: 'string',
+      });
+    });
   });
 
   describe('Inheritance', () => {

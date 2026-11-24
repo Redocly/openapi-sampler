@@ -824,6 +824,25 @@ describe('XML', () => {
 `);
     });
 
+    it.each([
+      ['readOnly', 'skipReadOnly'],
+      ['writeOnly', 'skipWriteOnly'],
+    ])('should skip %s properties when their allOf schema precedes a $ref', (annotation, option) => {
+      const schema = {
+        allOf: [
+          { type: 'object', properties: { tenant_id: { [annotation]: true } } },
+          { $ref: '#/components/schemas/User' },
+        ],
+      };
+
+      expect(sample(schema, { ...options, skipReadOnly: true, [option]: true }, spec)).toMatchInlineSnapshot(`
+"<User>
+  <username>string</username>
+</User>
+"
+`);
+    });
+
     it('should throw for a root null sample', () => {
       expect(() => sample({ type: 'null' }, options, spec)).toThrow('Unknown format output for building XML.');
     });
