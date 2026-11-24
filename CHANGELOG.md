@@ -1,5 +1,11 @@
 # openapi-sampler
 
+## 1.7.11
+
+### Patch Changes
+
+- 7a05dad: Fixed skipped `readOnly` and `writeOnly` properties reappearing when a later `allOf` member supplies a value.
+
 ## 1.7.10
 
 ### Patch Changes
