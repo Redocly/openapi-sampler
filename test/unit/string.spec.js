@@ -135,6 +135,11 @@ describe('sampleString', () => {
       });
   });
 
+  it('should return binary for format binary', () => {
+    res = sampleString({format: 'binary'});
+    expect(res).toEqual([116, 101, 115, 116]);
+  });
+  
   it.each([
     'email',
     // 'idn-email', // unsupported by ajv-formats
